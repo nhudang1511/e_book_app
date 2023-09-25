@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "238194152930",
+    "project_id": "flutter-e-book-app",
+    "storage_bucket": "flutter-e-book-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238194152930:android:61d2ad826f482a30c8d5bb",
+        "android_client_info": {
+          "package_name": "com.example.e_book_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP1txEoEbdJT46zdmCQX558NhC5nlI-9M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
