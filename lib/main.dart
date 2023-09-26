@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/app_route.dart';
-import 'config/theme.dart';
+import 'config/theme/theme.dart';
 import 'firebase_options.dart';
 import 'screen/screen.dart';
 
@@ -22,7 +22,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'E Book App',
       debugShowCheckedModeBanner: false,
-      theme: theme(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: SplashScreen.routeName,
     );

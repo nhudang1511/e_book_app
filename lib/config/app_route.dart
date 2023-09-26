@@ -8,6 +8,12 @@ class AppRouter{
         return HomeScreen.route();
       case '/splash':
         return SplashScreen.route();
+      case '/search':
+        return SearchScreen.route();
+      case '/library':
+        return LibraryScreen.route();
+      case '/profile':
+        return ProfileScreen.route();
       default:
         return _errorRoute();
     }

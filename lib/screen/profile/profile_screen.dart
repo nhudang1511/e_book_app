@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../../widget/widget.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
-  static const String routeName = '/';
+  static const String routeName = '/profile';
 
   static Route route() {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (_) => const HomeScreen());
+        builder: (_) => const ProfileScreen());
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      appBar: CustomAppBar(title: 'Good morning!'),
-      bottomNavigationBar: CustomNavBar(screen: 'home',),
+      appBar: CustomAppBar(title: 'Profile'),
+      bottomNavigationBar: CustomNavBar(screen: 'profile',),
     );
   }
 }

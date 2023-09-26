@@ -8,28 +8,20 @@ class SplashScreen extends StatelessWidget {
   static Route route(){
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (_) => const SplashScreen());
+        builder: (_) => const SplashScreen(),
+    );
   }
   @override
   Widget build(BuildContext context) {
     Timer(const Duration(seconds: 2), () => Navigator.pushNamed(context, '/'));
     return Scaffold(
-      body: Column(
+      backgroundColor: Theme.of(context).colorScheme.onBackground,
+      body: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Center(
-            child: Image(image: AssetImage('assets/logo/logo.png'), width: 125, height: 125),
+          Center(
+            child: Image(image: AssetImage('assets/logo/logo.png')),
           ),
-          Container(
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10
-            ),
-            child: Text('E Book App', style: Theme.of(context).textTheme.headline2!.copyWith(
-                color: Colors.white
-            )),
-          )
         ],
       ),
     );
