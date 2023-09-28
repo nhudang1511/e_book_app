@@ -38,20 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Good morning!'),
       bottomNavigationBar: CustomNavBar(
-      screen: 'home',
-      onTabSelected: (index) {
-        // Xử lý sự kiện chọn tab ở đây
-        if (index == 1) {
-          // Điều hướng đến màn hình Search
-          Navigator.pushReplacementNamed(context, '/search');
-        } else if (index == 2) {
-          // Điều hướng đến màn hình Library
-          Navigator.pushReplacementNamed(context, '/library');
-        } else if (index == 3) {
-          // Điều hướng đến màn hình Profile
-          Navigator.pushReplacementNamed(context, '/profile');
-        }
-      },
+      initialIndex: 0,
     ),
       body: SingleChildScrollView(
         child:  Column(
