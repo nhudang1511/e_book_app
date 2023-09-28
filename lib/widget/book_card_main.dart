@@ -16,6 +16,7 @@ class BookCardMain extends StatelessWidget {
           Expanded(
               flex: 1,
               child: Image.network('https://sachxuasaigon.com/wp-content/uploads/2020/01/De-men-phieu-luu-ky-1.jpg')),
+          SizedBox(width: 5),
           Expanded(flex:2, child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

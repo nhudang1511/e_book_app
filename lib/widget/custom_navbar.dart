@@ -1,55 +1,62 @@
 import 'package:flutter/material.dart';
 
-class CustomNavBar extends StatelessWidget implements PreferredSizeWidget{
+class CustomNavBar extends StatefulWidget {
   final String screen;
+  final void Function(int) onTabSelected;
+
   const CustomNavBar({
-    super.key, required this.screen,
-  });
+    Key? key,
+    required this.screen,
+    required this.onTabSelected,
+  }) : super(key: key);
 
   @override
+  State<CustomNavBar> createState() => _CustomNavBarState();
+}
+
+class _CustomNavBarState extends State<CustomNavBar> {
+  @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      color: Theme.of(context).colorScheme.background,
-      child: SizedBox(
-        height: 70,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, '/');
-                },
-                icon: Icon(
-                    Icons.home,
-                    color: screen == 'home' ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary )),
-            IconButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, '/search');
-                },
-                icon: Icon(
-                    Icons.search,
-                    color:  screen == 'search' ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary)),
-            IconButton(
-              onPressed: (){
-                Navigator.pushNamed(context, '/library');
-              },
-              icon: Icon(
-                  Icons.library_books_rounded,
-                  color:  screen == 'library' ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary),),
-            IconButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, '/profile');
-                },
-                icon: Icon(
-                    Icons.person,
-                    color:  screen == 'profile' ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary))
-          ],
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.shifting,
+      backgroundColor: Theme.of(context).colorScheme.background,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Theme.of(context).colorScheme.secondary,
+      currentIndex: _getSelectedIndex(widget.screen),
+      onTap: widget.onTabSelected,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
         ),
-      ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.library_books_rounded),
+          label: 'Library',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
     );
   }
 
-  @override
-  // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(50.0);
+  int _getSelectedIndex(String screen) {
+    switch (screen) {
+      case 'home':
+        return 0;
+      case 'search':
+        return 1;
+      case 'library':
+        return 2;
+      case 'profile':
+        return 3;
+      default:
+        return 0;
+    }
+  }
 }
