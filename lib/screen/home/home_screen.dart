@@ -5,7 +5,7 @@ import '../../widget/widget.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const String routeName = '/';
+  static const String routeName = '/home';
 
   static Route route() {
     return MaterialPageRoute(
@@ -17,7 +17,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CustomAppBar(title: 'Good morning!'),
-      bottomNavigationBar: CustomNavBar(screen: 'home',),
     );
   }
 }

@@ -17,7 +17,6 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CustomAppBar(title: 'Search'),
-      bottomNavigationBar: CustomNavBar(screen: 'search',),
     );
   }
 }

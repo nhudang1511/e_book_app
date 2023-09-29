@@ -17,7 +17,6 @@ class LibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CustomAppBar(title: 'My library'),
-      bottomNavigationBar: CustomNavBar(screen: 'library',),
     );
   }
 }
