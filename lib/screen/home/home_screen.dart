@@ -1,7 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
+import '../../model/models.dart';
 import '../../widget/widget.dart';
+import 'components/list_quote.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,20 +19,42 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-final List<String> imgList = [
-  'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-  'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-  'https://sachxuasaigon.com/wp-content/uploads/2020/01/De-men-phieu-luu-ky-1.jpg'
-];
+// final List<String> imgList = [
+//   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
+//   'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
+//   'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
+//   'https://sachxuasaigon.com/wp-content/uploads/2020/01/De-men-phieu-luu-ky-1.jpg'
+// ];
 class _HomeScreenState extends State<HomeScreen> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
-  final List<Widget> imageSliders = imgList.map((item) => Container(
+  final List<Widget> imageSliders = listQuote.map((item) => Container(
     margin: const EdgeInsets.all(5.0),
-    child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-        child: Image.network(item, fit: BoxFit.cover, width: 1000.0)),
+    decoration: BoxDecoration(color: item.color, borderRadius: BorderRadius.circular(10)),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 2,
+          child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+              child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          flex: 3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(item.quote, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              Text(item.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
+            ],
+          ),
+        ),
+        SizedBox(width: 10,)
+      ],
+    ),
   )).toList();
 
   @override
@@ -58,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: imgList.asMap().entries.map((entry) {
+              children: listQuote.asMap().entries.map((entry) {
               return GestureDetector(
                 onTap: () => _controller.animateToPage(entry.key),
                 child: Container(
@@ -79,9 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 132,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                  itemCount: 3,
+                  itemCount: Book.books.length,
                   itemBuilder: (context,index){
-                  return Padding(padding: EdgeInsets.all(8), child: BookCard());
+                  return Padding(padding: EdgeInsets.all(8), child: BookCard(book: Book.books[index],));
                   }),
             ),
             const SectionTitle(title: 'Recomendation'),
@@ -89,9 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 180,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 3,
+                  itemCount: Book.books.length,
                   itemBuilder: (context,index){
-                    return BookCardMain();
+                    return BookCardMain(book: Book.books[index],);
                   }),
             ),
             const SectionTitle(title: 'Countinue Reading'),
@@ -99,9 +123,9 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 180,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 3,
+                  itemCount: Book.books.length,
                   itemBuilder: (context,index){
-                    return BookCardMain();
+                    return BookCardMain(book: Book.books[index],);
                   }),
             ),
           ],

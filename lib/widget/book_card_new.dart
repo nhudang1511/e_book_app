@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../model/models.dart';
+
 class BookCard extends StatelessWidget {
+  final Book book;
   const BookCard({
-    super.key,
+    super.key, required this.book,
   });
 
   @override
@@ -16,9 +19,9 @@ class BookCard extends StatelessWidget {
         color: Color(0xFFF2A5B5),),
       child: Row(
         children: [
-          Expanded(flex:2, child: Text('Đơn giản', style: Theme.of(context).textTheme.headlineMedium )),
-          Expanded(flex:2, child: Text('Tạ Thu Ngân dịch')),
-          Expanded(flex:3,child: Image.network('https://intamphuc.vn/wp-content/uploads/2023/06/mau-bia-sach-dep-2.jpg'))
+          Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineMedium )),
+          Expanded(flex:2, child: Text(book.authodId)),
+          Expanded(flex:3,child: Image.network(book.imageUrl))
         ],
       ),
     );

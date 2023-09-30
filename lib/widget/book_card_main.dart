@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../model/models.dart';
+
 class BookCardMain extends StatelessWidget {
+  final Book book;
   const BookCardMain({
-    super.key,
+    super.key, required this.book,
   });
 
   @override
@@ -15,7 +18,7 @@ class BookCardMain extends StatelessWidget {
         children: [
           Expanded(
               flex: 1,
-              child: Image.network('https://sachxuasaigon.com/wp-content/uploads/2020/01/De-men-phieu-luu-ky-1.jpg')),
+              child: Image.network(book.imageUrl)),
           SizedBox(width: 5),
           Expanded(flex:2, child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,8 +29,8 @@ class BookCardMain extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dế mèn phiêu lưu ký', style: Theme.of(context).textTheme.headlineSmall,),
-                      Text('Tô Hoài', style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Color(0xFFC7C7C7), fontWeight: FontWeight.normal),),
+                      Text(book.title, style: Theme.of(context).textTheme.headlineSmall,),
+                      Text(book.authodId, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Color(0xFFC7C7C7), fontWeight: FontWeight.normal),),
                     ],
                   ),
                   IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),))
@@ -38,7 +41,7 @@ class BookCardMain extends StatelessWidget {
               Row(children: [
                 Icon(Icons.menu_book),
                 SizedBox(width: 5,),
-                Text('204 pages')
+                Text(book.language)
               ],),
               Row(
                 children: [
@@ -49,7 +52,7 @@ class BookCardMain extends StatelessWidget {
                       ),
                       padding: EdgeInsets.all(5),
                       margin: EdgeInsets.only(top: 2),
-                      child: Text('Fairy tail', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),))
+                      child: Text(book.categoryId[0], style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),))
                 ],
               )
             ],
