@@ -6,7 +6,7 @@ import '../../widget/widget.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static const String routeName = '/';
+  static const String routeName = '/home';
 
   static Route route() {
     return MaterialPageRoute(
@@ -36,10 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Good morning!'),
-      bottomNavigationBar: CustomNavBar(
-      initialIndex: 0,
-    ),
+      appBar: const CustomAppBar(title: 'Good morning!'),
+      bottomNavigationBar: CustomNavBar(), ,
       body: SingleChildScrollView(
         child:  Column(
           children: [
@@ -112,31 +110,3 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

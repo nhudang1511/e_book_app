@@ -15,9 +15,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       appBar: CustomAppBar(title: 'Profile'),
-      bottomNavigationBar: CustomNavBar(initialIndex: 3),
     );
   }
 }

@@ -1,69 +1,52 @@
 import 'package:flutter/material.dart';
 
-import '../screen/screen.dart';
-
 class CustomNavBar extends StatefulWidget {
-  final int initialIndex; // Sử dụng initialIndex thay vì selectedIndex
-  CustomNavBar({Key? key, required this.initialIndex}) : super(key: key);
+  const CustomNavBar({
+    super.key,
+    required this.onTabSelected,
+  });
+
+  final ValueChanged<int> onTabSelected;
 
   @override
-  _CustomNavBarState createState() => _CustomNavBarState();
+  State<CustomNavBar> createState() => _BottomNavigationBarWidgetState();
 }
 
-class _CustomNavBarState extends State<CustomNavBar> {
-  int _selectedIndex = 0; // Biến để theo dõi selectedIndex
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialIndex; // Khởi tạo selectedIndex từ initialIndex
-  }
+class _BottomNavigationBarWidgetState extends State<CustomNavBar> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        type: BottomNavigationBarType.shifting,
-        backgroundColor: Theme.of(context).colorScheme.background,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.secondary,
-        currentIndex: _selectedIndex,
       onTap: (index) {
         setState(() {
-          _selectedIndex = index;
+          _currentIndex = index;
+          widget.onTabSelected(index);
         });
-        switch (index) {
-          case 0:
-            Navigator.pushReplacementNamed(context, '/'); // Điều hướng đến trang "Home"
-            break;
-          case 1:
-            Navigator.pushReplacementNamed(context, '/search'); // Điều hướng đến trang "Search"
-            break;
-          case 2:
-            Navigator.pushReplacementNamed(context, '/library'); // Điều hướng đến trang "Library"
-            break;
-          case 3:
-            Navigator.pushReplacementNamed(context, '/profile'); // Điều hướng đến trang "Profile"
-            break;
-        }
       },
-      items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books_rounded),
-            label: 'Library',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.library_books_rounded),
+          label: 'Library',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _currentIndex,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Theme.of(context).colorScheme.secondary,
     );
   }
 }

@@ -5,6 +5,8 @@ class AppRouter{
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
+        return MainScreen.route();
+      case '/home':
         return HomeScreen.route();
       case SplashScreen.routeName:
         return SplashScreen.route();

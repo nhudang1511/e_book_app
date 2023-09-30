@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'Search'),
-      bottomNavigationBar: CustomNavBar(initialIndex: 1,),
+      //bottomNavigationBar: CustomNavBar(initialIndex: 1,),
       body: Column(
         children: [
           SearchAnchor(
