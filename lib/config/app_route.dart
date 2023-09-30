@@ -6,13 +6,13 @@ class AppRouter{
     switch (settings.name) {
       case '/':
         return HomeScreen.route();
-      case '/splash':
+      case SplashScreen.routeName:
         return SplashScreen.route();
-      case '/search':
+      case SearchScreen.routeName:
         return SearchScreen.route();
-      case '/library':
+      case LibraryScreen.routeName:
         return LibraryScreen.route();
-      case '/profile':
+      case ProfileScreen.routeName:
         return ProfileScreen.route();
       default:
         return _errorRoute();
