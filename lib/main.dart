@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
 import 'firebase_options.dart';
+import 'repository/repository.dart';
 import 'screen/screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 Future <void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +22,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'E Book App',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: SplashScreen.routeName,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => BookBloc(
+            bookRepository: BookRepository(),
+          )..add(LoadBooks()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'E Book App',
+        debugShowCheckedModeBanner: false,
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.system,
+        onGenerateRoute: AppRouter.onGenerateRoute,
+        initialRoute: SplashScreen.routeName,
+      ),
     );
   }
 }
