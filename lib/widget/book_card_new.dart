@@ -19,8 +19,8 @@ class BookCard extends StatelessWidget {
         color: Color(0xFFF2A5B5),),
       child: Row(
         children: [
-          Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineMedium )),
-          Expanded(flex:2, child: Text(book.authodId)),
+          Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineSmall )),
+          Expanded(flex:1, child: Text(book.authodId)),
           Expanded(flex:3,child: Image.network(book.imageUrl))
         ],
       ),

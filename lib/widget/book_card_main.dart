@@ -43,17 +43,27 @@ class BookCardMain extends StatelessWidget {
                 SizedBox(width: 5,),
                 Text(book.language)
               ],),
-              Row(
-                children: [
-                  Container(
+              SizedBox(
+                height: 25,
+                child: ListView.builder(
+                  itemCount: book.categoryId.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
                       decoration: BoxDecoration(
                           color: Color(0xFFEB6097),
-                          borderRadius: BorderRadius.circular(5)
-                      ),
+                          borderRadius: BorderRadius.circular(5)),
                       padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 2),
-                      child: Text(book.categoryId[0], style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),))
-                ],
+                      margin: EdgeInsets.only(top: 2, right: 5),
+                      child: Text(book.categoryId[index],
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Colors.white),
+                      ),
+                    );
+                  }),
               )
             ],
           ))
