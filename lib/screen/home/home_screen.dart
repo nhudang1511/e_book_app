@@ -1,11 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:e_book_app/widget/list_book.dart';
-import 'package:e_book_app/widget/list_book_main.dart';
+import 'package:e_book_app/widget/book_items/list_book.dart';
+import 'package:e_book_app/widget/book_items/list_book_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../blocs/blocs.dart';
-import '../../model/models.dart';
 import '../../widget/widget.dart';
 import 'components/list_quote.dart';
 
@@ -38,26 +36,26 @@ class _HomeScreenState extends State<HomeScreen> {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(width: 10,),
+        const SizedBox(width: 10,),
         Expanded(
           flex: 2,
           child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(5.0)),
               child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           flex: 3,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(item.quote, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              Text(item.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
+              Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
             ],
           ),
         ),
-        SizedBox(width: 10,)
+        const SizedBox(width: 10,)
       ],
     ),
   )).toList();
@@ -71,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child:  BlocBuilder<BookBloc, BookState>(
           builder: (context, state) {
             if(state is BookLoading){
-              return CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             }
             if(state is BookLoaded){
               return Column(
@@ -119,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             else{
-              return Text('Something went wrong');}
+              return const Text('Something went wrong');}
             },
         ),
       ),

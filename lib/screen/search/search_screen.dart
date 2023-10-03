@@ -1,5 +1,9 @@
+import 'package:e_book_app/model/models.dart';
+import 'package:e_book_app/widget/category_items/category_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocs/blocs.dart';
 import '../../widget/widget.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -73,19 +77,35 @@ class _SearchScreenState extends State<SearchScreen> {
               });
             },
           ),
-          // GridView.builder(
-          //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //         crossAxisCount: 2, childAspectRatio: 1.15),
-          //     itemBuilder: (BuildContext context, int index){
-          //       return Center(
-          //         child: BookCard()
-          //         );
-          //     },
-          //   itemCount: 6,
-          // )
+          SizedBox(height: 10),
+          SectionTitle(title: 'Genres: '),
+          BlocBuilder<CategoryBloc, CategoryState>(
+            builder: (context, state) {
+              if(state is CategoryLoading){
+                return Center(child: CircularProgressIndicator());
+              }
+              if(state is CategoryLoaded){
+                return Expanded(
+                  child: GridView.count(
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                    // Create a grid with 2 columns. If you change the scrollDirection to
+                    // horizontal, this produces 2 rows.
+                    crossAxisCount: 2,
+                    // Generate 100 widgets that display their index in the List.
+                    children: List.generate(state.categories.length, (index) {
+                      return CategoryCard(category: state.categories[index]);
+                    }),
+                  ),
+                );
+              }
+              else{
+                return Text('Something went wrong');
+              }},
+          ),
         ],
       )
-
     );
   }
 }

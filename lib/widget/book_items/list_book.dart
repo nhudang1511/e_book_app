@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../model/models.dart';
+import '../../model/models.dart';
 import 'book_card_new.dart';
 
 class ListBook extends StatelessWidget {

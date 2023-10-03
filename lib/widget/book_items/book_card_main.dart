@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../model/models.dart';
+import '../../model/models.dart';
 
 class BookCardMain extends StatelessWidget {
   final Book book;
@@ -23,18 +23,20 @@ class BookCardMain extends StatelessWidget {
           Expanded(flex:2, child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(book.title, style: Theme.of(context).textTheme.headlineSmall,),
-                      Text(book.authodId, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Color(0xFFC7C7C7), fontWeight: FontWeight.normal),),
-                    ],
-                  ),
-                  IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),))
-                ],
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(book.title, style: Theme.of(context).textTheme.headlineSmall,),
+                        Text(book.authodId, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Color(0xFFC7C7C7), fontWeight: FontWeight.normal),),
+                      ],
+                    ),
+                    IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),))
+                  ],
+                ),
               ),
               SizedBox(height: 35,),
               Icon(Icons.money_off),

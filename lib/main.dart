@@ -29,6 +29,11 @@ class MyApp extends StatelessWidget {
             bookRepository: BookRepository(),
           )..add(LoadBooks()),
         ),
+        BlocProvider(
+          create: (_) => CategoryBloc(
+            categoryRepository: CategoryRepository()
+          )..add(LoadCategory()),
+        ),
       ],
       child: MaterialApp(
         title: 'E Book App',

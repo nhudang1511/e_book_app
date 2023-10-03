@@ -1,6 +1,6 @@
-import 'package:e_book_app/widget/book_card_main.dart';
+import 'package:e_book_app/widget/book_items/book_card_main.dart';
 import 'package:flutter/material.dart';
-import '../model/models.dart';
+import '../../model/models.dart';
 
 
 class ListBookMain extends StatelessWidget {
