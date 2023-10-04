@@ -48,7 +48,25 @@ class BookCardMain extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(book.title, style: Theme.of(context).textTheme.headlineSmall,),
-                            Text(book.authodId, style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Color(0xFFC7C7C7), fontWeight: FontWeight.normal),),
+                            BlocBuilder<AuthorBloc, AuthorState>(builder: (context, state) {
+                              if(state is AuthorLoading){
+                                return Expanded(child: CircularProgressIndicator());
+                              }
+                              if(state is AuthorLoaded){
+                                Author? author = state.authors.firstWhere(
+                                      (author) => author.id == book.authodId,
+                                );
+                                return Text(
+                                  author.fullName,
+                                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                      color: Color(0xFFC7C7C7),
+                                      fontWeight: FontWeight.normal),);
+                              }
+                              else{
+                                return Text("Something went wrong");
+                              }
+                              },
+                            ),
                           ],
                         ),
                         IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),))

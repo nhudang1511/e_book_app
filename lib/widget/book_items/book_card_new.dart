@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 
 class BookCard extends StatelessWidget {
@@ -20,7 +22,25 @@ class BookCard extends StatelessWidget {
       child: Row(
         children: [
           Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineSmall )),
-          Expanded(flex:1, child: Text(book.authodId)),
+          Expanded(
+              flex:1, 
+              child: BlocBuilder<AuthorBloc, AuthorState>(
+                builder: (context, state) {
+                  if(state is AuthorLoading){
+                    return CircularProgressIndicator();
+                  }
+                  if(state is AuthorLoaded){
+                    Author? author = state.authors.firstWhere(
+                          (author) => author.id == book.authodId,
+                    );
+                    return Text(author.fullName);
+                  }
+                  else{
+                    return Text('Somthing went wrong');
+                  }
+                  },
+              )
+          ),
           Expanded(flex:3,child: Image.network(book.imageUrl))
         ],
       ),
