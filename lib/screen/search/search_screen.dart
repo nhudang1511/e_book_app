@@ -52,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           },
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Search...',
+                            hintText: 'Search for book',
                             hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: Color(0xFFC9C9C9))
                           ),
                         ),

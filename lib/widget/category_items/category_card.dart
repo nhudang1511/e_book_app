@@ -24,16 +24,18 @@ class CategoryCard extends StatelessWidget {
                   category.name,
                   style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white) )),
           Expanded(
-              flex:3,
+              flex:2,
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 5),
                 ),
-                child: ClipOval(
-                    child: SizedBox.fromSize(
-                      size: Size.fromRadius(48),
-                        child: Image.network(category.imageUrl, fit: BoxFit.cover,))),
+                child: SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: ClipOval(
+                      child: Image.network(category.imageUrl, fit: BoxFit.cover,)),
+                ),
               ))
         ],
       ),

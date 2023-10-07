@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../model/models.dart';
 import '../screen/screen.dart';
 
 class AppRouter{
@@ -6,7 +7,7 @@ class AppRouter{
     switch (settings.name) {
       case '/':
         return MainScreen.route();
-      case '/home':
+      case HomeScreen.routeName:
         return HomeScreen.route();
       case SplashScreen.routeName:
         return SplashScreen.route();
@@ -16,6 +17,8 @@ class AppRouter{
         return LibraryScreen.route();
       case ProfileScreen.routeName:
         return ProfileScreen.route();
+      case BookDetailScreen.routeName:
+        return BookDetailScreen.route(book: settings.arguments as Book);
       default:
         return _errorRoute();
     }

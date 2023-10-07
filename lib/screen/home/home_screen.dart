@@ -46,13 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(width: 10),
         Expanded(
           flex: 3,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 10,)
