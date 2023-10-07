@@ -12,7 +12,7 @@ class BookCardMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: (){
         Navigator.pushNamed(context, '/book_detail', arguments: book);
       },

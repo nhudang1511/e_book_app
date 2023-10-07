@@ -18,7 +18,12 @@ class AppRouter{
       case ProfileScreen.routeName:
         return ProfileScreen.route();
       case BookDetailScreen.routeName:
-        return BookDetailScreen.route(book: settings.arguments as Book);
+        if (settings.arguments is Book) {
+          return BookDetailScreen.route(book: settings.arguments as Book);
+        } else {
+          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
+          return HomeScreen.route();
+        }
       default:
         return _errorRoute();
     }

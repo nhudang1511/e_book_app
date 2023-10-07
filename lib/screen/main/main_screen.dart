@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
       case 3:
         return const ProfileScreen();
       default:
-        return const HomeScreen();
+        return const MainScreen();
     }
   }
 }
