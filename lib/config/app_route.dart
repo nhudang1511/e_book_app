@@ -24,6 +24,12 @@ class AppRouter{
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return HomeScreen.route();
         }
+      case CategoryScreen.routeName:
+        if (settings.arguments is Category) {
+          return CategoryScreen.route(category: settings.arguments as Category);
+        } else {
+          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
+          return HomeScreen.route();}
       default:
         return _errorRoute();
     }
