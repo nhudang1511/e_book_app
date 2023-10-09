@@ -1,5 +1,4 @@
 import 'package:e_book_app/model/models.dart';
-import 'package:e_book_app/widget/book_items/list_book_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
@@ -63,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Search'),
+      appBar: const CustomAppBar(title: 'Search'),
       body: Column(
         children: <Widget>[
           Padding(
@@ -71,24 +70,25 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: Color(0xFFDFE2E0)),
+                  color: const Color(0xFFC7C7C7)
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   children: [
-                    Icon(Icons.search),
-                    SizedBox(width: 8.0),
+                    const Icon(Icons.search),
+                    const SizedBox(width: 8.0),
                     Expanded(
                       child: TextField(
                         onChanged: _onSearchTextChanged,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Search for book',
-                          hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: Color(0xFFC9C9C9)),
+                          hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: const Color(0xFFC9C9C9)),
                         ),
                       ),
                     ),
-                    Icon(Icons.mic)
+                    const Icon(Icons.mic)
                   ],
                 ),
               ),
@@ -107,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
           BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
               if (state is BookLoading){
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
               if(state is BookLoaded){
                 List<Book> book = state.books;
@@ -124,17 +124,17 @@ class _SearchScreenState extends State<SearchScreen> {
                              itemBuilder: (context,index){
                                return BookCardMain(book: searchResults[index],);
                              }),
-                       ) :  ListCategoryInSearch(),
+                       ) :  const ListCategoryInSearch(),
                      );
                    }
                    else{
-                     return Text('Something went wrong');
+                     return const Text('Something went wrong');
                    }
                     },
                 );
               }
               else{
-                return Text('Something went wrong');
+                return const Text('Something went wrong');
               }},
           ),
         ],
@@ -144,7 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchOptionButton(String option) {
     return Container(
-      margin: EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(right: 10),
       child: ElevatedButton(
         onPressed: () {
           setState(() {
@@ -156,7 +156,7 @@ class _SearchScreenState extends State<SearchScreen> {
           side: _selectedSearchOption == option ? BorderSide(
               width: 1,
               color: Theme.of(context).colorScheme.primary) : null),
-        child: Text(option, style: TextStyle(color: Colors.black),),
+        child: Text(option, style: const TextStyle(color: Colors.black),),
       ),
     );
   }

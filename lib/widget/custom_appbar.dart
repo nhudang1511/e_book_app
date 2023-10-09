@@ -13,9 +13,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
       title: Text( title,
-        style: Theme.of(context).textTheme.displayMedium!,
+        style: Theme.of(context).textTheme.displayMedium,
       ),
-      titleSpacing: -40,
+      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+      //titleSpacing: -40,
       centerTitle: false,
     );
   }

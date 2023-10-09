@@ -23,7 +23,8 @@ class CustomTabInBook extends StatelessWidget {
               labelColor: Colors.black,
               indicator: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
-                  border: Border.all(color: Theme.of(context).colorScheme.primary)
+                  border: Border.all(color: Theme.of(context).colorScheme.primary),
+                color: Colors.white
               ),
               tabs: const [
                 Tab(
