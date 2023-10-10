@@ -9,7 +9,7 @@ class DetailBookItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50),
+      margin: const EdgeInsets.symmetric(horizontal: 50),
       child: Column(
         children: [
           Row(
@@ -21,33 +21,33 @@ class DetailBookItem extends StatelessWidget {
                   Text('100', style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary
                   )),
-                  Text('PAGES')
+                  const Text('PAGES')
                 ],
               ),
               Column(
                 children: [
                   Text('12+', style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary)),
-                  Text('AGE')
+                  const Text('AGE')
                 ],
               ),
               Column(
                 children: [
                   Text('5.0', style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary)),
-                  Text('RATINGS')
+                  const Text('RATINGS')
                 ],
               ),
             ],
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           Text(book.description),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           SizedBox(
             width: MediaQuery.of(context).size.width - 20,
             child: ElevatedButton(
                 onPressed: (){},
-                child: Text('READ')),
+                child: const Text('READ', style: TextStyle(color: Colors.white),)),
           )
         ],
       ),
