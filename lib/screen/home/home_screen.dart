@@ -64,8 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final now = TimeOfDay.now();
+    String period = getDayPeriod(now);
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Good morning!'),
+      appBar: CustomAppBar(title: period),
       //bottomNavigationBar: CustomNavBar(),
       body: SingleChildScrollView(
         child:  BlocBuilder<BookBloc, BookState>(
@@ -124,5 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+  String getDayPeriod(TimeOfDay time) {
+    if (time.hour < 12) {
+      return 'Good morning!';
+    } else if (time.hour < 18) {
+      return 'Good afternoon!';
+    } else {
+      return 'Good evening!';
+    }
   }
 }
