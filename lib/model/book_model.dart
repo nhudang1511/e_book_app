@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class Book extends Equatable{
+  final String id;
   final String authodId;
   final List<String> categoryId;
   final String description;
@@ -13,6 +14,7 @@ class Book extends Equatable{
   final String title;
 
   const Book({
+    required this.id,
     required this.authodId,
     required this.categoryId,
     required this.description,
@@ -29,7 +31,7 @@ class Book extends Equatable{
 
   static Book fromSnapshot(DocumentSnapshot snap) {
     Book book = Book(
-       authodId: snap['authodId'],
+      id: snap.id, authodId: snap['authodId'],
       categoryId: List<String>.from(snap['categoryId']),
       description: snap['description'],
       imageUrl: snap['imageUrl'],
@@ -43,6 +45,7 @@ class Book extends Equatable{
   }
   static List<Book> books = [
     Book(
+      id: '123',
         authodId: 'gb51TOSTxbkJNWZY0wJt',
         categoryId: const [
           're0RBYTYZsb1eAeuSYGk', 'enc0qB1JqjN1F90uLknL'
@@ -55,6 +58,7 @@ class Book extends Equatable{
         status: true,
         title: 'Hoàng tử bé'),
     Book(
+      id:'123',
         authodId: 'gb51TOSTxbkJNWZY0wJt',
         categoryId: const [
           're0RBYTYZsb1eAeuSYGk', 'enc0qB1JqjN1F90uLknL'

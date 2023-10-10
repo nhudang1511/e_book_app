@@ -41,7 +41,7 @@ class CustomTabInBook extends StatelessWidget {
             height: 300, // Set an appropriate fixed height here
             child: TabBarView(children: [
               DetailBookItem(book: book,),
-              ReviewItem(),
+              ReviewItem(book: book),
             ]),
           )
         ],

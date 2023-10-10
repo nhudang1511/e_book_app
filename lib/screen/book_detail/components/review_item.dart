@@ -5,7 +5,8 @@ import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 
 class ReviewItem extends StatelessWidget {
-  ReviewItem({super.key});
+  final Book book;
+  const ReviewItem({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
@@ -15,25 +16,26 @@ class ReviewItem extends StatelessWidget {
           BlocBuilder<ReviewBloc, ReviewState>(
             builder: (context, state) {
               if(state is ReviewLoading){
-               return SizedBox(child: CircularProgressIndicator(),);
+               return const SizedBox(child: CircularProgressIndicator(),);
               }
               if(state is ReviewLoaded){
+                List<Review> reviewsByBook = state.reviews.where((e) => e.bookId == book.id ).toList();
                 return SizedBox(
                   height: 100,
                   child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: state.reviews.length,
+                      itemCount: reviewsByBook.length,
                       itemBuilder: (context,index){
-                        return ReviewItemCard(review: state.reviews[index],);
+                        return ReviewItemCard(review: reviewsByBook[index],);
                       }),
                 );
               }
               else{
-                return SizedBox(child: Text('Something went wrong'),);
+                return const SizedBox(child: Text('Something went wrong'),);
               }
               },
           ),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           SizedBox(
             width: MediaQuery.of(context).size.width - 20,
             child: ElevatedButton(
@@ -57,9 +59,9 @@ class ReviewItemCard extends StatelessWidget {
     return Container(
       height: 100,
       width: MediaQuery.of(context).size.width - 50,
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
           border: Border.all(color: Theme.of(context).colorScheme.primary)
       ),
       child: Row(
