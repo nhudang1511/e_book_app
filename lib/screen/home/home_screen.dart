@@ -35,26 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
     decoration: BoxDecoration(color: item.color, borderRadius: BorderRadius.circular(10)),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(width: 10,),
-        Expanded(
-          flex: 2,
+        Flexible(
           child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(5.0)),
               child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
         ),
         const SizedBox(width: 10),
-        Expanded(
-          flex: 3,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
-              ],
-            ),
+        Flexible(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
+            ],
           ),
         ),
         const SizedBox(width: 10,)

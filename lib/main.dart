@@ -1,3 +1,4 @@
+import 'package:e_book_app/screen/book/book_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'blocs/blocs.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: SplashScreen.routeName,
+        initialRoute: BookScreen.routeName,
       ),
     );
   }

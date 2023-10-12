@@ -1,4 +1,3 @@
-import 'package:e_book_app/model/book_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,9 +24,9 @@ class BookDetailScreen extends StatelessWidget {
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
           actions: [
-            IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),)),
-            IconButton(onPressed: (){}, icon: Icon(Icons.share, color: Color(0xFFDFE2E0),)),
-            IconButton(onPressed: (){}, icon: Icon(Icons.download, color: Color(0xFFDFE2E0),))
+            IconButton(onPressed: (){}, icon: const Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),)),
+            IconButton(onPressed: (){}, icon: const Icon(Icons.share, color: Color(0xFFDFE2E0),)),
+            IconButton(onPressed: (){}, icon: const Icon(Icons.download, color: Color(0xFFDFE2E0),))
           ]),
       body: SingleChildScrollView(
         child: Column(
@@ -38,11 +37,11 @@ class BookDetailScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Image.network(book.imageUrl),
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
                     Text(book.title, style: Theme.of(context).textTheme.displayMedium, textAlign: TextAlign.center,),
                     BlocBuilder<AuthorBloc, AuthorState>(builder: (context, state) {
                       if(state is AuthorLoading){
-                        return Expanded(child: CircularProgressIndicator());
+                        return const Expanded(child: CircularProgressIndicator());
                       }
                       if(state is AuthorLoaded){
                         Author? author = state.authors.firstWhere(
@@ -51,17 +50,17 @@ class BookDetailScreen extends StatelessWidget {
                         return Text(
                           author.fullName,
                           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                              color: Color(0xFFC7C7C7),
+                              color: const Color(0xFFC7C7C7),
                               fontWeight: FontWeight.normal),);
                       }
                       else{
-                        return Text("Something went wrong");
+                        return const Text("Something went wrong");
                       }
                     },),
                   ],
                 )
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
             CustomTabInBook(book: book,),
           ],
         ),

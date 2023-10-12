@@ -1,3 +1,4 @@
+import 'package:e_book_app/screen/book/book_screen.dart';
 import 'package:flutter/material.dart';
 import '../model/models.dart';
 import '../screen/screen.dart';
@@ -30,6 +31,8 @@ class AppRouter{
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return HomeScreen.route();}
+      case BookScreen.routeName:
+        return BookScreen.route();
       default:
         return _errorRoute();
     }
