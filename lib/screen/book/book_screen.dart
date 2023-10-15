@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../model/models.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:translator/translator.dart';
 
 class BookScreen extends StatefulWidget {
   static const String routeName = '/book';
@@ -13,7 +11,8 @@ class BookScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (_) => BookScreen());
   }
-  const BookScreen({super.key});
+
+  const BookScreen({Key? key}) : super(key: key);
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -24,6 +23,11 @@ class _BookScreenState extends State<BookScreen> {
   OverlayEntry? _overlayEntry;
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   int currentPage = 1;
+  bool isBookmarkViewOpen = false;
+  // Text from clipboard
+  String clipboardText = '';
+
+
 
   @override
   void initState() {
@@ -35,23 +39,100 @@ class _BookScreenState extends State<BookScreen> {
       BuildContext context,
       PdfTextSelectionChangedDetails details,
       ) {
-    final OverlayState overlayState = Overlay.of(context)!; // Remove the double underscores
+    final OverlayState overlayState = Overlay.of(context)!;
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         top: details.globalSelectedRegion!.center.dy - 55,
         left: details.globalSelectedRegion!.bottomLeft.dx,
-        child: ElevatedButton(
-          onPressed: () {
-            final selectedText = details.selectedText ?? '';
-            Clipboard.setData(ClipboardData(text: selectedText));
-            print('Text copied to clipboard: ' + details.selectedText.toString());
-            _pdfViewerController.clearSelection();
-          },
-          child: Text('Copy', style: TextStyle(fontSize: 17)),
+        child: Container(
+          decoration: BoxDecoration(color: Color(0xFF8C2EEE), borderRadius: BorderRadius.circular(5)),
+          padding: EdgeInsets.all(5),
+          child: Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  final selectedText = details.selectedText ?? '';
+                  Clipboard.setData(ClipboardData(text: selectedText));
+                  print('Text copied to clipboard: ' + details.selectedText.toString());
+                  _pdfViewerController.clearSelection();
+                },
+                child: const Row(
+                  children: [
+                    Text('Copy', style: TextStyle(fontSize: 17, color: Colors.white),),
+                    Icon(Icons.copy, color: Colors.white)
+                  ],
+                ),
+              ),
+              TextButton(
+                  onPressed: (){
+                    final selectedText = details.selectedText ?? '';
+                    Clipboard.setData(ClipboardData(text: selectedText));
+                    _pdfViewerController.clearSelection();
+
+                    // Store the clipboard text and show it in a dialog
+                    setState(() {
+                      clipboardText = selectedText;
+                    });
+                    _showClipboardDialog(context);
+                  },
+                  child: const Row(
+                    children: [
+                    Text('Save', style: TextStyle(fontSize: 17, color: Colors.white)),
+                    Icon(Icons.save, color: Colors.white,)
+                  ],
+                  ),
+              ),
+              TextButton(
+                onPressed: (){
+                },
+                child: const Row(
+                  children: [
+                    Text('Mark', style: TextStyle(fontSize: 17, color: Colors.white)),
+                    Icon(Icons.edit_note_outlined, color: Colors.white,)
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final selectedText = details.selectedText ?? '';
+                  final translator = GoogleTranslator();
+                  translator
+                      .translate(selectedText, to: 'vi')
+                      .then((result) => print("Source: $selectedText\nTranslated: $result"));
+                },
+                child: const Row(
+                  children: [
+                    Text('Trans', style: TextStyle(fontSize: 17, color: Colors.white)),
+                    Icon(Icons.g_translate, color: Colors.white,)
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
-    overlayState.insert(_overlayEntry!); // Remove the double underscores
+    overlayState.insert(_overlayEntry!);
+  }
+
+  void _showClipboardDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Clipboard Content'),
+          content: Text(clipboardText),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _updateCurrentPageNumber(PdfPageChangedDetails details) {
@@ -78,9 +159,15 @@ class _BookScreenState extends State<BookScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              setState(() {
+                isBookmarkViewOpen = !isBookmarkViewOpen;
+              });
               _pdfViewerKey.currentState?.openBookmarkView();
             },
-            icon: const Icon(Icons.book),
+            icon: Icon(Icons.book,
+                color: isBookmarkViewOpen
+                    ? const Color(0xFF8C2EEE)
+                    : const Color(0xFFDFE2E0)),
           ),
           IconButton(
             onPressed: () {},
@@ -123,17 +210,9 @@ class _BookScreenState extends State<BookScreen> {
           },
           controller: _pdfViewerController,
           scrollDirection: PdfScrollDirection.horizontal,
+          
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
