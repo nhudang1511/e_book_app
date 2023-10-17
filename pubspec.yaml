@@ -43,6 +43,8 @@ dependencies:
   flutter_html: ^2.1.2
   syncfusion_flutter_pdfviewer: ^21.2.10
   translator: ^0.1.7
+  material_dialogs: ^1.1.4
+  syncfusion_flutter_sliders: ^21.2.10
 dev_dependencies:
   flutter_test:
     sdk: flutter
