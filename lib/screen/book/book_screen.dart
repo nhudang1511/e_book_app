@@ -39,7 +39,7 @@ class _BookScreenState extends State<BookScreen> {
     splitTextIntoSegments(screenHeight);
    return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        backgroundColor: isTickedBlack ? Colors.black : Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
         actions: [
@@ -173,6 +173,7 @@ class _BookScreenState extends State<BookScreen> {
             ],
           )
       ),
+      backgroundColor: isTickedBlack ? Colors.black : Colors.white,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -185,7 +186,10 @@ class _BookScreenState extends State<BookScreen> {
                 currentPage < textSegments.length
                     ? textSegments[currentPage]
                     : '',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  // Chỉnh màu văn bản tùy thuộc vào màu nền
+                  color: isTickedBlack ? Colors.white : Colors.black,
+                ),
                 showCursor: true,
                 toolbarOptions: ToolbarOptions(selectAll: false, copy: false),
                 onSelectionChanged: (selection, cause) {
