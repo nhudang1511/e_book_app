@@ -27,10 +27,21 @@ class _BookScreenState extends State<BookScreen> {
   List<String> textSegments = [];
   int currentPage = 0;
   List<TextSpan> highlightedTextSpans = [];
+  double fontSize = 16.0;
 
   @override
   void initState() {
     super.initState();
+  }
+  void increaseFontSize() {
+    setState(() {
+      fontSize += 2.0; // You can adjust the increment as needed
+    });
+  }
+  void decreaseFontSize() {
+    setState(() {
+      fontSize -= 2.0;
+    });
   }
 
   @override
@@ -45,6 +56,24 @@ class _BookScreenState extends State<BookScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              Dialogs.bottomMaterialDialog(
+                  context: context,
+                  color: const Color(0xFF122158),
+                actions: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
+                      TextButton(onPressed: (){
+
+                      }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
+                      TextButton(onPressed: (){
+                        Navigator.pop(context);
+                      }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                    ],
+                  ),
+                ]
+              );
             },
             icon: const Icon(Icons.book,
                 color: Color(0xFFDFE2E0)),
@@ -130,6 +159,32 @@ class _BookScreenState extends State<BookScreen> {
                             ],
                           ),
                         ),
+                        TextButton(
+                          onPressed: () {
+                            increaseFontSize();
+                          },
+                          child: const Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(Icons.zoom_in, color: Colors.white),
+                              SizedBox(width: 10,),
+                              Text('Zoom In', style: TextStyle(fontSize: 17, color: Colors.white),),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            decreaseFontSize();
+                          },
+                          child: const Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(Icons.zoom_out, color: Colors.white),
+                              SizedBox(width: 10,),
+                              Text('Zoom Out', style: TextStyle(fontSize: 17, color: Colors.white),),
+                            ],
+                          ),
+                        ),
                         TextButton(onPressed: (){
                           Navigator.pop(context);
                         }, child: const Text('Close', style: TextStyle(color: Colors.white),))
@@ -177,7 +232,7 @@ class _BookScreenState extends State<BookScreen> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: GestureDetector(
               onTapDown: (details) {
                 showToolbar(context, details.localPosition);
@@ -189,9 +244,10 @@ class _BookScreenState extends State<BookScreen> {
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   // Chỉnh màu văn bản tùy thuộc vào màu nền
                   color: isTickedBlack ? Colors.white : Colors.black,
+                  fontSize: fontSize
                 ),
                 showCursor: true,
-                toolbarOptions: ToolbarOptions(selectAll: false, copy: false),
+                toolbarOptions: const ToolbarOptions(selectAll: false, copy: false),
                 onSelectionChanged: (selection, cause) {
                   setState(() {
                     if (currentPage < textSegments.length) {
@@ -275,17 +331,6 @@ class _BookScreenState extends State<BookScreen> {
                     children: [
                       Text('Save', style: TextStyle(fontSize: 13, color: Colors.white)),
                       Icon(Icons.save, color: Colors.white,)
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: (){
-
-                  },
-                  child: const Row(
-                    children: [
-                      Text('Mark', style: TextStyle(fontSize: 13, color: Colors.white)),
-                      Icon(Icons.edit_note_outlined, color: Colors.white,)
                     ],
                   ),
                 ),
