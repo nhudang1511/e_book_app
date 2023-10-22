@@ -40,9 +40,9 @@ class ProfileCard extends StatelessWidget {
         IconButton(
             onPressed: (){
               showMenu(
-                color: Color(0xFF6A1CBD),
+                color: const Color(0xFF6A1CBD),
                 context: context,
-                position: RelativeRect.fromLTRB(100, 70, 0, 100),
+                position: const RelativeRect.fromLTRB(100, 70, 0, 100),
                 items: <PopupMenuEntry>[
                   PopupMenuItem(
                       child: Column(
@@ -98,10 +98,10 @@ class ProfileCard extends StatelessWidget {
                   ),
                 ],
               ).then((value) {
-                print('You selected: $value');
+                //print('You selected: $value');
               });
             },
-            icon: Icon(Icons.keyboard_arrow_down, color: Colors.white))
+            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white))
       ],
     );
   }
