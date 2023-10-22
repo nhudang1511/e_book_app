@@ -1,4 +1,3 @@
-import 'package:e_book_app/screen/book/book_screen.dart';
 import 'package:flutter/material.dart';
 import '../model/models.dart';
 import '../screen/screen.dart';
@@ -33,6 +32,8 @@ class AppRouter{
           return HomeScreen.route();}
       case BookScreen.routeName:
         return BookScreen.route();
+      case AdminPanel.routeName:
+        return AdminPanel.route();
       default:
         return _errorRoute();
     }

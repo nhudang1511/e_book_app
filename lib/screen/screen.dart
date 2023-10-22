@@ -6,3 +6,5 @@ export 'splash/splash_screen.dart';
 export 'search/search_screen.dart';
 export 'book_detail/book_detail_screen.dart';
 export 'category/category_screen.dart';
+export 'book/book_screen.dart';
+export 'admin/admin_panel.screen.dart';
