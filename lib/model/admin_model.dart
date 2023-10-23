@@ -6,6 +6,11 @@ class AdminTable{
     AdminTable(id: '124', name: 'Comedy', quantities: '51', views: '100'),
     AdminTable(id: '125', name: 'Comedy', quantities: '25', views: '100'),
     AdminTable(id: '126', name: 'Comedy', quantities: '7', views: '100'),
+    AdminTable(id: '127', name: 'Comedy', quantities: '8', views: '100'),
+    AdminTable(id: '123', name: 'Comedy', quantities: '5', views: '100'),
+    AdminTable(id: '124', name: 'Comedy', quantities: '51', views: '100'),
+    AdminTable(id: '125', name: 'Comedy', quantities: '25', views: '100'),
+    AdminTable(id: '126', name: 'Comedy', quantities: '7', views: '100'),
     AdminTable(id: '127', name: 'Comedy', quantities: '8', views: '100')
   ];
 
