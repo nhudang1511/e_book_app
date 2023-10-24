@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: AdminPanel.routeName,
+        initialRoute: BookScreen.routeName,
       ),
     );
   }

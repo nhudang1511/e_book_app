@@ -23,7 +23,7 @@ class CustomTableData extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(
             cardColor: const Color(0xFF1B2063),
-            cardTheme: CardTheme(shape: Border.all(color: Colors.white, width: 2)),
+            //cardTheme: CardTheme(shape: Border.all(color: Colors.white, width: 2)),
             dividerColor: Colors.white,
           dataTableTheme: const DataTableThemeData(
             dataTextStyle: TextStyle(color: Colors.white),
