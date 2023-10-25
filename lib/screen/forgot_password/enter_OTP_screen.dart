@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../widget/widget.dart';
+import 'package:pinput/pinput.dart';
 
-class SignupScreen extends StatelessWidget {
-  static const String routeName = '/signup';
+class EnterOTPScreen extends StatelessWidget {
+  static const String routeName = "/enter_otp";
 
-  const SignupScreen({super.key});
+  const EnterOTPScreen({super.key});
 
   static Route route() {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (_) => const SignupScreen(),
+      builder: (_) => const EnterOTPScreen(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
+    final currentWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
@@ -25,52 +27,54 @@ class SignupScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                //logo
                 SizedBox(
                   height: currentHeight / 4,
-                  child:
-                      const Image(image: AssetImage('assets/logo/logo1.png')),
+                  child: const Image(
+                    image: AssetImage("assets/logo/logo1.png"),
+                  ),
                 ),
-                //Gets tart
-                const Column(
-                  children: [
-                    CustomTitle(title1: "Get", title2: "started"),
-                    //with email
-                    CustomSecondaryTitle(title: "With email")
-                  ],
+                const CustomTitle(title1: "Enter", title2: "OTP"),
+                //input OTP
+                Pinput(
+                  length: 4,
+                  autofocus: true,
+                  defaultPinTheme: PinTheme(
+                    height: currentWidth / 6,
+                    width: currentWidth / 6,
+                    textStyle: Theme.of(context).textTheme.displayMedium,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                  ),
                 ),
-                const Column(
-                  children: [
-                    //email input
-                    CustomTextField(hint: "Email"),
-                    //password input
-                    PasswordInput(hint: "Password"),
-                    //confirm pass input
-                    PasswordInput(hint: "Confirm password"),
-                  ],
-                ),
-                //signup button
+                //verify button
                 CustomButton(
-                  title: "Sign up",
+                  title: "Verify",
                   onPressed: () {
                     print('Nút tùy chỉnh đã được nhấn');
                   },
                 ),
-                //already have an account
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Already have a account? ",
+                      "If you don't receive a code! ",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     SelectableText(
-                      "Log in",
+                      "Resend",
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: currentHeight / 3,
+                )
               ],
             ),
           ),

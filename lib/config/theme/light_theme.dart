@@ -51,5 +51,11 @@ ThemeData lightTheme = ThemeData(
             fontSize: 10,
             fontWeight: FontWeight.normal
         ),
+        labelSmall: TextStyle(
+            color: Color(0xFFC7C7C7),
+            fontSize: 18,
+            fontWeight: FontWeight.normal
+        ),
+
     )
 );

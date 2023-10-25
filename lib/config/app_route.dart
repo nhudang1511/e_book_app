@@ -8,16 +8,36 @@ class AppRouter{
     switch (settings.name) {
       case '/':
         return MainScreen.route();
+      case ChangePasswordScreen.routeName:
+        return ChangePasswordScreen.route();
+      case ChooseRecoveryMethodScreen.routeName:
+        return ChooseRecoveryMethodScreen.route();
+      case EnterEmailScreen.routeName:
+        return EnterEmailScreen.route();
+      case EnterNewPasswordScreen.routeName:
+        return EnterNewPasswordScreen.route();
+      case EnterOTPScreen.routeName:
+        return EnterOTPScreen.route();
+      case EditProfileScreen.routeName:
+        return EditProfileScreen.route();
       case HomeScreen.routeName:
         return HomeScreen.route();
       case SplashScreen.routeName:
         return SplashScreen.route();
       case SearchScreen.routeName:
         return SearchScreen.route();
+      case SettingsScreen.routeName:
+        return SettingsScreen.route();
       case LibraryScreen.routeName:
         return LibraryScreen.route();
+      case LoginScreen.routeName:
+        return LoginScreen.route();
       case ProfileScreen.routeName:
         return ProfileScreen.route();
+      case SignupScreen.routeName:
+        return SignupScreen.route();
+      case TextNotesScreen.routeName:
+        return TextNotesScreen.route();
       case BookDetailScreen.routeName:
         if (settings.arguments is Book) {
           return BookDetailScreen.route(book: settings.arguments as Book);
