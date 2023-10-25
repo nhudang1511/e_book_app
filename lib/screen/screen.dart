@@ -16,3 +16,5 @@ export 'profile/edit_profile_screen.dart';
 export 'profile/change_password_screen.dart';
 export 'profile/settings_screen.dart';
 export 'profile/text_notes_screen.dart';
+export 'book/book_screen.dart';
+export 'admin/admin_panel.screen.dart';
