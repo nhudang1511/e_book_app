@@ -28,6 +28,7 @@ class _BookScreenState extends State<BookScreen> {
   int currentPage = 0;
   List<TextSpan> highlightedTextSpans = [];
   double fontSize = 16.0;
+  bool _isToolbarVisible = false;
 
   @override
   void initState() {
@@ -247,7 +248,7 @@ class _BookScreenState extends State<BookScreen> {
                   fontSize: fontSize
                 ),
                 showCursor: true,
-                toolbarOptions: const ToolbarOptions(selectAll: false, copy: false),
+                toolbarOptions: const ToolbarOptions(selectAll: false, copy: false, cut: true),
                 onSelectionChanged: (selection, cause) {
                   setState(() {
                     if (currentPage < textSegments.length) {
@@ -299,64 +300,78 @@ class _BookScreenState extends State<BookScreen> {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
     }
-    _overlayEntry = OverlayEntry(
-      builder: (context) {
-        return Positioned(
-          right: 30,
-          top: localPosition.dy + 30,
-          child: Container(
-            decoration: BoxDecoration(color: const Color(0xFF8C2EEE), borderRadius: BorderRadius.circular(5)),
-            child: Row(
-              children: [
-                TextButton(
-                  child: const Row(
-                    children: [
-                      Text('Copy', style: TextStyle(fontSize: 13, color: Colors.white),),
-                      Icon(Icons.copy, color: Colors.white)
-                    ],
-                  ),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: selectedText));
-                  },
-                ),
-                TextButton(
-                  onPressed: (){
-                    Clipboard.setData(ClipboardData(text: selectedText));
-                    _overlayEntry!.remove();
-                    _showClipboardDialog(context);
-                  },
-                  child: const Row(
-                    children: [
-                      Text('Save', style: TextStyle(fontSize: 13, color: Colors.white)),
-                      Icon(Icons.save, color: Colors.white,)
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final translator = GoogleTranslator();
-                    translator
-                        .translate(selectedText, to: 'vi')
-                        .then((result) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.toString()))));
-
+    if (!_isToolbarVisible) {
+      _overlayEntry = OverlayEntry(
+        builder: (context) {
+          return Positioned(
+            right: 30,
+            top: localPosition.dy + 30,
+            child: Container(
+              decoration: BoxDecoration(color: const Color(0xFF8C2EEE),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Row(
+                children: [
+                  TextButton(
+                    child: const Row(
+                      children: [
+                        Text('Copy', style: TextStyle(fontSize: 13,
+                            color: Colors.white),),
+                        Icon(Icons.copy, color: Colors.white)
+                      ],
+                    ),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: selectedText));
                     },
-                  child: const Row(
-                    children: [
-                      Text('Trans', style: TextStyle(fontSize: 13, color: Colors.white)),
-                      Icon(Icons.g_translate, color: Colors.white,)
-                    ],
                   ),
-                ),
-              ],
+                  TextButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: selectedText));
+                      _showClipboardDialog(context);
+                    },
+                    child: const Row(
+                      children: [
+                        Text('Save', style: TextStyle(fontSize: 13,
+                            color: Colors.white)),
+                        Icon(Icons.save, color: Colors.white,)
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final translator = GoogleTranslator();
+                      translator
+                          .translate(selectedText, to: 'vi')
+                          .then((result) =>
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                              content: Text(result.toString()))));
+                    },
+                    child: const Row(
+                      children: [
+                        Text('Trans', style: TextStyle(fontSize: 13,
+                            color: Colors.white)),
+                        Icon(Icons.g_translate, color: Colors.white,)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
-
+          );
+        },
+      );
+    }
     Overlay.of(context)!.insert(_overlayEntry!);
   }
+  void _hideToolbar() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+      _isToolbarVisible = false;
+    }
+  }
   void _showClipboardDialog(BuildContext context) {
+    _hideToolbar();
     showDialog(
       context: context,
       builder: (context) {
