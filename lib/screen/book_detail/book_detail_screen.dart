@@ -22,19 +22,15 @@ class BookDetailScreen extends StatefulWidget {
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
-  List<String> images = [
-    "https://tinyurl.com/popup-banner-image",
-    "https://tinyurl.com/popup-banner-image2",
-    "https://tinyurl.com/popup-banner-image3",
-    "https://tinyurl.com/popup-banner-image4"
-  ];
-  void showHideDotsPopup() {
+  void showHideDotsPopup(List<String> images) {
     PopupBanner(
       context: context,
       images: images,
       dotsAlignment: Alignment.bottomCenter,
       dotsColorActive: Colors.blue,
       dotsColorInactive: Colors.grey.withOpacity(0.5),
+      autoSlide: false,
+      useDots: false,
       onClick: (int) {  },
     ).show();
   }
@@ -58,8 +54,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 child: Column(
                   children: [
                     InkWell(
-                        onTap: () => showHideDotsPopup(),
-                        child: Image.network(widget.book.imageUrl)),
+                        onTap: () => showHideDotsPopup(widget.book.bookPreview),
+                        child: Image.network(widget.book.imageUrl)
+                    ),
                     const SizedBox(height: 10,),
                     Text(widget.book.title, style: Theme.of(context).textTheme.displayMedium, textAlign: TextAlign.center,),
                     BlocBuilder<AuthorBloc, AuthorState>(builder: (context, state) {
