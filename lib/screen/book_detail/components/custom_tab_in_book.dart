@@ -38,7 +38,7 @@ class CustomTabInBook extends StatelessWidget {
           ),
           SizedBox(height: 20,),
           SizedBox(
-            height: 300, // Set an appropriate fixed height here
+            height: MediaQuery.of(context).size.height/2, // Set an appropriate fixed height here
             child: TabBarView(children: [
               DetailBookItem(book: book,),
               ReviewItem(book: book),

@@ -56,7 +56,9 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo/logo.png"
+  image_path: "assets/logo/ic_launcher.png"
+  adaptive_icon_background: 'assets/logo/ic_launcher_adaptive_back.png'
+  adaptive_icon_foreground: 'assets/logo/ic_launcher_adaptive_fore.png'
 flutter:
 
   # The following line ensures that the Material Icons font is

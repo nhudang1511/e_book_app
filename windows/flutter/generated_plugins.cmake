@@ -3,14 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  cloud_firestore
   firebase_auth
   firebase_core
-<<<<<<< HEAD
   smart_auth
-  syncfusion_pdfviewer_windows
-  url_launcher_windows
-=======
->>>>>>> d7059788767fbbc482d8d49392949bdbe415a656
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
