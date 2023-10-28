@@ -48,6 +48,8 @@ dependencies:
   material_dialogs: ^1.1.4
   syncfusion_flutter_charts: ^23.1.41
   flutter_launcher_icons: ^0.11.0
+  readmore: ^2.2.0
+  popup_banner: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

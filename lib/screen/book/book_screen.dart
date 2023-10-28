@@ -51,8 +51,8 @@ class _BookScreenState extends State<BookScreen> {
     splitTextIntoSegments(screenHeight);
    return WillPopScope(
      onWillPop: () async {
-       _hideToolbar(); // Gọi hàm để ẩn toolbar
-       return true; // Trả về true để cho phép người dùng quay lại trang chủ
+       _hideToolbar();
+       return true;
      },
      child: Scaffold(
         appBar: AppBar(

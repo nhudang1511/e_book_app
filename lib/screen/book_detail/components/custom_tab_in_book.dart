@@ -22,7 +22,7 @@ class CustomTabInBook extends StatelessWidget {
             child: TabBar(
               labelColor: Colors.black,
               indicator: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   border: Border.all(color: Theme.of(context).colorScheme.primary),
                 color: Colors.white
               ),
@@ -36,7 +36,7 @@ class CustomTabInBook extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           SizedBox(
             height: MediaQuery.of(context).size.height/2, // Set an appropriate fixed height here
             child: TabBarView(children: [
