@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/responsive.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
@@ -15,6 +16,10 @@ class Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          if(!Responsive.isDesktop(context))
+            IconButton(onPressed: (){
+
+            }, icon: const Icon(Icons.menu, color: Colors.white,)),
           Text(title, style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Colors.white),),
           const ProfileCard()
         ],

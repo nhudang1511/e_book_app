@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/responsive.dart';
 import 'package:e_book_app/screen/admin/components/admin_books_screen.dart';
 import 'package:e_book_app/screen/admin/components/admin_categories_screen.dart';
 import 'package:e_book_app/screen/admin/components/admin_users_screen.dart';
@@ -44,50 +45,12 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-              child: Drawer(
-                backgroundColor: const Color(0xFF601DB2),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      DrawerHeader(child: Image.asset('assets/logo/logo.png')),
-                      DrawerListTile(
-                        title: 'Dashboard',
-                        icons: Icons.dashboard_rounded,
-                        press: () {
-                          _tabController.animateTo(0);
-                        },
-                        isSelected: _selectedTabIndex == 0, // Kiểm tra tab hiện tại
-                      ),
-                      DrawerListTile(
-                        title: 'Categories',
-                        icons: Icons.category_rounded,
-                        press: () {
-                          _tabController.animateTo(1);
-                        },
-                        isSelected: _selectedTabIndex == 1, // Kiểm tra tab hiện tại
-                      ),
-                      DrawerListTile(
-                        title: 'Books',
-                        icons: Icons.library_books_rounded,
-                        press: () {
-                          _tabController.animateTo(2);
-                        },
-                        isSelected: _selectedTabIndex == 2, // Kiểm tra tab hiện tại
-                      ),
-                      DrawerListTile(
-                        title: 'Users',
-                        icons: Icons.person,
-                        press: () {
-                          _tabController.animateTo(3);
-                        },
-                        isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            if(Responsive.isDesktop(context))
+             Expanded(
+              child: SliderMenu(
+                  tabController: _tabController,
+                  selectedTabIndex: _selectedTabIndex),
+             ),
             Expanded(
               flex: 4,
               child: Column(
@@ -105,6 +68,63 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SliderMenu extends StatelessWidget {
+  const SliderMenu({
+    super.key,
+    required TabController tabController,
+    required int selectedTabIndex,
+  }) : _tabController = tabController, _selectedTabIndex = selectedTabIndex;
+
+  final TabController _tabController;
+  final int _selectedTabIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFF601DB2),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            DrawerHeader(child: Image.asset('assets/logo/logo.png')),
+            DrawerListTile(
+              title: 'Dashboard',
+              icons: Icons.dashboard_rounded,
+              press: () {
+                _tabController.animateTo(0);
+              },
+              isSelected: _selectedTabIndex == 0, // Kiểm tra tab hiện tại
+            ),
+            DrawerListTile(
+              title: 'Categories',
+              icons: Icons.category_rounded,
+              press: () {
+                _tabController.animateTo(1);
+              },
+              isSelected: _selectedTabIndex == 1, // Kiểm tra tab hiện tại
+            ),
+            DrawerListTile(
+              title: 'Books',
+              icons: Icons.library_books_rounded,
+              press: () {
+                _tabController.animateTo(2);
+              },
+              isSelected: _selectedTabIndex == 2, // Kiểm tra tab hiện tại
+            ),
+            DrawerListTile(
+              title: 'Users',
+              icons: Icons.person,
+              press: () {
+                _tabController.animateTo(3);
+              },
+              isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
             ),
           ],
         ),
