@@ -1,9 +1,11 @@
 import 'package:e_book_app/config/responsive.dart';
+import 'package:e_book_app/menu_app_controller.dart';
 import 'package:e_book_app/screen/admin/components/admin_books_screen.dart';
 import 'package:e_book_app/screen/admin/components/admin_categories_screen.dart';
 import 'package:e_book_app/screen/admin/components/admin_users_screen.dart';
 import 'package:e_book_app/screen/admin/components/dashboard_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AdminPanel extends StatefulWidget {
   const AdminPanel({super.key});
@@ -42,6 +44,9 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: context.read<MenuAppController>().scaffoldKey,
+      drawer: SliderMenu(tabController: _tabController,
+          selectedTabIndex: _selectedTabIndex),
       body: SafeArea(
         child: Row(
           children: [

@@ -132,7 +132,7 @@ class DashBoardRow2 extends StatelessWidget {
     ): Column(
       children: [
         Container(
-          height: MediaQuery.of(context).size.height/3,
+          height: MediaQuery.of(context).size.height/2,
           width: MediaQuery.of(context).size.width - 20,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Color(0xFFFDC844),),
           margin: const EdgeInsets.all(10),
@@ -223,7 +223,7 @@ class TotalItems extends StatelessWidget {
         children: [
           Text('${recentData.number} \n${recentData.title}',
               style: (Responsive.isMobile(context))
-                  ? Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white)
+                  ? TextStyle(fontSize: 13, color: Colors.white)
                   : (Responsive.isTablet(context))?
               Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.white):
               Theme.of(context).textTheme.displaySmall!.copyWith(color: Colors.white)
