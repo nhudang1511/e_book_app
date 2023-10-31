@@ -1,5 +1,6 @@
 import '../../model/user_model.dart';
 
 abstract class BaseUserRepository {
-  Stream<List<User>> getUser();
+  Stream<User> getUser(String userId);
+  
 }

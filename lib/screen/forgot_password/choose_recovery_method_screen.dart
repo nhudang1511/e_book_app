@@ -18,6 +18,7 @@ class ChooseRecoveryMethodScreen extends StatelessWidget {
     final currentHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: const CustomAppBar(title: '',),
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
@@ -46,7 +47,7 @@ class ChooseRecoveryMethodScreen extends StatelessWidget {
                     CustomButton(
                       title: "Email",
                       onPressed: () {
-                        print('Nút tùy chỉnh đã được nhấn');
+                        Navigator.pushNamed(context, "/enter_email");
                       },
                     ),
                     const SizedBox(
