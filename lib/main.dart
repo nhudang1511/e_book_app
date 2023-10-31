@@ -6,7 +6,7 @@ import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
 import 'firebase_options.dart';
-import 'menu_app_controller.dart';
+import 'screen/admin/components/menu_app_controller.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

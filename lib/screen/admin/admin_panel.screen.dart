@@ -1,11 +1,13 @@
 import 'package:e_book_app/config/responsive.dart';
-import 'package:e_book_app/menu_app_controller.dart';
-import 'package:e_book_app/screen/admin/components/admin_books_screen.dart';
-import 'package:e_book_app/screen/admin/components/admin_categories_screen.dart';
-import 'package:e_book_app/screen/admin/components/admin_users_screen.dart';
-import 'package:e_book_app/screen/admin/components/dashboard_screen.dart';
+import 'package:e_book_app/screen/admin/components/menu_app_controller.dart';
+import 'package:e_book_app/screen/admin/admin_books_screen/admin_books_screen.dart';
+import 'package:e_book_app/screen/admin/admin_categories_screen/admin_categories_screen.dart';
+import 'package:e_book_app/screen/admin/admin_users_screen/admin_users_screen.dart';
+import 'package:e_book_app/screen/admin/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'components/slider_menu.dart';
 
 class AdminPanel extends StatefulWidget {
   const AdminPanel({super.key});
@@ -81,91 +83,3 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   }
 }
 
-
-class SliderMenu extends StatelessWidget {
-  const SliderMenu({
-    super.key,
-    required TabController tabController,
-    required int selectedTabIndex,
-  }) : _tabController = tabController, _selectedTabIndex = selectedTabIndex;
-
-  final TabController _tabController;
-  final int _selectedTabIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: const Color(0xFF601DB2),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            DrawerHeader(child: Image.asset('assets/logo/logo.png')),
-            DrawerListTile(
-              title: 'Dashboard',
-              icons: Icons.dashboard_rounded,
-              press: () {
-                _tabController.animateTo(0);
-                Navigator.of(context).pop();
-              },
-              isSelected: _selectedTabIndex == 0, // Kiểm tra tab hiện tại
-            ),
-            DrawerListTile(
-              title: 'Categories',
-              icons: Icons.category_rounded,
-              press: () {
-                _tabController.animateTo(1);
-                Navigator.of(context).pop();
-              },
-              isSelected: _selectedTabIndex == 1, // Kiểm tra tab hiện tại
-            ),
-            DrawerListTile(
-              title: 'Books',
-              icons: Icons.library_books_rounded,
-              press: () {
-                _tabController.animateTo(2);
-                Navigator.of(context).pop();
-              },
-              isSelected: _selectedTabIndex == 2, // Kiểm tra tab hiện tại
-            ),
-            DrawerListTile(
-              title: 'Users',
-              icons: Icons.person,
-              press: () {
-                _tabController.animateTo(3);
-                Navigator.of(context).pop();
-              },
-              isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerListTile extends StatelessWidget {
-  const DrawerListTile({
-    super.key,
-    required this.title,
-    required this.icons,
-    required this.press,
-    required this.isSelected, // Trạng thái chọn
-  });
-
-  final String title;
-  final IconData icons;
-  final VoidCallback press;
-  final bool isSelected; // Trạng thái chọn
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: press,
-      horizontalTitleGap: 0.0,
-      leading: Icon(icons, color: isSelected ? Colors.white : Colors.white54), // Thay đổi màu dựa trên trạng thái chọn
-      title: Text(
-        title,
-        style: TextStyle(color: isSelected ? Colors.white : Colors.white54), // Thay đổi màu dựa trên trạng thái chọn
-      ),
-    );
-  }
-}

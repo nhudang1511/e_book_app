@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../model/models.dart';
-import 'custom_table_data.dart';
-import 'header.dart';
+import '../components/custom_table_data.dart';
+import '../dashboard/components/header.dart';
 class AdminCategoriesScreen extends StatelessWidget {
   const AdminCategoriesScreen({super.key});
 
