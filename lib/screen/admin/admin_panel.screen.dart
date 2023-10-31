@@ -105,6 +105,7 @@ class SliderMenu extends StatelessWidget {
               icons: Icons.dashboard_rounded,
               press: () {
                 _tabController.animateTo(0);
+                Navigator.of(context).pop();
               },
               isSelected: _selectedTabIndex == 0, // Kiểm tra tab hiện tại
             ),
@@ -113,6 +114,7 @@ class SliderMenu extends StatelessWidget {
               icons: Icons.category_rounded,
               press: () {
                 _tabController.animateTo(1);
+                Navigator.of(context).pop();
               },
               isSelected: _selectedTabIndex == 1, // Kiểm tra tab hiện tại
             ),
@@ -121,6 +123,7 @@ class SliderMenu extends StatelessWidget {
               icons: Icons.library_books_rounded,
               press: () {
                 _tabController.animateTo(2);
+                Navigator.of(context).pop();
               },
               isSelected: _selectedTabIndex == 2, // Kiểm tra tab hiện tại
             ),
@@ -129,6 +132,7 @@ class SliderMenu extends StatelessWidget {
               icons: Icons.person,
               press: () {
                 _tabController.animateTo(3);
+                Navigator.of(context).pop();
               },
               isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
             ),
