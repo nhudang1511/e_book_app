@@ -53,10 +53,28 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 width: MediaQuery.of(context).size.width / 1.5,
                 child: Column(
                   children: [
-                    InkWell(
-                        onTap: () => showHideDotsPopup(widget.book.bookPreview),
-                        child: Image.network(widget.book.imageUrl)
-                    ),
+                    Stack(children: [
+                      Image.network(widget.book.imageUrl),
+                      Positioned(
+                          bottom: 0,
+                          height: 30,
+                          width: MediaQuery.of(context).size.width/1.5,
+                          child: InkWell(
+                            onTap: () => showHideDotsPopup(widget.book.bookPreview),
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.grey.withAlpha(90)),
+                              padding: const EdgeInsets.only(right: 10),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(Icons.remove_red_eye_rounded, color: Colors.white,),
+                                  SizedBox(width: 5,),
+                                  Text('Preview', style: TextStyle(color: Colors.white),)
+                                ],
+                              ),
+                            ),
+                          ))
+                    ]),
                     const SizedBox(height: 10,),
                     Text(widget.book.title, style: Theme.of(context).textTheme.displayMedium, textAlign: TextAlign.center,),
                     BlocBuilder<AuthorBloc, AuthorState>(builder: (context, state) {

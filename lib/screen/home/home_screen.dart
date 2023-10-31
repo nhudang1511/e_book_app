@@ -3,6 +3,7 @@ import 'package:e_book_app/widget/book_items/list_book.dart';
 import 'package:e_book_app/widget/book_items/list_book_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
 import '../../widget/widget.dart';
 import 'components/list_quote.dart';
@@ -49,7 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(item.quote, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              ReadMoreText(
+                item.quote,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                trimLength: 100,
+                colorClickableText: Colors.white.withAlpha(80),
+              ),
               Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
             ],
           ),

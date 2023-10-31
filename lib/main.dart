@@ -1,10 +1,12 @@
 import 'package:e_book_app/screen/book/book_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
 import 'firebase_options.dart';
+import 'menu_app_controller.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +44,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (_) => ReviewBloc(
               reviewRepository: ReviewRepository(),
-            )..add(LoadedReview()) )
+            )..add(LoadedReview()) ),
+        ChangeNotifierProvider(create: (context) => MenuAppController())
       ],
       child: MaterialApp(
         title: 'E Book App',
@@ -51,7 +54,7 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: SplashScreen.routeName,
+        initialRoute: AdminPanel.routeName,
       ),
     );
   }
