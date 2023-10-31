@@ -1,7 +1,7 @@
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
   static const String routeName = '/edit_profile';
 
@@ -10,16 +10,6 @@ class EditProfileScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (_) => const EditProfileScreen());
   }
-
-  @override
-  State<StatefulWidget> createState() => _EditProfileScreenState();
-}
-
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final formField = GlobalKey<FormState>();
-  final fullNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneNumber = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
@@ -58,4 +48,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
 
   }
+
 }

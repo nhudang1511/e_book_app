@@ -4,20 +4,19 @@ class CustomInkwell extends StatelessWidget {
   final Icon mainIcon;
   final String title;
   final double currentHeight;
-  final VoidCallback onTap;
 
   const CustomInkwell(
       {required this.mainIcon,
       required this.title,
       required this.currentHeight,
-      super.key, required this.onTap});
+      super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 32, right: 32),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {},
         child: Container(
           height: currentHeight / 12,
           decoration: BoxDecoration(
