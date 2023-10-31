@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widget/widget.dart';
 
-class EnterNewPasswordScreen extends StatefulWidget {
+class EnterNewPasswordScreen extends StatelessWidget {
   static const String routeName = "/enter_new_password";
 
   const EnterNewPasswordScreen({super.key});
@@ -12,15 +12,6 @@ class EnterNewPasswordScreen extends StatefulWidget {
       builder: (_) => const EnterNewPasswordScreen(),
     );
   }
-
-  @override
-  State<StatefulWidget> createState() => _EnterNewPasswordScreenState();
-}
-
-class _EnterNewPasswordScreenState extends State<EnterNewPasswordScreen> {
-  final formField = GlobalKey<FormState>();
-  final newPasswordController = TextEditingController();
-  final confirmNewPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +33,10 @@ class _EnterNewPasswordScreenState extends State<EnterNewPasswordScreen> {
                   ),
                 ),
                 const CustomTitle(title1: "Enter", title2: "new password"),
-                Column(
+                const Column(
                   children: [
-                    PasswordInput(
-                      hint: "New password",
-                      controller: newPasswordController,
-                      onChanged: (value) {
-                        print('Text changed to: $value');
-                        // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                      },
-                    ),
-                    PasswordInput(
-                      hint: "Confirm new password",
-                      controller: confirmNewPasswordController,
-                      onChanged: (value) {
-                        print('Text changed to: $value');
-                        // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                      },
-                    ),
+                    PasswordInput(hint: "New password"),
+                    PasswordInput(hint: "Confirm new password"),
                   ],
                 ),
                 //confirm button
