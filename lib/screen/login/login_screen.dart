@@ -1,6 +1,4 @@
 import 'package:e_book_app/Cubits/cubits.dart';
-import 'package:e_book_app/blocs/blocs.dart';
-import 'package:e_book_app/screen/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../widget/widget.dart';
@@ -38,12 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final currentHeight = MediaQuery.of(context).size.height;
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
-        if (state.status == LoginStatus.success){
+        if (state.status == LoginStatus.success) {
           Navigator.pushNamed(context, '/');
-        }
-        else if (state.status == LoginStatus.error){}
-
-    },
+        } else if (state.status == LoginStatus.error) {}
+      },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SingleChildScrollView(

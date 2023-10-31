@@ -49,224 +49,237 @@ class _BookScreenState extends State<BookScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height*2;
     splitTextIntoSegments(screenHeight);
-   return Scaffold(
-      appBar: AppBar(
-        backgroundColor: isTickedBlack ? Colors.black : Theme.of(context).appBarTheme.backgroundColor,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Dialogs.bottomMaterialDialog(
-                  context: context,
-                  color: const Color(0xFF122158),
-                actions: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
-                      TextButton(onPressed: (){
+    return WillPopScope(
+      onWillPop: () async {
+        _hideToolbar();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: isTickedBlack ? Colors.black : Theme.of(context).appBarTheme.backgroundColor,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _hideToolbar();
+                Dialogs.bottomMaterialDialog(
+                    context: context,
+                    color: const Color(0xFF122158),
+                    actions: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
+                          TextButton(onPressed: (){
 
-                      }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
-                      TextButton(onPressed: (){
-                        Navigator.pop(context);
-                      }, child: const Text('Close', style: TextStyle(color: Colors.white),))
-                    ],
-                  ),
-                ]
-              );
-            },
-            icon: const Icon(Icons.book,
-                color: Color(0xFFDFE2E0)),
-          ),
-          IconButton(
-            onPressed: () {
-              Dialogs.bottomMaterialDialog(
-                  context: context,
-                  color: const Color(0xFF122158),
-                  actions: [
-                    Column(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            _showClipboardDialog(context);
-                          },
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add, color: Colors.white),
-                              SizedBox(width: 10,),
-                              Text('Add Notes', style: TextStyle(fontSize: 17, color: Colors.white),),
-                            ],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                          },
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.color_lens, color: Colors.white),
-                              const SizedBox(width: 10,),
-                              const Text('Backgrounds', style: TextStyle(fontSize: 17, color: Colors.white),),
-                              const SizedBox(width: 10,),
-                              InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    isTickedWhite = !isTickedWhite;
-                                    isTickedBlack = !isTickedBlack;
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  width: 20.0,
-                                  height: 20.0,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                  ),
-                                  child:  isTickedWhite
-                                      ? const Icon(
-                                    Icons.check,
-                                    color: Colors.black,
-                                    size: 10.0,
-                                  ): null,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    isTickedWhite = !isTickedWhite;
-                                    isTickedBlack = !isTickedBlack;
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  width: 20.0,
-                                  height: 20.0,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: isTickedBlack
-                                      ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 10.0,
-                                  ): null,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            increaseFontSize();
-                          },
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.zoom_in, color: Colors.white),
-                              SizedBox(width: 10,),
-                              Text('Zoom In', style: TextStyle(fontSize: 17, color: Colors.white),),
-                            ],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            decreaseFontSize();
-                          },
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.zoom_out, color: Colors.white),
-                              SizedBox(width: 10,),
-                              Text('Zoom Out', style: TextStyle(fontSize: 17, color: Colors.white),),
-                            ],
-                          ),
-                        ),
-                        TextButton(onPressed: (){
-                          Navigator.pop(context);
-                        }, child: const Text('Close', style: TextStyle(color: Colors.white),))
-                      ],
-                    ),
-                  ]
-              );
-            },
-            icon: const Icon(Icons.settings),
-          ),
-        ],
-      ),
-      bottomNavigationBar:  BottomAppBar(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              IconButton(
-                onPressed: (){
-                  if (currentPage > 0) {
-                    setState(() {
-                      currentPage--;
-                    });
-                  }
-                },
-                icon: Icon(Icons.arrow_back_ios_new, color: currentPage>0? Colors.black: Colors.grey),
-              ),
-              Text(
-                'Page ${currentPage+1}',
-                style: const TextStyle(fontSize: 18),
-              ),
-              IconButton(
-                onPressed: (){
-                  if (currentPage < textSegments.length - 1) {
-                    setState(() {
-                      currentPage++;
-                    });
-                  }
-                },
-                icon: Icon(Icons.arrow_forward_ios, color: currentPage<textSegments.length-1? Colors.black: Colors.grey,),
-              ),
-            ],
-          )
-      ),
-      backgroundColor: isTickedBlack ? Colors.black : Colors.white,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            child: GestureDetector(
-              onTapDown: (details) {
-                showToolbar(context, details.localPosition);
+                          }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
+                          TextButton(onPressed: (){
+                            Navigator.pop(context);
+                          }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                        ],
+                      ),
+                    ]
+                );
               },
-              child: SelectableText(
-                currentPage < textSegments.length
-                    ? textSegments[currentPage]
-                    : '',
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  // Chỉnh màu văn bản tùy thuộc vào màu nền
-                  color: isTickedBlack ? Colors.white : Colors.black,
-                  fontSize: fontSize
-                ),
-                showCursor: true,
-                toolbarOptions: const ToolbarOptions(selectAll: false, copy: false, cut: true),
-                onSelectionChanged: (selection, cause) {
-                  setState(() {
-                    if (currentPage < textSegments.length) {
-                      final start = selection.start.clamp(0, textSegments[currentPage].length);
-                      final end = selection.end.clamp(0, textSegments[currentPage].length);
-
-                      selectedText = textSegments[currentPage].substring(start, end);
-                    } else {
-                      selectedText = '';
+              icon: const Icon(Icons.book,
+                  color: Color(0xFFDFE2E0)),
+            ),
+            IconButton(
+              onPressed: () {
+                _hideToolbar();
+                Dialogs.bottomMaterialDialog(
+                    context: context,
+                    color: const Color(0xFF122158),
+                    actions: [
+                      Column(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              _showClipboardDialog(context);
+                            },
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add, color: Colors.white),
+                                SizedBox(width: 10,),
+                                Text('Add Notes', style: TextStyle(fontSize: 17, color: Colors.white),),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.color_lens, color: Colors.white),
+                                const SizedBox(width: 10,),
+                                const Text('Backgrounds', style: TextStyle(fontSize: 17, color: Colors.white),),
+                                const SizedBox(width: 10,),
+                                InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      isTickedWhite = !isTickedWhite;
+                                      isTickedBlack = !isTickedBlack;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    width: 20.0,
+                                    height: 20.0,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    child:  isTickedWhite
+                                        ? const Icon(
+                                      Icons.check,
+                                      color: Colors.black,
+                                      size: 10.0,
+                                    ): null,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      isTickedWhite = !isTickedWhite;
+                                      isTickedBlack = !isTickedBlack;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    width: 20.0,
+                                    height: 20.0,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black,
+                                    ),
+                                    child: isTickedBlack
+                                        ? const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 10.0,
+                                    ): null,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              increaseFontSize();
+                            },
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.zoom_in, color: Colors.white),
+                                SizedBox(width: 10,),
+                                Text('Zoom In', style: TextStyle(fontSize: 17, color: Colors.white),),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              decreaseFontSize();
+                            },
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.zoom_out, color: Colors.white),
+                                SizedBox(width: 10,),
+                                Text('Zoom Out', style: TextStyle(fontSize: 17, color: Colors.white),),
+                              ],
+                            ),
+                          ),
+                          TextButton(onPressed: (){
+                            Navigator.pop(context);
+                          }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                        ],
+                      ),
+                    ]
+                );
+              },
+              icon: const Icon(Icons.settings),
+            ),
+          ],
+        ),
+        bottomNavigationBar:  BottomAppBar(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  onPressed: (){
+                    _hideToolbar();
+                    if (currentPage > 0) {
+                      setState(() {
+                        currentPage--;
+                      });
                     }
-                  });
+                  },
+                  icon: Icon(Icons.arrow_back_ios_new, color: currentPage>0? Colors.black: Colors.grey),
+                ),
+                Text(
+                  'Page ${currentPage+1}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+                IconButton(
+                  onPressed: (){
+                    _hideToolbar();
+                    if (currentPage < textSegments.length - 1) {
+                      setState(() {
+                        currentPage++;
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.arrow_forward_ios, color: currentPage<textSegments.length-1? Colors.black: Colors.grey,),
+                ),
+              ],
+            )
+        ),
+        backgroundColor: isTickedBlack ? Colors.black : Colors.white,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: GestureDetector(
+                onTapDown: (details) {
+                  showToolbar(context, details.localPosition);
                 },
+                child: SelectableText(
+                  currentPage < textSegments.length
+                      ? textSegments[currentPage]
+                      : '',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    // Chỉnh màu văn bản tùy thuộc vào màu nền
+                      color: isTickedBlack ? Colors.white : Colors.black,
+                      fontSize: fontSize
+                  ),
+                  showCursor: true,
+                  toolbarOptions: const ToolbarOptions(selectAll: false, copy: false, cut: true),
+                  onSelectionChanged: (selection, cause) {
+                    if (selection.start == selection.end) {
+                      _hideToolbar(); // Hide the toolbar when no text is selected
+                    }
+                    setState(() {
+                      if (currentPage < textSegments.length) {
+                        final start = selection.start.clamp(0, textSegments[currentPage].length);
+                        final end = selection.end.clamp(0, textSegments[currentPage].length);
+
+                        selectedText = textSegments[currentPage].substring(start, end);
+                      } else {
+                        selectedText = '';
+                      }
+                    });
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-   );
+    );
   }
   void splitTextIntoSegments(double screenHeight) {
     final textLength = selectedTableText.length;
@@ -454,4 +467,3 @@ class _BookScreenState extends State<BookScreen> {
   }
 
 }
-

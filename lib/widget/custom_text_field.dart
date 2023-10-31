@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -7,7 +6,10 @@ class CustomTextField extends StatelessWidget {
   final Function(String) onChanged;
 
   const CustomTextField(
-      {required this.hint, super.key, required this.controller, required this.onChanged});
+      {required this.hint,
+      super.key,
+      required this.controller,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {

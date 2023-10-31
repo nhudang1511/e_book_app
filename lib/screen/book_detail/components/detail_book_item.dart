@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 
 import '../../../model/book_model.dart';
 
 class DetailBookItem extends StatelessWidget {
   final Book book;
   const DetailBookItem({super.key, required this.book});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,7 +41,10 @@ class DetailBookItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10,),
-          Text(book.description),
+          ReadMoreText(
+            book.description,
+            trimLength: 300,
+          ),
           const SizedBox(height: 10,),
           SizedBox(
             width: MediaQuery.of(context).size.width - 20,
@@ -53,4 +56,5 @@ class DetailBookItem extends StatelessWidget {
       ),
     );
   }
+
 }

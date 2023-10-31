@@ -15,18 +15,19 @@ class EnterEmailScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _EnterEmailScreenState();
-
-  
 }
 
 class _EnterEmailScreenState extends State<EnterEmailScreen> {
   final formField = GlobalKey<FormState>();
   final emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: const CustomAppBar(title: '',),
+      appBar: const CustomAppBar(
+        title: '',
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
         child: Center(
@@ -44,10 +45,14 @@ class _EnterEmailScreenState extends State<EnterEmailScreen> {
                     ),
                   ),
                   const CustomTitle(title1: "Change with", title2: "email"),
-                  CustomTextField(hint: "Email", controller: emailController,onChanged: (value) {
-                    print('Text changed to: $value');
-                    // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                  },),
+                  CustomTextField(
+                    hint: "Email",
+                    controller: emailController,
+                    onChanged: (value) {
+                      print('Text changed to: $value');
+                      // Thực hiện xử lý khi giá trị của TextField thay đổi.
+                    },
+                  ),
                   CustomButton(
                     title: "Send OTP",
                     onPressed: () {

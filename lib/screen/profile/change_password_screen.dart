@@ -78,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 const SizedBox(
                   height: 32,
                 ),
-                CustomButton(title: "Update", onPressed: () {})
+                CustomButton(title: "Update", onPressed: () {}),
               ],
             ),
           ),

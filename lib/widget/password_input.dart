@@ -6,7 +6,10 @@ class PasswordInput extends StatefulWidget {
   final Function(String) onChanged;
 
   const PasswordInput(
-      {required this.hint, super.key, required this.controller, required this.onChanged});
+      {required this.hint,
+      super.key,
+      required this.controller,
+      required this.onChanged});
 
   @override
   State<StatefulWidget> createState() => _PasswordInputState();
@@ -36,8 +39,8 @@ class _PasswordInputState extends State<PasswordInput> {
             },
           ),
         ),
-        validator: (value){
-          if(value!.isEmpty){
+        validator: (value) {
+          if (value!.isEmpty) {
             return "Enter Password";
           }
         },

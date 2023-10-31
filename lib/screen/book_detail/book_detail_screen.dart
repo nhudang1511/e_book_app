@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:popup_banner/popup_banner.dart';
 
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 import 'components/custom_tab_in_book.dart';
 
-class BookDetailScreen extends StatelessWidget {
+class BookDetailScreen extends StatefulWidget {
   static const String routeName = '/book_detail';
 
   static Route route({required Book book}) {
@@ -16,6 +17,23 @@ class BookDetailScreen extends StatelessWidget {
   final Book book;
   const BookDetailScreen({super.key, required this.book});
 
+  @override
+  State<BookDetailScreen> createState() => _BookDetailScreenState();
+}
+
+class _BookDetailScreenState extends State<BookDetailScreen> {
+  void showHideDotsPopup(List<String> images) {
+    PopupBanner(
+      context: context,
+      images: images,
+      dotsAlignment: Alignment.bottomCenter,
+      dotsColorActive: Colors.blue,
+      dotsColorInactive: Colors.grey.withOpacity(0.5),
+      autoSlide: false,
+      useDots: false,
+      onClick: (int) {  },
+    ).show();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,20 +50,40 @@ class BookDetailScreen extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(
-                //height: MediaQuery.of(context).size.height /2,
                 width: MediaQuery.of(context).size.width / 1.5,
                 child: Column(
                   children: [
-                    Image.network(book.imageUrl),
+                    Stack(children: [
+                      Image.network(widget.book.imageUrl),
+                      Positioned(
+                          bottom: 0,
+                          height: 30,
+                          width: MediaQuery.of(context).size.width/1.5,
+                          child: InkWell(
+                            onTap: () => showHideDotsPopup(widget.book.bookPreview),
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.grey.withAlpha(90)),
+                              padding: const EdgeInsets.only(right: 10),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(Icons.remove_red_eye_rounded, color: Colors.white,),
+                                  SizedBox(width: 5,),
+                                  Text('Preview', style: TextStyle(color: Colors.white),)
+                                ],
+                              ),
+                            ),
+                          ))
+                    ]),
                     const SizedBox(height: 10,),
-                    Text(book.title, style: Theme.of(context).textTheme.displayMedium, textAlign: TextAlign.center,),
+                    Text(widget.book.title, style: Theme.of(context).textTheme.displayMedium, textAlign: TextAlign.center,),
                     BlocBuilder<AuthorBloc, AuthorState>(builder: (context, state) {
                       if(state is AuthorLoading){
                         return const Expanded(child: CircularProgressIndicator());
                       }
                       if(state is AuthorLoaded){
                         Author? author = state.authors.firstWhere(
-                              (author) => author.id == book.authodId,
+                              (author) => author.id == widget.book.authodId,
                         );
                         return Text(
                           author.fullName,
@@ -61,12 +99,11 @@ class BookDetailScreen extends StatelessWidget {
                 )
             ),
             const SizedBox(height: 10,),
-            CustomTabInBook(book: book,),
+            CustomTabInBook(book: widget.book,),
           ],
         ),
       ),
     );
   }
 }
-
 

@@ -24,9 +24,15 @@ class _EnterNewPasswordScreenState extends State<EnterNewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentHeight = MediaQuery.of(context).size.height;
+    final currentHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .background,
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
@@ -60,20 +66,19 @@ class _EnterNewPasswordScreenState extends State<EnterNewPasswordScreen> {
                         // Thực hiện xử lý khi giá trị của TextField thay đổi.
                       },
                     ),
+                    //confirm button
+                    CustomButton(
+                      title: "Confirm",
+                      onPressed: () {
+                        print('Nút tùy chỉnh đã được nhấn');
+                      },
+                    ),
+                    SizedBox(
+                      height: currentHeight / 4,
+                    ),
                   ],
                 ),
-                //confirm button
-                CustomButton(
-                  title: "Confirm",
-                  onPressed: () {
-                    print('Nút tùy chỉnh đã được nhấn');
-                  },
-                ),
-                SizedBox(
-                  height: currentHeight / 4,
-                ),
-              ],
-            ),
+              ],),
           ),
         ),
       ),

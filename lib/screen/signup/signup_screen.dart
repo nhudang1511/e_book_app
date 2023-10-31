@@ -15,8 +15,6 @@ class SignupScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _SignupScreenState();
-
-
 }
 
 class _SignupScreenState extends State<SignupScreen> {
@@ -24,6 +22,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
@@ -41,7 +40,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(
                     height: currentHeight / 4,
                     child:
-                    const Image(image: AssetImage('assets/logo/logo1.png')),
+                        const Image(image: AssetImage('assets/logo/logo1.png')),
                   ),
                   //Gets tart
                   const Column(
@@ -54,20 +53,32 @@ class _SignupScreenState extends State<SignupScreen> {
                   Column(
                     children: [
                       //email input
-                      CustomTextField(hint: "Email", controller: emailController,onChanged: (value) {
-                        print('Text changed to: $value');
-                        // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                      },),
+                      CustomTextField(
+                        hint: "Email",
+                        controller: emailController,
+                        onChanged: (value) {
+                          print('Text changed to: $value');
+                          // Thực hiện xử lý khi giá trị của TextField thay đổi.
+                        },
+                      ),
                       //password input
-                      PasswordInput(hint: "Password", controller: passwordController,onChanged: (value) {
-                        print('Text changed to: $value');
-                        // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                      },),
+                      PasswordInput(
+                        hint: "Password",
+                        controller: passwordController,
+                        onChanged: (value) {
+                          print('Text changed to: $value');
+                          // Thực hiện xử lý khi giá trị của TextField thay đổi.
+                        },
+                      ),
                       //confirm pass input
-                      PasswordInput(hint: "Confirm password", controller: confirmPasswordController,onChanged: (value) {
-                        print('Text changed to: $value');
-                        // Thực hiện xử lý khi giá trị của TextField thay đổi.
-                      },),
+                      PasswordInput(
+                        hint: "Confirm password",
+                        controller: confirmPasswordController,
+                        onChanged: (value) {
+                          print('Text changed to: $value');
+                          // Thực hiện xử lý khi giá trị của TextField thay đổi.
+                        },
+                      ),
                     ],
                   ),
                   //signup button
@@ -86,13 +97,16 @@ class _SignupScreenState extends State<SignupScreen> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pushNamed(context, "/login");
                         },
                         child: Text(
                           "Log in",
-                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              color: Theme.of(context).colorScheme.primary),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ],
