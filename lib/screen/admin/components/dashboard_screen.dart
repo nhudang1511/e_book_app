@@ -113,7 +113,7 @@ class DashBoardRow2 extends StatelessWidget {
             flex: 1,
             child: Container(
               height: MediaQuery.of(context).size.height/2,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Color(0xFFFDC844),),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: const Color(0xFFFDC844),),
               margin: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -121,7 +121,7 @@ class DashBoardRow2 extends StatelessWidget {
                 children: [
                   Text('Top view', style: Theme.of(context).textTheme.displaySmall,),
                   Image.network(
-                    'https://product.hstatic.net/200000343865/product/hoang-tu-be_tb-2022_39672e31853b42be866b92319496455d_master.jpg',
+                      'https://product.hstatic.net/200000343865/product/hoang-tu-be_tb-2022_39672e31853b42be866b92319496455d_master.jpg',
                     height: MediaQuery.of(context).size.height/3,
                   ),
                   Text('Hoàng tử bé', style: Theme.of(context).textTheme.displaySmall,)
@@ -134,7 +134,7 @@ class DashBoardRow2 extends StatelessWidget {
         Container(
           height: MediaQuery.of(context).size.height/2,
           width: MediaQuery.of(context).size.width - 20,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Color(0xFFFDC844),),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: const Color(0xFFFDC844),),
           margin: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -223,7 +223,7 @@ class TotalItems extends StatelessWidget {
         children: [
           Text('${recentData.number} \n${recentData.title}',
               style: (Responsive.isMobile(context))
-                  ? TextStyle(fontSize: 13, color: Colors.white)
+                  ? const TextStyle(fontSize: 13, color: Colors.white)
                   : (Responsive.isTablet(context))?
               Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.white):
               Theme.of(context).textTheme.displaySmall!.copyWith(color: Colors.white)
@@ -231,9 +231,9 @@ class TotalItems extends StatelessWidget {
               textAlign: TextAlign.center),
           if(!Responsive.isMobile(context))
             Icon(
-            recentData.icon,
-            color: Colors.white,
-            size: MediaQuery.of(context).size.height/ (Responsive.isTablet(context) ? 15: 8),)
+              recentData.icon,
+              color: Colors.white,
+              size: MediaQuery.of(context).size.height/ (Responsive.isTablet(context) ? 15: 8),)
         ],
       ),
     );
@@ -250,6 +250,7 @@ class DashBoardRow1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return (!Responsive.isMobile(context)) ?
     Row(
       children: [
@@ -293,10 +294,10 @@ class DashBoardRow1 extends StatelessWidget {
                 legend: const Legend(isVisible: true),
                 series:[
                   PieSeries<UsersAccess,String>(
-                      dataSource: userAccess,
-                      xValueMapper: (UsersAccess data,_)=> data.user,
-                      yValueMapper: (UsersAccess data,_)=>data.times,
-                      dataLabelSettings: const DataLabelSettings(isVisible: true,)
+                    dataSource: userAccess,
+                    xValueMapper: (UsersAccess data,_)=> data.user,
+                    yValueMapper: (UsersAccess data,_)=>data.times,
+                    dataLabelSettings: const DataLabelSettings(isVisible: true,)
                   )
                 ],
               ),
@@ -362,6 +363,7 @@ class ChartData {
   final int x;
   final double? y;
 }
+
 class RecentData {
   final int number;
   final String title;

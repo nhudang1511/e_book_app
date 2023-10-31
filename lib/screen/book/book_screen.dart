@@ -49,12 +49,12 @@ class _BookScreenState extends State<BookScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height*2;
     splitTextIntoSegments(screenHeight);
-   return WillPopScope(
-     onWillPop: () async {
-       _hideToolbar();
-       return true;
-     },
-     child: Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        _hideToolbar();
+        return true;
+      },
+      child: Scaffold(
         appBar: AppBar(
           backgroundColor: isTickedBlack ? Colors.black : Theme.of(context).appBarTheme.backgroundColor,
           elevation: 0,
@@ -66,20 +66,20 @@ class _BookScreenState extends State<BookScreen> {
                 Dialogs.bottomMaterialDialog(
                     context: context,
                     color: const Color(0xFF122158),
-                  actions: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
-                        TextButton(onPressed: (){
+                    actions: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
+                          TextButton(onPressed: (){
 
-                        }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
-                        TextButton(onPressed: (){
-                          Navigator.pop(context);
-                        }, child: const Text('Close', style: TextStyle(color: Colors.white),))
-                      ],
-                    ),
-                  ]
+                          }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
+                          TextButton(onPressed: (){
+                            Navigator.pop(context);
+                          }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                        ],
+                      ),
+                    ]
                 );
               },
               icon: const Icon(Icons.book,
@@ -253,8 +253,8 @@ class _BookScreenState extends State<BookScreen> {
                       : '',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     // Chỉnh màu văn bản tùy thuộc vào màu nền
-                    color: isTickedBlack ? Colors.white : Colors.black,
-                    fontSize: fontSize
+                      color: isTickedBlack ? Colors.white : Colors.black,
+                      fontSize: fontSize
                   ),
                   showCursor: true,
                   toolbarOptions: const ToolbarOptions(selectAll: false, copy: false, cut: true),
@@ -278,8 +278,8 @@ class _BookScreenState extends State<BookScreen> {
             ),
           ],
         ),
-     ),
-   );
+      ),
+    );
   }
   void splitTextIntoSegments(double screenHeight) {
     final textLength = selectedTableText.length;
@@ -467,4 +467,3 @@ class _BookScreenState extends State<BookScreen> {
   }
 
 }
-

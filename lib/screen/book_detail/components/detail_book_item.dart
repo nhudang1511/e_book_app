@@ -42,7 +42,7 @@ class DetailBookItem extends StatelessWidget {
           ),
           const SizedBox(height: 10,),
           ReadMoreText(
-              book.description,
+            book.description,
             trimLength: 300,
           ),
           const SizedBox(height: 10,),

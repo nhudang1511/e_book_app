@@ -1,21 +1,35 @@
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
   static const String routeName = '/edit_profile';
+
+  const EditProfileScreen({super.key});
 
   static Route route() {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (_) => const EditProfileScreen());
   }
+
+  @override
+  State<StatefulWidget> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final formField = GlobalKey<FormState>();
+  final fullNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneNumber = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: const CustomAppBar(title: "Edit profile",),
+      appBar: const CustomAppBar(
+        title: "Edit profile",
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
@@ -37,16 +51,15 @@ class EditProfileScreen extends StatelessWidget {
                 const CustomEditTextField(title: "Full Name"),
                 const CustomEditTextField(title: "Email"),
                 const CustomEditTextField(title: "Phone Number"),
-
-                CustomButton(title: "Update", onPressed: (){}),
-                SizedBox(height: currentHeight/3,),
+                CustomButton(title: "Update", onPressed: () {}),
+                SizedBox(
+                  height: currentHeight / 3,
+                ),
               ],
             ),
           ),
         ),
       ),
     );
-
   }
-
 }

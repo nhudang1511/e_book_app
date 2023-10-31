@@ -81,6 +81,7 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   }
 }
 
+
 class SliderMenu extends StatelessWidget {
   const SliderMenu({
     super.key,

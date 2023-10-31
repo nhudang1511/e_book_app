@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             }
             else{
               return const Text('Something went wrong');}
-            },
+          },
         ),
       ),
     );

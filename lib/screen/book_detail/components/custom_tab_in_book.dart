@@ -24,7 +24,7 @@ class CustomTabInBook extends StatelessWidget {
               indicator: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   border: Border.all(color: Theme.of(context).colorScheme.primary),
-                color: Colors.white
+                  color: Colors.white
               ),
               tabs: const [
                 Tab(

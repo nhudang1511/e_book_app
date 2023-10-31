@@ -1,4 +1,4 @@
-import 'package:e_book_app/screen/book/book_screen.dart';
+import 'package:e_book_app/Cubits/cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +11,7 @@ import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-Future <void> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -28,23 +28,40 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) => LoginCubit(authRepository: AuthRepository()),
+          child: const LoginScreen(),
+        ),
+        BlocProvider(
+          create: (_) => AuthBloc(
+            authRepository: AuthRepository(),
+          )..add(AuthEventStarted()),
+        ),
+        BlocProvider(
           create: (_) => BookBloc(
             bookRepository: BookRepository(),
           )..add(LoadBooks()),
         ),
         BlocProvider(
-          create: (_) => CategoryBloc(
-            categoryRepository: CategoryRepository()
-          )..add(LoadCategory()),
+          create: (_) => CategoryBloc(categoryRepository: CategoryRepository())
+            ..add(LoadCategory()),
         ),
         BlocProvider(
             create: (_) => AuthorBloc(
-                authorRepository: AuthorRepository(),
-            )..add(LoadedAuthor()) ),
+                  authorRepository: AuthorRepository(),
+                )..add(LoadedAuthor())),
+        BlocProvider(
+          create: (_) => ReviewBloc(
+            reviewRepository: ReviewRepository(),
+          )..add(LoadedReview()),
+        ),
+        BlocProvider(
+            create: (_) => AuthorBloc(
+                  authorRepository: AuthorRepository(),
+                )..add(LoadedAuthor())),
         BlocProvider(
             create: (_) => ReviewBloc(
-              reviewRepository: ReviewRepository(),
-            )..add(LoadedReview()) ),
+                  reviewRepository: ReviewRepository(),
+                )..add(LoadedReview())),
         ChangeNotifierProvider(create: (context) => MenuAppController())
       ],
       child: MaterialApp(
@@ -54,9 +71,8 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: AdminPanel.routeName,
+        initialRoute: SplashScreen.routeName,
       ),
     );
   }
 }
-
