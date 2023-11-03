@@ -1,4 +1,5 @@
 import 'package:e_book_app/Cubits/cubits.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,7 @@ import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
 import 'firebase_options.dart';
-import 'menu_app_controller.dart';
+import 'screen/admin/components/menu_app_controller.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,8 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
 
   // This widget is the root of your application.
   @override
@@ -78,6 +81,7 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
         initialRoute: SplashScreen.routeName,
+        navigatorObservers: <NavigatorObserver>[observer],
       ),
     );
   }
