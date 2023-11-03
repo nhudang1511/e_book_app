@@ -21,7 +21,11 @@ class AuthRepository extends BaseAuthRepository {
 
   @override
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    try {
+      await Future.wait([
+        _firebaseAuth.signOut(),
+      ]);
+    } catch (_) {}
   }
 
   @override

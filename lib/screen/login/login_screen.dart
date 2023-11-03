@@ -37,8 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
-          Navigator.pushNamed(context, '/');
-        } else if (state.status == LoginStatus.error) {}
+          Navigator.pop(context);
+        }
+        if (state.status == LoginStatus.error) {}
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -112,12 +113,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     //login button
-                    CustomButton(
-                      title: "Login",
-                      onPressed: () {
-                        if (formField.currentState!.validate()) {
-                          _loginCubit.logInWithCredentials();
-                        }
+                    BlocBuilder<LoginCubit, LoginState>(
+                      buildWhen: (previous, current) =>
+                          previous.status != current.status,
+                      builder: (context, state) {
+                        return state.status == LoginStatus.submitting
+                            ? const CircularProgressIndicator()
+                            : CustomButton(
+                                title: "Login",
+                                onPressed: () {
+                                  if (formField.currentState!.validate()) {
+                                    _loginCubit.logInWithCredentials();
+                                  }
+                                },
+                              );
                       },
                     ),
                     //or with

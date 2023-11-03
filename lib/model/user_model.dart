@@ -7,7 +7,7 @@ class User extends Equatable {
   final String email;
   final String imageUrl;
   final String passWord;
-  final int phoneNumber;
+  final String phoneNumber;
   final bool status;
 
   const User(

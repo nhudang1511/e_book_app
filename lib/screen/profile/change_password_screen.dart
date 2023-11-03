@@ -37,7 +37,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             height: currentHeight,
             child: Column(
               children: <Widget>[
-                CustomTextField(
+                PasswordInput(
                   hint: "Old Password",
                   controller: oldPasswordController,
                   onChanged: (value) {
@@ -59,7 +59,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ],
                   ),
                 ),
-                CustomTextField(
+                PasswordInput(
                   hint: "New Password",
                   controller: newPasswordController,
                   onChanged: (value) {
@@ -67,7 +67,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     // Thực hiện xử lý khi giá trị của TextField thay đổi.
                   },
                 ),
-                CustomTextField(
+                PasswordInput(
                   hint: "Confirm New Password",
                   controller: confirmNewPasswordController,
                   onChanged: (value) {

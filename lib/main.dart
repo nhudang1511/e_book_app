@@ -62,6 +62,12 @@ class MyApp extends StatelessWidget {
             create: (_) => ReviewBloc(
                   reviewRepository: ReviewRepository(),
                 )..add(LoadedReview())),
+        BlocProvider(
+          create: (_) => UserBloc(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          )..add(LoadUser()),
+        ),
         ChangeNotifierProvider(create: (context) => MenuAppController())
       ],
       child: MaterialApp(

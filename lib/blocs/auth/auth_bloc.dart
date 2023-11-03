@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(AuthInitial()) {
     on<AuthEventStarted>(_onAuthEventStarted);
     on<AuthEventLoggedIn>(_onAuthEventLoggedIn);
+    on<AuthEventLogOut>(_onAuthEventLogOut);
     on<AuthEventLoggedOut>(_onAuthEventLoggedOut);
     _authUserSubscription = _authRepository.user.listen((User? authUser) {
       if (kDebugMode) {
@@ -44,10 +45,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthEventLoggedIn event, Emitter<AuthState> emit) async {
     emit(AuthenticateState(authUser: event.authUser));
   }
-
+  void _onAuthEventLogOut(AuthEventLogOut event, Emitter<AuthState> emit) async {
+    unawaited(_authRepository.signOut());
+  }
   void _onAuthEventLoggedOut(
       AuthEventLoggedOut event, Emitter<AuthState> emit) async {
-    await _authRepository.signOut();
-    emit(UnAuthenticateState());
+      emit(UnAuthenticateState());
   }
 }
