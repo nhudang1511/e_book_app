@@ -1,7 +1,11 @@
 import 'package:e_book_app/blocs/auth/auth_bloc.dart';
+import 'package:e_book_app/model/library_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:e_book_app/screen/screen.dart';
+import '../../blocs/book/book_bloc.dart';
+import '../../blocs/library/library_bloc.dart';
+import '../../model/book_model.dart';
+import '../../widget/book_items/list_book_main.dart';
 import '../../widget/widget.dart';
 
 class LibraryScreen extends StatelessWidget {
@@ -102,14 +106,47 @@ class CollectionTab extends StatelessWidget {
     );
   }
 }
-
 class FavouritesTab extends StatelessWidget {
   const FavouritesTab({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('hello')),
+    return Scaffold(
+      body: SingleChildScrollView(
+          child: BlocBuilder<LibraryBloc, LibraryState>(
+            builder: (context, state) {
+              if(state is LibraryLoading){
+                return const Text('Loading');
+              }
+              else if(state is LibraryLoaded){
+                List<Library> libraries = state.libraries;
+                return BlocBuilder<BookBloc, BookState>(
+                  builder: (context, state) {
+                    if(state is BookLoaded){
+                      List<Book> matchingBooks = state.books
+                          .where((book) =>
+                          libraries.any((library) =>
+                          library.bookId == book.id))
+                          .toList();
+                      if (matchingBooks.isNotEmpty) {
+                        return ListBookMain(
+                          books: matchingBooks,
+                          scrollDirection: Axis.vertical,
+                          height: MediaQuery.of(context).size.height-50,);
+                      } else {
+                        return const Text('No matching books found');
+                      }
+                    }
+                    else{
+                      return const Text('Something went wrong in Book');
+                    }
+                    },
+                );
+              }
+              else{
+                return const Text('Something went wrong in Library');
+              }
+  },
+)),
     );
   }
 }

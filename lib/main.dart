@@ -1,4 +1,5 @@
 import 'package:e_book_app/Cubits/cubits.dart';
+import 'package:e_book_app/blocs/library/library_bloc.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -71,7 +72,10 @@ class MyApp extends StatelessWidget {
             userRepository: UserRepository(),
           )..add(LoadUser()),
         ),
-        ChangeNotifierProvider(create: (context) => MenuAppController())
+        ChangeNotifierProvider(create: (context) => MenuAppController()),
+        BlocProvider(create: (_) => LibraryBloc(
+            libraryRepository: LibraryRepository(),)..add(LoadLibrary()),
+        )
       ],
       child: MaterialApp(
         title: 'E Book App',

@@ -71,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
     String period = getDayPeriod(now);
     return Scaffold(
       appBar: CustomAppBar(title: period),
-      //bottomNavigationBar: CustomNavBar(),
       body: SingleChildScrollView(
         child:  BlocBuilder<BookBloc, BookState>(
           builder: (context, state) {
@@ -117,9 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SectionTitle(title: 'New reals'),
                   ListBook(books: state.books,),
                   const SectionTitle(title: 'Recomendation'),
-                  ListBookMain(books: state.books,),
+                  ListBookMain(books: state.books,scrollDirection: Axis.horizontal, height: 180),
                   const SectionTitle(title: 'Countinue Reading'),
-                  ListBookMain(books: state.books,),
+                  ListBookMain(books: state.books,scrollDirection: Axis.horizontal,height: 180,),
                 ],
               );
             }

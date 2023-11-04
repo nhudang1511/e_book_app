@@ -5,14 +5,16 @@ import '../../model/models.dart';
 
 class ListBookMain extends StatelessWidget {
   final List<Book> books;
-  const ListBookMain({super.key, required this.books});
+  final Axis scrollDirection;
+  final double height;
+  const ListBookMain({super.key, required this.books, required this.scrollDirection, required this.height});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
+      height: height,
       child: ListView.builder(
-          scrollDirection: Axis.horizontal,
+          scrollDirection: scrollDirection,
           itemCount: books.length,
           itemBuilder: (context,index){
             return BookCardMain(book: books[index],);
