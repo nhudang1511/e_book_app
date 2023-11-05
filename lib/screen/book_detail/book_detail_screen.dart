@@ -9,13 +9,14 @@ import 'components/custom_tab_in_book.dart';
 class BookDetailScreen extends StatefulWidget {
   static const String routeName = '/book_detail';
 
-  static Route route({required Book book}) {
+  static Route route({required Book book, required bool inLibrary}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (_) => BookDetailScreen(book: book));
+        builder: (_) => BookDetailScreen(book: book, inLibrary: inLibrary));
   }
   final Book book;
-  const BookDetailScreen({super.key, required this.book});
+  final bool inLibrary;
+  const BookDetailScreen({super.key, required this.book, required this.inLibrary});
 
   @override
   State<BookDetailScreen> createState() => _BookDetailScreenState();
@@ -42,7 +43,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
           actions: [
-            IconButton(onPressed: (){}, icon: const Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),)),
+            IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: widget.inLibrary ? Color(0xFF8C2EEE) : Color(0xFFDFE2E0),)),
             IconButton(onPressed: (){}, icon: const Icon(Icons.share, color: Color(0xFFDFE2E0),)),
             IconButton(onPressed: (){}, icon: const Icon(Icons.download, color: Color(0xFFDFE2E0),))
           ]),

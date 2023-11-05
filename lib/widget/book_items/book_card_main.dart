@@ -14,7 +14,7 @@ class BookCardMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.pushNamed(context, '/book_detail', arguments: book);
+        Navigator.pushNamed(context, '/book_detail',  arguments: {'book': book, 'inLibrary': inLibrary},);
       },
       child: Container(
         width: MediaQuery.of(context).size.width - 10,

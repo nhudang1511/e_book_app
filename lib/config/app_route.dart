@@ -38,8 +38,11 @@ class AppRouter{
       case TextNotesScreen.routeName:
         return TextNotesScreen.route();
       case BookDetailScreen.routeName:
-        if (settings.arguments is Book) {
-          return BookDetailScreen.route(book: settings.arguments as Book);
+        if (settings.arguments is Map<String, dynamic>) {
+          final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+          final Book book = arguments['book'] as Book;
+          final bool inLibrary = arguments['inLibrary'] as bool;
+          return BookDetailScreen.route(book: book, inLibrary: inLibrary);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return HomeScreen.route();
