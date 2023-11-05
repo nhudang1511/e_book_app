@@ -2,13 +2,12 @@ import 'package:e_book_app/blocs/auth/auth_bloc.dart';
 import 'package:e_book_app/model/library_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/book/book_bloc.dart';
-import '../../blocs/library/library_bloc.dart';
-import '../../model/book_model.dart';
+import '../../blocs/blocs.dart';
+import '../../model/models.dart';
 import '../../widget/book_items/list_book_main.dart';
 import '../../widget/widget.dart';
 
-class LibraryScreen extends StatelessWidget {
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
   static const String routeName = '/library';
@@ -17,6 +16,16 @@ class LibraryScreen extends StatelessWidget {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (_) => const LibraryScreen());
+  }
+  @override
+  State<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends State<LibraryScreen> {
+  @override
+  void initState(){
+    super.initState();
+    BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
   }
 
   @override
@@ -39,60 +48,75 @@ class CustomTab extends StatefulWidget {
 class _CustomTabState extends State<CustomTab> {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listenWhen: (context, state) {
         return state is AuthInitial || state is UnAuthenticateState;
       },
       listener: (context, state) {
         Navigator.pushNamed(context, "/login");
       },
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: null,
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  child: TabBar(
-                    indicator: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(4),
+      builder: (context, state) {
+        if(state is AuthenticateState){
+          final String uId = state.authUser.uid;
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: null,
+              body: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .secondary,
+                      ),
+                      child: TabBar(
+                        indicator: BoxDecoration(
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .primary,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.black,
+                        labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+                        tabs: const [
+                          Tab(
+                            text: 'Collection',
+                          ),
+                          Tab(
+                            text: 'Favourites',
+                          ),
+                        ],
+                      ),
                     ),
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w500),
-                    tabs: const [
-                      Tab(
-                        text: 'Collection',
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          CollectionTab(),
+                          FavouritesTab(uId: uId),
+                        ],
                       ),
-                      Tab(
-                        text: 'Favourites',
-                      ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-                const Expanded(
-                  child: TabBarView(
-                    children: [
-                      CollectionTab(),
-                      FavouritesTab(),
-                    ],
-                  ),
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        }
+        else{
+          return Text('Something went wrong');
+        }
+      }
     );
+
   }
 }
 
@@ -107,7 +131,8 @@ class CollectionTab extends StatelessWidget {
   }
 }
 class FavouritesTab extends StatelessWidget {
-  const FavouritesTab({super.key});
+  const FavouritesTab({super.key, required this.uId});
+  final String uId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,7 +143,7 @@ class FavouritesTab extends StatelessWidget {
                 return const Text('Loading');
               }
               else if(state is LibraryLoaded){
-                List<Library> libraries = state.libraries;
+                List<Library> libraries = state.libraries.where((element) => element.userId == uId ).toList();
                 return BlocBuilder<BookBloc, BookState>(
                   builder: (context, state) {
                     if(state is BookLoaded){

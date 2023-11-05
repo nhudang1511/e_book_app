@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:e_book_app/model/library_model.dart';
 import 'package:equatable/equatable.dart';
