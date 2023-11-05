@@ -78,12 +78,12 @@ class BookCardMain extends StatelessWidget {
                               String uId = state.user.id;
                               return IconButton(
                                   onPressed: (){
-                                    BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
+                                    inLibrary? null : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text("Thêm vào thư viện thành công"),
+                                          title: inLibrary? Text('Đã thêm') :Text("Thêm vào thư viện thành công"),
                                           content: Text("Cuốn sách đã được thêm vào thư viện của bạn."),
                                           actions: <Widget>[
                                             TextButton(
