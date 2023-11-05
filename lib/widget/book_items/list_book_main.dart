@@ -7,7 +7,8 @@ class ListBookMain extends StatelessWidget {
   final List<Book> books;
   final Axis scrollDirection;
   final double height;
-  const ListBookMain({super.key, required this.books, required this.scrollDirection, required this.height});
+  final bool inLibrary;
+  const ListBookMain({super.key, required this.books, required this.scrollDirection, required this.height, required this.inLibrary});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class ListBookMain extends StatelessWidget {
           scrollDirection: scrollDirection,
           itemCount: books.length,
           itemBuilder: (context,index){
-            return BookCardMain(book: books[index],);
+            return BookCardMain(book: books[index], inLibrary: inLibrary);
           }),
     );
   }

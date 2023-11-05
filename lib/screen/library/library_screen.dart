@@ -156,7 +156,9 @@ class FavouritesTab extends StatelessWidget {
                         return ListBookMain(
                           books: matchingBooks,
                           scrollDirection: Axis.vertical,
-                          height: MediaQuery.of(context).size.height-50,);
+                          height: MediaQuery.of(context).size.height-50,
+                          inLibrary: true
+                        );
                       } else {
                         return const Text('No matching books found');
                       }

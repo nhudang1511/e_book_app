@@ -122,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                              scrollDirection: Axis.vertical,
                              itemCount: searchResults.length,
                              itemBuilder: (context,index){
-                               return BookCardMain(book: searchResults[index],);
+                               return BookCardMain(book: searchResults[index], inLibrary: false,);
                              }),
                        ) :  const ListCategoryInSearch(),
                      );

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../blocs/blocs.dart';
-import '../../blocs/library/library_bloc.dart';
 import '../../model/models.dart';
 
 class BookCardMain extends StatelessWidget {
   final Book book;
-  const BookCardMain({
-    super.key, required this.book,
+  late bool inLibrary;
+  BookCardMain({
+    super.key, required this.book,  required this.inLibrary,
   });
 
   @override
@@ -75,13 +74,44 @@ class BookCardMain extends StatelessWidget {
                             ],
                           ),
                           BlocBuilder<UserBloc,UserState>(builder: (context, state) {
-                            return IconButton(onPressed: (){
-                              if(state is UserLoaded){
-                                BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
-                              }
-                            },
-                                icon: const Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0),));
-                            },
+                            if(state is UserLoaded){
+                              String uId = state.user.id;
+                              return IconButton(
+                                  onPressed: (){
+                                    BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Thêm vào thư viện thành công"),
+                                          content: Text("Cuốn sách đã được thêm vào thư viện của bạn."),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text("Đóng"),
+                                              onPressed: () {
+                                                BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                                                Navigator.of(context).pop(); // Đóng hộp thoại
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: BlocBuilder<LibraryBloc, LibraryState>(builder: (context, state) {
+                                    if(state is LibraryLoaded){
+                                      bool isBookInLibrary = state.libraries.any((b) =>b.userId == uId && b.bookId == book.id);
+                                      if (isBookInLibrary) {
+                                        inLibrary = true; // Nếu sách có trong Books, đặt inLibrary thành true
+                                      }
+                                    }
+                                    return Icon(Icons.bookmark_outlined,color: inLibrary ? const Color(0xFF8C2EEE) : const Color(0xFFDFE2E0),);
+                                  },
+                                  )); }
+                            else{
+                              return const Icon(Icons.bookmark_outlined,color: Color(0xFFDFE2E0),);
+                            }
+                          }
                           )
                         ],
                       ),

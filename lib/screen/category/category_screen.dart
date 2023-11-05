@@ -51,7 +51,7 @@ class CategoryScreen extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     itemCount: listBookInCategory.length,
                     itemBuilder: (context,index){
-                      return BookCardMain(book: listBookInCategory[index],);
+                      return BookCardMain(book: listBookInCategory[index], inLibrary: false,);
                     }),
               );
             }
