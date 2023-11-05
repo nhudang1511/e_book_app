@@ -6,15 +6,16 @@ import '../../model/models.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
-  const BookCard({
-    super.key, required this.book,
+  late bool inLibrary;
+  BookCard({
+    super.key, required this.book, required this.inLibrary
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.pushNamed(context, '/book_detail', arguments: book);
+        Navigator.pushNamed(context, '/book_detail',  arguments: {'book': book, 'inLibrary': inLibrary},);
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),

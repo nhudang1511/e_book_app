@@ -43,12 +43,13 @@ class BookCardMain extends StatelessWidget {
                 const SizedBox(width: 5),
                 Expanded(flex:2, child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(book.title, style: Theme.of(context).textTheme.headlineSmall,),
@@ -73,78 +74,101 @@ class BookCardMain extends StatelessWidget {
                               ),
                             ],
                           ),
-                          BlocBuilder<UserBloc,UserState>(builder: (context, state) {
-                            if(state is UserLoaded){
-                              String uId = state.user.id;
-                              return IconButton(
-                                  onPressed: (){
-                                    inLibrary? null : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: inLibrary? Text('Đã thêm') :Text("Thêm vào thư viện thành công"),
-                                          content: Text("Cuốn sách đã được thêm vào thư viện của bạn."),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: Text("Đóng"),
-                                              onPressed: () {
-                                                BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
-                                                Navigator.of(context).pop(); // Đóng hộp thoại
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: BlocBuilder<LibraryBloc, LibraryState>(builder: (context, state) {
-                                    if(state is LibraryLoaded){
-                                      bool isBookInLibrary = state.libraries.any((b) =>b.userId == uId && b.bookId == book.id);
-                                      if (isBookInLibrary) {
-                                        inLibrary = true; // Nếu sách có trong Books, đặt inLibrary thành true
-                                      }
+                        ),
+                        BlocBuilder<UserBloc,UserState>(builder: (context, state) {
+                          if(state is UserLoaded){
+                            String uId = state.user.id;
+                            return IconButton(
+                                onPressed: (){
+                                  inLibrary? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: book.id))
+                                  : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: inLibrary? Text('Remove') :Text("Thêm vào thư viện thành công"),
+                                        content: Text("Cuốn sách đã được thêm vào thư viện của bạn."),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text("Đóng"),
+                                            onPressed: () {
+                                              BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                                              Navigator.of(context).pop(); // Đóng hộp thoại
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: BlocBuilder<LibraryBloc, LibraryState>(builder: (context, state) {
+                                  if(state is LibraryLoaded){
+                                    bool isBookInLibrary = state.libraries.any((b) =>b.userId == uId && b.bookId == book.id);
+                                    if (isBookInLibrary) {
+                                      inLibrary = true; // Nếu sách có trong Library, đặt inLibrary thành true
                                     }
-                                    return Icon(Icons.bookmark_outlined,color: inLibrary ? const Color(0xFF8C2EEE) : const Color(0xFFDFE2E0),);
-                                  },
-                                  )); }
-                            else{
-                              return const Icon(Icons.bookmark_outlined,color: Color(0xFFDFE2E0),);
-                            }
+                                  }
+
+                                  return Icon(Icons.bookmark_outlined,color: inLibrary ? const Color(0xFF8C2EEE) : const Color(0xFFDFE2E0),);
+                                },
+                                )); }
+                          else{
+                            return IconButton(
+                              onPressed: (){
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Vui lòng đăng nhập để thực hiện tính năng"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text("Đóng"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); // Đóng hộp thoại
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },);
+                              },
+                              icon: const Icon(Icons.bookmark_outlined,color: Color(0xFFDFE2E0)),);
                           }
-                          )
-                        ],
-                      ),
+                        }
+                        )
+                      ],
                     ),
-                    const SizedBox(height: 35,),
-                    const Icon(Icons.money_off),
-                    Row(children: [
-                      const Icon(Icons.menu_book),
-                      const SizedBox(width: 5,),
-                      Text(book.language)
-                    ],),
-                    SizedBox(
-                      height: 25,
-                      child: ListView.builder(
-                          itemCount: categoryNames.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFEB6097),
-                                  borderRadius: BorderRadius.circular(5)),
-                              padding: const EdgeInsets.all(5),
-                              margin: const EdgeInsets.only(top: 2, right: 5),
-                              child: Text(categoryNames[index],
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(color: Colors.white),
-                              ),
-                            );
-                          }),
-                    )
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      const Icon(Icons.money_off),
+                      Row(children: [
+                        const Icon(Icons.menu_book),
+                        const SizedBox(width: 5,),
+                        Text(book.language)
+                      ],),
+                      SizedBox(
+                        height: 25,
+                        child: ListView.builder(
+                            itemCount: categoryNames.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFEB6097),
+                                    borderRadius: BorderRadius.circular(5)),
+                                padding: const EdgeInsets.all(5),
+                                margin: const EdgeInsets.only(top: 2, right: 5),
+                                child: Text(categoryNames[index],
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(color: Colors.white),
+                                ),
+                              );
+                            }),
+                      )
+                    ]),
                   ],
                 ))
               ],

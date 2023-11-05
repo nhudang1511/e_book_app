@@ -23,4 +23,19 @@ class LibraryRepository extends BaseLibraryRepository{
       return snapshot.docs.map((doc) => Library.fromSnapshot(doc)).toList();
     });
   }
+
+  @override
+  Future<void> removeBookInLibrary(Library library) {
+    return _firebaseFirestore
+        .collection('libraries')
+        .where('bookId', isEqualTo: library.bookId)
+        .where('userId', isEqualTo: library.userId)
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    });
+  }
+
 }

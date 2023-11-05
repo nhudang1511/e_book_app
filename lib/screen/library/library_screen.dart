@@ -112,7 +112,7 @@ class _CustomTabState extends State<CustomTab> {
           );
         }
         else{
-          return Text('Something went wrong');
+          return Text('');
         }
       }
     );

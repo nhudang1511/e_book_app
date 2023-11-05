@@ -1,6 +1,5 @@
 import 'package:e_book_app/Cubits/cubits.dart';
-import 'package:e_book_app/blocs/library/library_bloc.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+// import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +22,8 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
+  // static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  // static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -90,7 +89,7 @@ class _MyAppState extends State<MyApp> {
         themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
         initialRoute: SplashScreen.routeName,
-        navigatorObservers: <NavigatorObserver>[MyApp.observer],
+        // navigatorObservers: <NavigatorObserver>[MyApp.observer],
       ),
     );
   }

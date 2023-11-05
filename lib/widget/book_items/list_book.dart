@@ -5,7 +5,8 @@ import 'book_card_new.dart';
 
 class ListBook extends StatelessWidget {
   final List<Book> books;
-  const ListBook({super.key, required this.books});
+  final bool inLibrary;
+  const ListBook({super.key, required this.books, required this.inLibrary});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ListBook extends StatelessWidget {
           itemCount: books.length,
           itemBuilder: (context,index){
             return Padding(padding: EdgeInsets.all(8),
-                child: BookCard(book: books[index],));
+                child: BookCard(book: books[index], inLibrary: inLibrary,));
           }),
     );
   }

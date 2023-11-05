@@ -23,6 +23,8 @@ class BookDetailScreen extends StatefulWidget {
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
+  late bool isBookmarked;
+
   void showHideDotsPopup(List<String> images) {
     PopupBanner(
       context: context,
@@ -36,6 +38,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     ).show();
   }
   @override
+  void initState() {
+    super.initState();
+    isBookmarked = widget.inLibrary;
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +50,42 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
           actions: [
-            IconButton(onPressed: (){}, icon: Icon(Icons.bookmark_outlined, color: widget.inLibrary ? Color(0xFF8C2EEE) : Color(0xFFDFE2E0),)),
+            BlocBuilder<UserBloc,UserState>(
+              builder: (context, state) {
+                if(state is UserLoaded){
+                  return IconButton(onPressed: (){
+                    isBookmarked? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: widget.book.id))
+                        : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: widget.book.id));
+                    setState(() {
+                      isBookmarked = !isBookmarked;
+                      BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                    });
+                    }, icon: Icon(Icons.bookmark_outlined, color: isBookmarked ? const Color(0xFF8C2EEE) : Color(0xFFDFE2E0),));
+
+                }
+                else{
+                  return IconButton(onPressed: (){
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Vui lòng đăng nhập để thực hiện tính năng"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Đóng"),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Đóng hộp thoại
+                              },
+                            ),
+                          ],
+                        );
+                      },);
+                  },
+                      icon: const Icon(Icons.bookmark_outlined, color: Color(0xFFDFE2E0)));
+                }
+
+              }
+            ),
             IconButton(onPressed: (){}, icon: const Icon(Icons.share, color: Color(0xFFDFE2E0),)),
             IconButton(onPressed: (){}, icon: const Icon(Icons.download, color: Color(0xFFDFE2E0),))
           ]),

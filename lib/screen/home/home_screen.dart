@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }).toList(),),
                   const SectionTitle(title: 'New reals'),
-                  ListBook(books: state.books,),
+                  ListBook(books: state.books,inLibrary: false,),
                   const SectionTitle(title: 'Recomendation'),
                   ListBookMain(books: state.books,scrollDirection: Axis.horizontal, height: 180, inLibrary: false),
                   const SectionTitle(title: 'Countinue Reading'),

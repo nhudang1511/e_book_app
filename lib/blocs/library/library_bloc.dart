@@ -31,6 +31,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     }
   }
   void _onRemoveFromLibrary(event, Emitter<LibraryState> emit) async{
+    final library = Library(bookId: event.bookId, userId: event.userId);
+    _librarySubscription?.cancel();
+    emit(LibraryLoading());
+    try {
+      // Thêm sách vào thư viện
+      await _libraryRepository.removeBookInLibrary(library);
+      emit(LibraryLoaded(libraries: event.libraries));
+    } catch (e) {
+      emit(LibraryError('error in add'));
+    }
   }
   void _onLoadLibrary(event, Emitter<LibraryState> emit) async{
     emit(LibraryLoading());
