@@ -15,16 +15,15 @@ class BookDetailScreen extends StatefulWidget {
         builder: (_) => BookDetailScreen(book: book, inLibrary: inLibrary));
   }
   final Book book;
-  final bool inLibrary;
-  const BookDetailScreen({super.key, required this.book, required this.inLibrary});
+  late bool inLibrary;
+  BookDetailScreen({super.key, required this.book, required this.inLibrary});
 
   @override
   State<BookDetailScreen> createState() => _BookDetailScreenState();
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
-  late bool isBookmarked;
-
+ late bool isBookmarked;
   void showHideDotsPopup(List<String> images) {
     PopupBanner(
       context: context,
@@ -41,6 +40,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void initState() {
     super.initState();
     isBookmarked = widget.inLibrary;
+    BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
   }
   @override
   Widget build(BuildContext context) {
@@ -54,12 +54,28 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               builder: (context, state) {
                 if(state is UserLoaded){
                   return IconButton(onPressed: (){
-                    isBookmarked? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: widget.book.id))
+                    isBookmarked = !isBookmarked;
+                    !isBookmarked? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: widget.book.id))
                         : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: widget.book.id));
-                    setState(() {
-                      isBookmarked = !isBookmarked;
-                      BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
-                    });
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: isBookmarked ? Text('Added'): Text('Removed'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Đóng"),
+                              onPressed: () {
+                                setState(() {
+                                  BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                                  Navigator.of(context).pop(); // Đóng hộp thoại
+                                });
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                     }, icon: Icon(Icons.bookmark_outlined, color: isBookmarked ? const Color(0xFF8C2EEE) : Color(0xFFDFE2E0),));
 
                 }
