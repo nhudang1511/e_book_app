@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 
+import '../../../blocs/blocs.dart';
 import '../../../model/book_model.dart';
 
 class DetailBookItem extends StatelessWidget {
@@ -48,9 +50,20 @@ class DetailBookItem extends StatelessWidget {
           const SizedBox(height: 10,),
           SizedBox(
             width: MediaQuery.of(context).size.width - 20,
-            child: ElevatedButton(
-                onPressed: (){},
-                child: const Text('READ', style: TextStyle(color: Colors.white),)),
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return ElevatedButton(
+                    onPressed: (){
+                      if( state is AuthInitial || state is UnAuthenticateState){
+                        Navigator.pushNamed(context, '/login');
+                      }
+                      else{
+                        Navigator.pushNamed(context, '/book');
+                      }
+                },
+                    child: const Text('READ', style: TextStyle(color: Colors.white),));
+  },
+),
           )
         ],
       ),

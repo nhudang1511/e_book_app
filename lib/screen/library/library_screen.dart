@@ -25,7 +25,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState(){
     super.initState();
-    //BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
   }
 
   @override

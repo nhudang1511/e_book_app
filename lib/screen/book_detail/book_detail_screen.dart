@@ -39,7 +39,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   @override
   void initState() {
     super.initState();
-    isBookmarked = widget.inLibrary;
     BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
   }
   @override
@@ -54,17 +53,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               builder: (context, state) {
                 if(state is UserLoaded){
                   return IconButton(onPressed: (){
-                    isBookmarked = !isBookmarked;
-                    !isBookmarked? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: widget.book.id))
+                    widget.inLibrary = !widget.inLibrary;
+                    !widget.inLibrary? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: widget.book.id))
                         : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: widget.book.id));
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: isBookmarked ? Text('Added'): Text('Removed'),
+                          title: widget.inLibrary ? const Text('Added'): const Text('Removed'),
                           actions: <Widget>[
                             TextButton(
-                              child: Text("Đóng"),
+                              child: const Text("Đóng"),
                               onPressed: () {
                                 setState(() {
                                   BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
@@ -76,7 +75,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         );
                       },
                     );
-                    }, icon: Icon(Icons.bookmark_outlined, color: isBookmarked ? const Color(0xFF8C2EEE) : Color(0xFFDFE2E0),));
+                    }, icon: Icon(Icons.bookmark_outlined, color: widget.inLibrary ? const Color(0xFF8C2EEE) : const Color(0xFFDFE2E0),));
 
                 }
                 else{
@@ -85,10 +84,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Vui lòng đăng nhập để thực hiện tính năng"),
+                          title: const Text("Vui lòng đăng nhập để thực hiện tính năng"),
                           actions: <Widget>[
                             TextButton(
-                              child: Text("Đóng"),
+                              child: const Text("Đóng"),
                               onPressed: () {
                                 Navigator.of(context).pop(); // Đóng hộp thoại
                               },
