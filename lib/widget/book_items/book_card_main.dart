@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
@@ -80,14 +82,14 @@ class BookCardMain extends StatelessWidget {
                             String uId = state.user.id;
                             return IconButton(
                                 onPressed: (){
-                                  inLibrary? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: book.id))
+                                  inLibrary = !inLibrary;
+                                  !inLibrary? BlocProvider.of<LibraryBloc>(context).add(RemoveFromLibraryEvent(userId: state.user.id, bookId: book.id))
                                   : BlocProvider.of<LibraryBloc>(context).add(AddToLibraryEvent(userId: state.user.id, bookId: book.id));
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: inLibrary? Text('Remove') :Text("Thêm vào thư viện thành công"),
-                                        content: Text("Cuốn sách đã được thêm vào thư viện của bạn."),
+                                        title: inLibrary ? Text('Added'): Text('Removed'),
                                         actions: <Widget>[
                                           TextButton(
                                             child: Text("Đóng"),
