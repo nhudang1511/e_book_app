@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import '../widget.dart';
 
 class BookCardMain extends StatelessWidget {
   final Book book;
   late bool inLibrary;
+  late Timer _timer;
   BookCardMain({
     super.key, required this.book,  required this.inLibrary,
   });
@@ -88,20 +90,20 @@ class BookCardMain extends StatelessWidget {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: inLibrary ? Text('Added'): Text('Removed'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            child: Text("Đóng"),
-                                            onPressed: () {
-                                              BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
-                                              Navigator.of(context).pop(); // Đóng hộp thoại
-                                            },
-                                          ),
-                                        ],
+                                      _timer = Timer(const Duration(seconds: 5), () {
+                                        BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                                        Navigator.of(context).pop();
+                                      });
+                                      return CustomDialogNotice(
+                                        title: Icons.downloading,
+                                        content: inLibrary ? 'Wait to Add ' : 'Wait to Removing',
                                       );
                                     },
-                                  );
+                                  ).then((value) {
+                                    if (_timer.isActive) {
+                                      _timer.cancel();
+                                    }
+                                  });
                                 },
                                 icon: BlocBuilder<LibraryBloc, LibraryState>(builder: (context, state) {
                                   if(state is LibraryLoaded){

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popup_banner/popup_banner.dart';
 
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import '../../widget/custom_dialog_notice.dart';
 import 'components/custom_tab_in_book.dart';
 
 class BookDetailScreen extends StatefulWidget {
@@ -16,6 +19,7 @@ class BookDetailScreen extends StatefulWidget {
   }
   final Book book;
   late bool inLibrary;
+  late Timer _timer;
   BookDetailScreen({super.key, required this.book, required this.inLibrary});
 
   @override
@@ -59,22 +63,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: widget.inLibrary ? const Text('Added'): const Text('Removed'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text("Đóng"),
-                              onPressed: () {
-                                setState(() {
-                                  BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
-                                  Navigator.of(context).pop(); // Đóng hộp thoại
-                                });
-                              },
-                            ),
-                          ],
+                        widget._timer = Timer(const Duration(seconds: 5), () {
+                          BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
+                          Navigator.of(context).pop();
+                        });
+                        return CustomDialogNotice(
+                          title: Icons.downloading,
+                          content: widget.inLibrary ? 'Wait to Add ' : 'Wait to Removing',
                         );
                       },
-                    );
+                    ).then((value) {
+                      if (widget._timer.isActive) {
+                       widget. _timer.cancel();
+                      }
+                    });
                     }, icon: Icon(Icons.bookmark_outlined, color: widget.inLibrary ? const Color(0xFF8C2EEE) : const Color(0xFFDFE2E0),));
 
                 }

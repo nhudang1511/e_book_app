@@ -27,8 +27,7 @@ class BookScreen extends StatefulWidget {
 
 class _BookScreenState extends State<BookScreen> {
   String selectedText = '';
-  String selectedTableText =
-      'Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.';
+  String selectedTableText = '';
   OverlayEntry? _overlayEntry;
   bool isTickedWhite = true;
   bool isTickedBlack = false;
@@ -43,6 +42,21 @@ class _BookScreenState extends State<BookScreen> {
   void initState() {
     super.initState();
     BlocProvider.of<ChaptersBloc>(context).add(LoadChapters(widget.book.id));
+
+    // Lấy chapter đầu tiên và thiết lập selectedTableText
+    BlocProvider.of<ChaptersBloc>(context).stream.listen((state) {
+      if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
+        final firstChapterEntry = state.chapters.chapterList.entries.lastWhere(
+              (entry) => entry.key.startsWith('Chương 1'),
+        );
+        if (mounted) {
+          setState(() {
+            selectedTableText = firstChapterEntry.value;
+            selectedChapterId = firstChapterEntry.key;
+          });
+        }
+      }
+    });
   }
 
   void increaseFontSize() {
@@ -98,9 +112,17 @@ class _BookScreenState extends State<BookScreen> {
                                     'title': entry.value,
                                   };
                                 }).toList();
+                                // Sắp xếp danh sách theo key (chapter['id'])
+                                chapterListMap.sort((a, b) {
+                                  // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+                                  int aNumber = int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int bNumber = int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  return aNumber.compareTo(bNumber);
+                                });
                                 return SizedBox(
                                   height: MediaQuery.of(context).size.height/3,
                                   child: ListView.builder(
+                                    scrollDirection: Axis.vertical,
                                     itemCount: chapterListMap.length,
                                     itemBuilder: (context, index) {
                                       final chapter = chapterListMap[index];

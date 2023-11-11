@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
-    fontFamily: 'Open Sans',
+    fontFamily: 'OpenSans',
     colorScheme: const ColorScheme.dark(
         background: Colors.black,
         primary: Color(0xFF8C2EEE),
