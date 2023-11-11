@@ -79,7 +79,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(create: (_) => LibraryBloc(
             libraryRepository: LibraryRepository(),)..add(LoadLibrary()),
-        )
+        ),
+        BlocProvider(create: (_) => ChaptersBloc(chaptersRepository: ChaptersRepository()))
       ],
       child: MaterialApp(
         title: 'E Book App',

@@ -5,3 +5,4 @@ export 'auth/auth_bloc.dart';
 export 'review/review_bloc.dart';
 export 'user/user_bloc.dart';
 export 'library/library_bloc.dart';
+export 'chapters/chapters_bloc.dart';

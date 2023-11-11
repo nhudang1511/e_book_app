@@ -54,7 +54,11 @@ class AppRouter{
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return HomeScreen.route();}
       case BookScreen.routeName:
-        return BookScreen.route();
+        if (settings.arguments is Book) {
+          return BookScreen.route(book: settings.arguments as Book);
+        } else {
+          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
+          return HomeScreen.route();}
       case AdminPanel.routeName:
         return AdminPanel.route();
       default:

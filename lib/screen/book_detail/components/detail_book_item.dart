@@ -58,7 +58,7 @@ class DetailBookItem extends StatelessWidget {
                         Navigator.pushNamed(context, '/login');
                       }
                       else{
-                        Navigator.pushNamed(context, '/book');
+                        Navigator.pushNamed(context, '/book', arguments: book);
                       }
                 },
                     child: const Text('READ', style: TextStyle(color: Colors.white),));

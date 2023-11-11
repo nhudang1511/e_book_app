@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:translator/translator.dart';
 import 'package:material_dialogs/dialogs.dart';
+import '../../blocs/blocs.dart';
+import '../../model/models.dart';
 
 class BookScreen extends StatefulWidget {
   static const String routeName = '/book';
 
-  static Route route() {
+  static Route route({required Book book}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (_) => const BookScreen());
+        builder: (_) => BookScreen(
+              book: book,
+            ));
   }
 
-  const BookScreen({Key? key}) : super(key: key);
+  final Book book;
+
+  const BookScreen({super.key, required this.book});
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -20,7 +27,8 @@ class BookScreen extends StatefulWidget {
 
 class _BookScreenState extends State<BookScreen> {
   String selectedText = '';
-  String selectedTableText = 'Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.';
+  String selectedTableText =
+      'Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.Tôi sống độc lập từ thủa bé. Ấy là tục lệ lâu đời trong họ nhà dế chúng tôi. Vả lại, mẹ thường bảo chúng tôi rằng: "Phải như thế để các con biết kiếm ăn một mình cho quen đi. Con cái mà cứ nhong nhong ăn bám vào bố mẹ thì chỉ sinh ra tính ỷ lại, xấu lắm, rồi ra đời không làm nên trò trống gì đâu". Bởi thế, lứa sinh nào cũng vậy, đẻ xong là bố mẹ thu xếp cho con cái ra ở riêng. Lứa sinh ấy, chúng tôi có cả thảy ba anh em. Ba anh em chúng tôi chỉ ở với mẹ ba hôm. Tới hôm thứ ba, mẹ đi trước, ba đứa tôi tấp tểnh, khấp khởi, nửa lo nửa vui theo sau. Mẹ dẫn chúng tôi đi và mẹ đem đặt mỗi đứa vào một cái hang đất ở bờ ruộng phía bên kia, chỗ trông ra đầm nước mà không biết mẹ đã chịu khó đào bới, be đắp tinh tươm thành hang, thành nhà cho chúng tôi từ bao giờ. Tôi là em út, bé nhất nên được mẹ tôi sau khi dắt vào hang, lại bỏ theo một ít ngọn cỏ non trước cửa, để tôi nếu có bỡ ngỡ, thì đã có ít thức ăn sẵn trong vài ngày.';
   OverlayEntry? _overlayEntry;
   bool isTickedWhite = true;
   bool isTickedBlack = false;
@@ -33,12 +41,15 @@ class _BookScreenState extends State<BookScreen> {
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<ChaptersBloc>(context).add(LoadChapters(widget.book.id));
   }
+
   void increaseFontSize() {
     setState(() {
       fontSize += 2.0; // You can adjust the increment as needed
     });
   }
+
   void decreaseFontSize() {
     setState(() {
       fontSize -= 2.0;
@@ -47,7 +58,7 @@ class _BookScreenState extends State<BookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height*2;
+    final screenHeight = MediaQuery.of(context).size.height * 2;
     splitTextIntoSegments(screenHeight);
     return WillPopScope(
       onWillPop: () async {
@@ -56,7 +67,9 @@ class _BookScreenState extends State<BookScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: isTickedBlack ? Colors.black : Theme.of(context).appBarTheme.backgroundColor,
+          backgroundColor: isTickedBlack
+              ? Colors.black
+              : Theme.of(context).appBarTheme.backgroundColor,
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
           actions: [
@@ -70,20 +83,53 @@ class _BookScreenState extends State<BookScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Chapter', style: TextStyle(color: Colors.white, fontSize: 20)),
-                          TextButton(onPressed: (){
+                          const Text('Chapter',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20)),
+                          BlocBuilder<ChaptersBloc, ChaptersState>(
+                            builder: (context, state) {
+                              if(state is ChaptersLoaded) {
+                                final chapterList = state.chapters.chapterList;
 
-                          }, child: const Text('Chương 1: Tôi sống độc lập từ thủa bé - Một sự ngỗ nghịch đáng ân hận suốt đời', style: TextStyle(color: Colors.white),)),
-                          TextButton(onPressed: (){
-                            Navigator.pop(context);
-                          }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                                // Convert the chapterList to a list of Map<String, dynamic>.
+                                final chapterListMap = chapterList.entries.map((entry) {
+                                  return {
+                                    'id': entry.key,
+                                    'title': entry.value,
+                                  };
+                                }).toList();
+                                return SizedBox(
+                                  height: MediaQuery.of(context).size.height/3,
+                                  child: ListView.builder(
+                                    itemCount: chapterListMap.length,
+                                    itemBuilder: (context, index) {
+                                      final chapter = chapterListMap[index];
+                                      // Display the chapter.
+                                      return ListTile(
+                                        title: Text(chapter['id'],style: const TextStyle(color: Colors.white)),
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                              else{
+                                return const Text('Somthing went wrong');
+                              }
+                            },
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Close',
+                                style: TextStyle(color: Colors.white),
+                              ))
                         ],
                       ),
-                    ]
-                );
+                    ]);
               },
-              icon: const Icon(Icons.book,
-                  color: Color(0xFFDFE2E0)),
+              icon: const Icon(Icons.book, color: Color(0xFFDFE2E0)),
             ),
             IconButton(
               onPressed: () {
@@ -102,23 +148,37 @@ class _BookScreenState extends State<BookScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.add, color: Colors.white),
-                                SizedBox(width: 10,),
-                                Text('Add Notes', style: TextStyle(fontSize: 17, color: Colors.white),),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Add Notes',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
                           TextButton(
-                            onPressed: () {
-                            },
+                            onPressed: () {},
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Icon(Icons.color_lens, color: Colors.white),
-                                const SizedBox(width: 10,),
-                                const Text('Backgrounds', style: TextStyle(fontSize: 17, color: Colors.white),),
-                                const SizedBox(width: 10,),
+                                const Icon(Icons.color_lens,
+                                    color: Colors.white),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text(
+                                  'Backgrounds',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.white),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
                                 InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     setState(() {
                                       isTickedWhite = !isTickedWhite;
                                       isTickedBlack = !isTickedBlack;
@@ -132,17 +192,20 @@ class _BookScreenState extends State<BookScreen> {
                                       shape: BoxShape.circle,
                                       color: Colors.white,
                                     ),
-                                    child:  isTickedWhite
+                                    child: isTickedWhite
                                         ? const Icon(
-                                      Icons.check,
-                                      color: Colors.black,
-                                      size: 10.0,
-                                    ): null,
+                                            Icons.check,
+                                            color: Colors.black,
+                                            size: 10.0,
+                                          )
+                                        : null,
                                   ),
                                 ),
-                                const SizedBox(width: 10,),
+                                const SizedBox(
+                                  width: 10,
+                                ),
                                 InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     setState(() {
                                       isTickedWhite = !isTickedWhite;
                                       isTickedBlack = !isTickedBlack;
@@ -158,10 +221,11 @@ class _BookScreenState extends State<BookScreen> {
                                     ),
                                     child: isTickedBlack
                                         ? const Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                      size: 10.0,
-                                    ): null,
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 10.0,
+                                          )
+                                        : null,
                                   ),
                                 )
                               ],
@@ -175,8 +239,14 @@ class _BookScreenState extends State<BookScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.zoom_in, color: Colors.white),
-                                SizedBox(width: 10,),
-                                Text('Zoom In', style: TextStyle(fontSize: 17, color: Colors.white),),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Zoom In',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
@@ -188,56 +258,71 @@ class _BookScreenState extends State<BookScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.zoom_out, color: Colors.white),
-                                SizedBox(width: 10,),
-                                Text('Zoom Out', style: TextStyle(fontSize: 17, color: Colors.white),),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Zoom Out',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
-                          TextButton(onPressed: (){
-                            Navigator.pop(context);
-                          }, child: const Text('Close', style: TextStyle(color: Colors.white),))
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Close',
+                                style: TextStyle(color: Colors.white),
+                              ))
                         ],
                       ),
-                    ]
-                );
+                    ]);
               },
               icon: const Icon(Icons.settings),
             ),
           ],
         ),
-        bottomNavigationBar:  BottomAppBar(
+        bottomNavigationBar: BottomAppBar(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  onPressed: (){
-                    _hideToolbar();
-                    if (currentPage > 0) {
-                      setState(() {
-                        currentPage--;
-                      });
-                    }
-                  },
-                  icon: Icon(Icons.arrow_back_ios_new, color: currentPage>0? Colors.black: Colors.grey),
-                ),
-                Text(
-                  'Page ${currentPage+1}',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                IconButton(
-                  onPressed: (){
-                    _hideToolbar();
-                    if (currentPage < textSegments.length - 1) {
-                      setState(() {
-                        currentPage++;
-                      });
-                    }
-                  },
-                  icon: Icon(Icons.arrow_forward_ios, color: currentPage<textSegments.length-1? Colors.black: Colors.grey,),
-                ),
-              ],
-            )
-        ),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(
+              onPressed: () {
+                _hideToolbar();
+                if (currentPage > 0) {
+                  setState(() {
+                    currentPage--;
+                  });
+                }
+              },
+              icon: Icon(Icons.arrow_back_ios_new,
+                  color: currentPage > 0 ? Colors.black : Colors.grey),
+            ),
+            Text(
+              'Page ${currentPage + 1}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            IconButton(
+              onPressed: () {
+                _hideToolbar();
+                if (currentPage < textSegments.length - 1) {
+                  setState(() {
+                    currentPage++;
+                  });
+                }
+              },
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                color: currentPage < textSegments.length - 1
+                    ? Colors.black
+                    : Colors.grey,
+              ),
+            ),
+          ],
+        )),
         backgroundColor: isTickedBlack ? Colors.black : Colors.white,
         body: Stack(
           children: [
@@ -252,22 +337,25 @@ class _BookScreenState extends State<BookScreen> {
                       ? textSegments[currentPage]
                       : '',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    // Chỉnh màu văn bản tùy thuộc vào màu nền
+                      // Chỉnh màu văn bản tùy thuộc vào màu nền
                       color: isTickedBlack ? Colors.white : Colors.black,
-                      fontSize: fontSize
-                  ),
+                      fontSize: fontSize),
                   showCursor: true,
-                  toolbarOptions: const ToolbarOptions(selectAll: false, copy: false, cut: true),
+                  toolbarOptions: const ToolbarOptions(
+                      selectAll: false, copy: false, cut: true),
                   onSelectionChanged: (selection, cause) {
                     if (selection.start == selection.end) {
                       _hideToolbar(); // Hide the toolbar when no text is selected
                     }
                     setState(() {
                       if (currentPage < textSegments.length) {
-                        final start = selection.start.clamp(0, textSegments[currentPage].length);
-                        final end = selection.end.clamp(0, textSegments[currentPage].length);
+                        final start = selection.start
+                            .clamp(0, textSegments[currentPage].length);
+                        final end = selection.end
+                            .clamp(0, textSegments[currentPage].length);
 
-                        selectedText = textSegments[currentPage].substring(start, end);
+                        selectedText =
+                            textSegments[currentPage].substring(start, end);
                       } else {
                         selectedText = '';
                       }
@@ -281,6 +369,7 @@ class _BookScreenState extends State<BookScreen> {
       ),
     );
   }
+
   void splitTextIntoSegments(double screenHeight) {
     final textLength = selectedTableText.length;
     textSegments.clear();
@@ -308,7 +397,6 @@ class _BookScreenState extends State<BookScreen> {
     }
   }
 
-
   void showToolbar(BuildContext context, Offset localPosition) {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
@@ -320,15 +408,18 @@ class _BookScreenState extends State<BookScreen> {
             right: 30,
             top: localPosition.dy + 30,
             child: Container(
-              decoration: BoxDecoration(color: const Color(0xFF8C2EEE),
+              decoration: BoxDecoration(
+                  color: const Color(0xFF8C2EEE),
                   borderRadius: BorderRadius.circular(5)),
               child: Row(
                 children: [
                   TextButton(
                     child: const Row(
                       children: [
-                        Text('Copy', style: TextStyle(fontSize: 13,
-                            color: Colors.white),),
+                        Text(
+                          'Copy',
+                          style: TextStyle(fontSize: 13, color: Colors.white),
+                        ),
                         Icon(Icons.copy, color: Colors.white)
                       ],
                     ),
@@ -343,27 +434,33 @@ class _BookScreenState extends State<BookScreen> {
                     },
                     child: const Row(
                       children: [
-                        Text('Save', style: TextStyle(fontSize: 13,
-                            color: Colors.white)),
-                        Icon(Icons.save, color: Colors.white,)
+                        Text('Save',
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.white)),
+                        Icon(
+                          Icons.save,
+                          color: Colors.white,
+                        )
                       ],
                     ),
                   ),
                   TextButton(
                     onPressed: () async {
                       final translator = GoogleTranslator();
-                      translator
-                          .translate(selectedText, to: 'vi')
-                          .then((result) =>
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(
-                              content: Text(result.toString()))));
+                      translator.translate(selectedText, to: 'vi').then(
+                          (result) => ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                                  SnackBar(content: Text(result.toString()))));
                     },
                     child: const Row(
                       children: [
-                        Text('Trans', style: TextStyle(fontSize: 13,
-                            color: Colors.white)),
-                        Icon(Icons.g_translate, color: Colors.white,)
+                        Text('Trans',
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.white)),
+                        Icon(
+                          Icons.g_translate,
+                          color: Colors.white,
+                        )
                       ],
                     ),
                   ),
@@ -376,6 +473,7 @@ class _BookScreenState extends State<BookScreen> {
     }
     Overlay.of(context)!.insert(_overlayEntry!);
   }
+
   void _hideToolbar() {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
@@ -383,6 +481,7 @@ class _BookScreenState extends State<BookScreen> {
       _isToolbarVisible = false;
     }
   }
+
   void _showClipboardDialog(BuildContext context) {
     _hideToolbar();
     showDialog(
@@ -394,18 +493,28 @@ class _BookScreenState extends State<BookScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.edit, color: Colors.white),
-              Text('Add Notes', style: TextStyle(color: Colors.white),)
+              Text(
+                'Add Notes',
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Divider(color: Colors.white, height: 10),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
-                  const Text('Name:', style: TextStyle(color: Colors.white),),
-                  const SizedBox(width: 10,),
+                  const Text(
+                    'Name:',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   Flexible(
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
@@ -414,40 +523,59 @@ class _BookScreenState extends State<BookScreen> {
                             cursorColor: Colors.white,
                             decoration: const InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white, width: 2), // Màu gạch dưới khi TextFormField được focus
+                                borderSide: BorderSide(
+                                    color: Colors.white,
+                                    width:
+                                        2), // Màu gạch dưới khi TextFormField được focus
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey, width: 2),),
-                            )
-                        )
-                    ),
+                                borderSide:
+                                    BorderSide(color: Colors.grey, width: 2),
+                              ),
+                            ))),
                   ),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
-                  const Text('Content:', style: TextStyle(color: Colors.white),),
-                  const SizedBox(width: 10,),
+                  const Text(
+                    'Content:',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   Flexible(
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
-                        child: selectedText.isNotEmpty ? Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 2)),
-                            child: Text(selectedText, style: const TextStyle(color: Colors.white),)):
-                        TextFormField(
-                            style: const TextStyle(color: Colors.white),
-                            cursorColor: Colors.white,
-                            decoration: const InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white, width: 2), // Màu gạch dưới khi TextFormField được focus
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey, width: 2),),
-                            )
-                        )
-                    ),
+                        child: selectedText.isNotEmpty
+                            ? Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.white, width: 2)),
+                                child: Text(
+                                  selectedText,
+                                  style: const TextStyle(color: Colors.white),
+                                ))
+                            : TextFormField(
+                                style: const TextStyle(color: Colors.white),
+                                cursorColor: Colors.white,
+                                decoration: const InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white,
+                                        width:
+                                            2), // Màu gạch dưới khi TextFormField được focus
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.grey, width: 2),
+                                  ),
+                                ))),
                   ),
                 ],
               ),
@@ -458,12 +586,14 @@ class _BookScreenState extends State<BookScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Close', style: TextStyle(color: Colors.white),),
+              child: const Text(
+                'Close',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
       },
     );
   }
-
 }

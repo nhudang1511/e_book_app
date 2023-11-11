@@ -6,3 +6,4 @@ export 'user/user_repository.dart';
 export 'auth/auth_repository.dart';
 export 'review/review_repository.dart';
 export 'library/library_repository.dart';
+export 'chapters/chapters_repository.dart';
