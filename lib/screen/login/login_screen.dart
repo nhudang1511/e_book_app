@@ -1,4 +1,6 @@
-import 'package:e_book_app/Cubits/cubits.dart';
+import 'dart:async';
+
+import 'package:e_book_app/cubits/cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../widget/widget.dart';
@@ -24,6 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   late LoginCubit _loginCubit;
+  late Timer _timer;
+
 
   @override
   void initState() {
@@ -39,7 +43,24 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == LoginStatus.success) {
           Navigator.pop(context);
         }
-        if (state.status == LoginStatus.error) {}
+        if (state.status == LoginStatus.error) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              _timer = Timer(const Duration(seconds: 2), () {
+                Navigator.of(context).pop();
+              });
+              return const CustomDialogNotice(
+                title: Icons.info,
+                content: 'Invalid account or password.',
+              );
+            },
+          ).then((value) {
+            if (_timer.isActive) {
+              _timer.cancel();
+            }
+          });
+        }
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,

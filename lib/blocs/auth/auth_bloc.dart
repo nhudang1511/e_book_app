@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/repository.dart';
 import 'package:equatable/equatable.dart';
@@ -19,37 +18,42 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _authRepository = authRepository,
         super(AuthInitial()) {
     on<AuthEventStarted>(_onAuthEventStarted);
-    on<AuthEventLoggedIn>(_onAuthEventLoggedIn);
-    on<AuthEventLogOut>(_onAuthEventLogOut);
+    on<AuthEventChanged>(_onAuthEventChanged);
     on<AuthEventLoggedOut>(_onAuthEventLoggedOut);
-    _authUserSubscription = _authRepository.user.listen((User? authUser) {
-      if (kDebugMode) {
-        print("test $authUser");
-      }
-    });
   }
+
+
 
   void _onAuthEventStarted(
       AuthEventStarted event, Emitter<AuthState> emit) async {
-    _authUserSubscription?.cancel();
     _authUserSubscription = _authRepository.user.listen((User? authUser) {
       if (authUser != null) {
-        add(AuthEventLoggedIn(authUser));
+        add(AuthEventChanged(authUser));
       } else {
-        add(AuthEventLoggedOut());
+        add(const AuthEventChanged(null));
       }
     });
   }
 
-  void _onAuthEventLoggedIn(
-      AuthEventLoggedIn event, Emitter<AuthState> emit) async {
-    emit(AuthenticateState(authUser: event.authUser));
+  void _onAuthEventChanged(
+      AuthEventChanged event, Emitter<AuthState> emit) async {
+    if (event.authUser != null) {
+      emit(AuthenticateState(authUser: event.authUser));
+    } else {
+      emit(UnAuthenticateState());
+    }
   }
-  void _onAuthEventLogOut(AuthEventLogOut event, Emitter<AuthState> emit) async {
-    unawaited(_authRepository.signOut());
-  }
+
   void _onAuthEventLoggedOut(
       AuthEventLoggedOut event, Emitter<AuthState> emit) async {
-      emit(UnAuthenticateState());
+    unawaited(_authRepository.signOut());
+  }
+
+
+
+  @override
+  Future<void> close() {
+    _authUserSubscription?.cancel();
+    return super.close();
   }
 }

@@ -20,8 +20,6 @@ class UserBloc extends Bloc<UserEvent, UserState>{
     on<UpdateUser>(_onUpdateUser);
   }
   void _onLoadUser(LoadUser event, Emitter<UserState> emit) async {
-    _authSubscription?.cancel();
-    _userSubscription?.cancel();
     _authSubscription = _authRepository.user.listen((auth.User? authUser) {
       if(authUser!=null) {
         _userSubscription = _userRepository.getUser(authUser.uid).listen((user) {
@@ -32,5 +30,12 @@ class UserBloc extends Bloc<UserEvent, UserState>{
   }
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) async {
     emit(UserLoaded(user: event.user));
+  }
+
+  @override
+  Future<void> close() {
+    _authSubscription?.cancel();
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

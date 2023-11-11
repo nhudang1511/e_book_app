@@ -10,7 +10,7 @@ abstract class AuthState extends Equatable {
 class AuthInitial extends AuthState {}
 
 class AuthenticateState extends AuthState {
-  final User authUser;
+  final User? authUser;
   const AuthenticateState({required this.authUser});
 
   @override

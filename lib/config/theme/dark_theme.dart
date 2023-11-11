@@ -8,7 +8,8 @@ ThemeData darkTheme = ThemeData(
         background: Colors.black,
         primary: Color(0xFF8C2EEE),
         secondary: Colors.white,
-        onBackground: Color(0xFF122158)
+        onBackground: Color(0xFF122158),
+        secondaryContainer: Colors.white,
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(
@@ -55,6 +56,11 @@ ThemeData darkTheme = ThemeData(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.normal
-      )
+      ),
+      bodySmall: TextStyle(
+        color: Colors.black,
+        fontSize: 16,
+        fontWeight: FontWeight.bold
+      ),
     )
 );

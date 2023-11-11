@@ -1,5 +1,5 @@
-import 'package:e_book_app/Cubits/cubits.dart';
-// import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:e_book_app/cubits/cubits.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +36,24 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => LoginCubit(authRepository: AuthRepository()),
+          create: (_) => LoginCubit(
+            authRepository: AuthRepository(),
+          ),
           child: const LoginScreen(),
+        ),
+        BlocProvider(
+          create: (_) => ChangePasswordCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const ChangePasswordScreen(),
+        ),
+        BlocProvider(
+          create: (_) => EditProfileCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const EditProfileScreen(),
         ),
         BlocProvider(
           create: (_) => AuthBloc(

@@ -29,10 +29,60 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar(title: 'My library'),
-      body: CustomTab(),
-    );
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthInitial || state is UnAuthenticateState) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: const CustomAppBar(title: 'My Library'),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Please log in to use the library feature',
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayLarge!
+                      .copyWith(fontSize: 12),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, LoginScreen.routeName);
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              100), // Adjust the radius as needed
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      "Log in now",
+                      style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      if (state is AuthenticateState) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: const CustomAppBar(title: 'My Library'),
+          body: const CustomTab(),
+        );
+      } else {
+        return const Text("Something went wrong");
+      }
+    });
   }
 }
 
