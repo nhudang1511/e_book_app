@@ -37,6 +37,7 @@ class _BookScreenState extends State<BookScreen> {
   List<TextSpan> highlightedTextSpans = [];
   double fontSize = 16.0;
   bool _isToolbarVisible = false;
+  String selectedChapterId = 'Chương 1';
 
   @override
   void initState() {
@@ -90,7 +91,6 @@ class _BookScreenState extends State<BookScreen> {
                             builder: (context, state) {
                               if(state is ChaptersLoaded) {
                                 final chapterList = state.chapters.chapterList;
-
                                 // Convert the chapterList to a list of Map<String, dynamic>.
                                 final chapterListMap = chapterList.entries.map((entry) {
                                   return {
@@ -106,8 +106,25 @@ class _BookScreenState extends State<BookScreen> {
                                       final chapter = chapterListMap[index];
                                       // Display the chapter.
                                       return ListTile(
-                                        title: Text(chapter['id'],style: const TextStyle(color: Colors.white)),
-                                      );
+                                        title: TextButton(
+                                          style: ButtonStyle(
+                                              backgroundColor:  MaterialStateProperty.all<Color>(
+                                                chapter['id'] == selectedChapterId
+                                                    ? Color(0xFFD9D9D9)
+                                                    : Colors.transparent,
+                                              )),
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedTableText = chapter['title'];
+                                              selectedChapterId = chapter['id'];
+                                              Navigator.pop(context);
+                                            });
+                                          },
+                                          child: Text(chapter['id'],
+                                            style: const TextStyle(
+                                            color: Colors.white,) ,
+                                        ),
+                                      ));
                                     },
                                   ),
                                 );
@@ -129,7 +146,7 @@ class _BookScreenState extends State<BookScreen> {
                       ),
                     ]);
               },
-              icon: const Icon(Icons.book, color: Color(0xFFDFE2E0)),
+              icon: const Icon(Icons.menu, color: Color(0xFFDFE2E0)),
             ),
             IconButton(
               onPressed: () {
