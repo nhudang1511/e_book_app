@@ -1,4 +1,4 @@
-import 'package:e_book_app/Cubits/cubits.dart';
+import 'package:e_book_app/cubits/cubits.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,8 +22,10 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
+  static FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   // This widget is the root of your application.
   @override
@@ -31,8 +33,24 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => LoginCubit(authRepository: AuthRepository()),
+          create: (_) => LoginCubit(
+            authRepository: AuthRepository(),
+          ),
           child: const LoginScreen(),
+        ),
+        BlocProvider(
+          create: (_) => ChangePasswordCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const ChangePasswordScreen(),
+        ),
+        BlocProvider(
+          create: (_) => EditProfileCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const EditProfileScreen(),
         ),
         BlocProvider(
           create: (_) => AuthBloc(

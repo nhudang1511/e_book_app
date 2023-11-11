@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/screen/screen.dart';
 import '../../widget/widget.dart';
 
-class LibraryScreen extends StatelessWidget {
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
   static const String routeName = '/library';
@@ -16,11 +16,66 @@ class LibraryScreen extends StatelessWidget {
   }
 
   @override
+  State<StatefulWidget> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends State<LibraryScreen> {
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar(title: 'My library'),
-      body: CustomTab(),
-    );
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthInitial || state is UnAuthenticateState) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: const CustomAppBar(title: 'My Library'),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Please log in to use the library feature',
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayLarge!
+                      .copyWith(fontSize: 12),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, LoginScreen.routeName);
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              100), // Adjust the radius as needed
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      "Log in now",
+                      style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      if (state is AuthenticateState) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: const CustomAppBar(title: 'My Library'),
+          body: const CustomTab(),
+        );
+      } else {
+        return const Text("Something went wrong");
+      }
+    });
   }
 }
 
@@ -35,56 +90,48 @@ class CustomTab extends StatefulWidget {
 class _CustomTabState extends State<CustomTab> {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (context, state) {
-        return state is AuthInitial || state is UnAuthenticateState;
-      },
-      listener: (context, state) {
-        Navigator.pushNamed(context, "/login");
-      },
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: null,
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  child: TabBar(
-                    indicator: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w500),
-                    tabs: const [
-                      Tab(
-                        text: 'Collection',
-                      ),
-                      Tab(
-                        text: 'Favourites',
-                      ),
-                    ],
-                  ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: null,
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                const Expanded(
-                  child: TabBarView(
-                    children: [
-                      CollectionTab(),
-                      FavouritesTab(),
-                    ],
+                child: TabBar(
+                  indicator: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                )
-              ],
-            ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.black,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+                  tabs: const [
+                    Tab(
+                      text: 'Collection',
+                    ),
+                    Tab(
+                      text: 'Favourites',
+                    ),
+                  ],
+                ),
+              ),
+              const Expanded(
+                child: TabBarView(
+                  children: [
+                    CollectionTab(),
+                    FavouritesTab(),
+                  ],
+                ),
+              )
+            ],
           ),
         ),
       ),

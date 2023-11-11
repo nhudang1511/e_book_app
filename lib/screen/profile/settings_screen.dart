@@ -1,7 +1,10 @@
+import 'package:e_book_app/blocs/blocs.dart';
+import 'package:e_book_app/screen/screen.dart';
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   static const String routeName = '/settings';
 
   const SettingsScreen({super.key});
@@ -14,6 +17,19 @@ class SettingsScreen extends StatelessWidget {
   }
 
   @override
+  State<StatefulWidget> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+    late AuthBloc _authBloc;
+
+    @override
+    void initState() {
+      super.initState();
+      _authBloc = BlocProvider.of<AuthBloc>(context);
+    }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -22,13 +38,10 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(
-              height: 32,
-            ),
             Padding(
-              padding: const EdgeInsets.only(right: 32, left: 32),
+              padding: const EdgeInsets.only(right: 32, left: 32, top: 32),
               child: InkWell(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,6 +70,34 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            BlocBuilder<AuthBloc, AuthState>(builder: (context, state){
+              if (state is AuthInitial || state is UnAuthenticateState){
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: CustomButton(
+                    title: "Log in",
+                    onPressed: () {
+                      Navigator.pushNamed(context, LoginScreen.routeName);
+                    },
+                  ),
+                );
+              }
+              if (state is AuthenticateState) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: CustomButton(
+                    title: "Log out",
+                    onPressed: () {
+                      _authBloc.add(AuthEventLoggedOut());
+                      Navigator.pushNamedAndRemoveUntil(context, MainScreen.routeName, (route) => false);
+                    },
+                  ),
+                );
+              }
+              else {
+                return const Text("Something went wrong");
+              }
+            })
           ],
         ),
       ),

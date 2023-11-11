@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'base_auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -7,14 +9,13 @@ class AuthRepository extends BaseAuthRepository {
   AuthRepository({FirebaseAuth? firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-
-
   @override
   Future<User?> logInWithEmailAndPassword(
       {required String email, required String password}) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);final user = credential.user;
+          email: email, password: password);
+      final user = credential.user;
       return user;
     } catch (_) {}
   }
@@ -42,6 +43,10 @@ class AuthRepository extends BaseAuthRepository {
   @override
   Stream<User?> get user => _firebaseAuth.authStateChanges();
 
-
-
+  @override
+  Future<bool> changePassword({required String newPassword}) async {
+    bool success = false;
+    await _firebaseAuth.currentUser?.updatePassword(newPassword).then((_) => {success = true});
+    return success;
+  }
 }

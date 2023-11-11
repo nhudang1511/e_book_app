@@ -14,4 +14,6 @@ abstract class BaseAuthRepository {
   });
 
   Future<void> signOut();
+
+  Future<bool> changePassword({required String newPassword});
 }
