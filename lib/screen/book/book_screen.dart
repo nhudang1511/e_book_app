@@ -130,7 +130,7 @@ class _BookScreenState extends State<BookScreen> {
                                 );
                               }
                               else{
-                                return const Text('Somthing went wrong');
+                                return const Text('Something went wrong');
                               }
                             },
                           ),
