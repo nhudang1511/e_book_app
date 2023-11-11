@@ -6,6 +6,7 @@ import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 import '../../widget/book_items/list_book_main.dart';
 import '../../widget/widget.dart';
+import '../screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -77,7 +78,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: const CustomAppBar(title: 'My Library'),
-          body: const CustomTab(),
+          body: CustomTab(uId: state.authUser!.uid),
         );
       } else {
         return const Text("Something went wrong");
@@ -88,7 +89,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
 // Tab bar
 class CustomTab extends StatefulWidget {
-  const CustomTab({super.key});
+  const CustomTab({super.key, required this.uId});
+  final String uId;
 
   @override
   State<StatefulWidget> createState() => _CustomTabState();
@@ -97,73 +99,57 @@ class CustomTab extends StatefulWidget {
 class _CustomTabState extends State<CustomTab> {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listenWhen: (context, state) {
-        return state is AuthInitial || state is UnAuthenticateState;
-      },
-      listener: (context, state) {
-        Navigator.pushNamed(context, "/login");
-      },
-      builder: (context, state) {
-        if(state is AuthenticateState){
-          final String uId = state.authUser.uid;
-          return DefaultTabController(
-            length: 2,
-            child: Scaffold(
-              appBar: null,
-              body: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .secondary,
-                      ),
-                      child: TabBar(
-                        indicator: BoxDecoration(
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .primary,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.black,
-                        labelStyle: const TextStyle(fontWeight: FontWeight.w500),
-                        tabs: const [
-                          Tab(
-                            text: 'Collection',
-                          ),
-                          Tab(
-                            text: 'Favourites',
-                          ),
-                        ],
-                      ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: null,
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .secondary,
+                ),
+                child: TabBar(
+                  indicator: BoxDecoration(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.black,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+                  tabs: const [
+                    Tab(
+                      text: 'Collection',
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          CollectionTab(),
-                          FavouritesTab(uId: uId),
-                        ],
-                      ),
-                    )
+                    Tab(
+                      text: 'Favourites',
+                    ),
                   ],
                 ),
               ),
-            ),
-          );
-        }
-        else{
-          return Text('');
-        }
-      }
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    CollectionTab(),
+                    FavouritesTab(uId: widget.uId),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
 
   }
