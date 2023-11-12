@@ -45,20 +45,22 @@ class AppRouter{
           return BookDetailScreen.route(book: book, inLibrary: inLibrary);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return HomeScreen.route();
+          return MainScreen.route();
         }
       case CategoryScreen.routeName:
         if (settings.arguments is Category) {
           return CategoryScreen.route(category: settings.arguments as Category);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return HomeScreen.route();}
+          return MainScreen.route();
+        }
       case BookScreen.routeName:
         if (settings.arguments is Book) {
           return BookScreen.route(book: settings.arguments as Book);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return HomeScreen.route();}
+          return MainScreen.route();
+        }
       case AdminPanel.routeName:
         return AdminPanel.route();
       default:

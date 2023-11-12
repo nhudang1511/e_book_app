@@ -38,6 +38,7 @@ class _BookScreenState extends State<BookScreen> {
   bool _isToolbarVisible = false;
   String selectedChapterId = 'Chương 1';
 
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,7 @@ class _BookScreenState extends State<BookScreen> {
     BlocProvider.of<ChaptersBloc>(context).stream.listen((state) {
       if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
         final firstChapterEntry = state.chapters.chapterList.entries.lastWhere(
-              (entry) => entry.key.startsWith('Chương 1'),
+          (entry) => entry.key.startsWith('Chương 1'),
         );
         if (mounted) {
           setState(() {
@@ -75,6 +76,8 @@ class _BookScreenState extends State<BookScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height * 2;
     splitTextIntoSegments(screenHeight);
+    PageController _pageController = PageController(initialPage: currentPage);
+
     return WillPopScope(
       onWillPop: () async {
         _hideToolbar();
@@ -103,10 +106,11 @@ class _BookScreenState extends State<BookScreen> {
                                   TextStyle(color: Colors.white, fontSize: 20)),
                           BlocBuilder<ChaptersBloc, ChaptersState>(
                             builder: (context, state) {
-                              if(state is ChaptersLoaded) {
+                              if (state is ChaptersLoaded) {
                                 final chapterList = state.chapters.chapterList;
                                 // Convert the chapterList to a list of Map<String, dynamic>.
-                                final chapterListMap = chapterList.entries.map((entry) {
+                                final chapterListMap =
+                                    chapterList.entries.map((entry) {
                                   return {
                                     'id': entry.key,
                                     'title': entry.value,
@@ -115,12 +119,15 @@ class _BookScreenState extends State<BookScreen> {
                                 // Sắp xếp danh sách theo key (chapter['id'])
                                 chapterListMap.sort((a, b) {
                                   // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-                                  int aNumber = int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                                  int bNumber = int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int aNumber = int.parse(a['id']
+                                      .replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int bNumber = int.parse(b['id']
+                                      .replaceAll(RegExp(r'[^0-9]'), ''));
                                   return aNumber.compareTo(bNumber);
                                 });
                                 return SizedBox(
-                                  height: MediaQuery.of(context).size.height/3,
+                                  height:
+                                      MediaQuery.of(context).size.height / 3,
                                   child: ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     itemCount: chapterListMap.length,
@@ -128,30 +135,34 @@ class _BookScreenState extends State<BookScreen> {
                                       final chapter = chapterListMap[index];
                                       // Display the chapter.
                                       return ListTile(
-                                        title: TextButton(
-                                          style: ButtonStyle(
-                                              backgroundColor:  MaterialStateProperty.all<Color>(
-                                                chapter['id'] == selectedChapterId
-                                                    ? Color(0xFFD9D9D9)
-                                                    : Colors.transparent,
-                                              )),
-                                          onPressed: () {
-                                            setState(() {
-                                              selectedTableText = chapter['title'];
-                                              selectedChapterId = chapter['id'];
-                                              Navigator.pop(context);
-                                            });
-                                          },
-                                          child: Text(chapter['id'],
-                                            style: const TextStyle(
-                                            color: Colors.white,) ,
+                                          title: TextButton(
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(
+                                          chapter['id'] == selectedChapterId
+                                              ? const Color(0xFFD9D9D9)
+                                              : Colors.transparent,
+                                        )),
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedTableText =
+                                                chapter['title'];
+                                            selectedChapterId = chapter['id'];
+                                            Navigator.pop(context);
+                                          });
+                                        },
+                                        child: Text(
+                                          chapter['id'],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ));
                                     },
                                   ),
                                 );
-                              }
-                              else{
+                              } else {
                                 return const Text('Something went wrong');
                               }
                             },
@@ -326,82 +337,54 @@ class _BookScreenState extends State<BookScreen> {
         ),
         bottomNavigationBar: BottomAppBar(
             child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              onPressed: () {
-                _hideToolbar();
-                if (currentPage > 0) {
-                  setState(() {
-                    currentPage--;
-                  });
-                }
-              },
-              icon: Icon(Icons.arrow_back_ios_new,
-                  color: currentPage > 0 ? Colors.black : Colors.grey),
-            ),
-            Text(
-              'Page ${currentPage + 1}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            IconButton(
-              onPressed: () {
-                _hideToolbar();
-                if (currentPage < textSegments.length - 1) {
-                  setState(() {
-                    currentPage++;
-                  });
-                }
-              },
-              icon: Icon(
-                Icons.arrow_forward_ios,
-                color: currentPage < textSegments.length - 1
-                    ? Colors.black
-                    : Colors.grey,
-              ),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(
+                  'Page ${currentPage + 1}',
+                  style: const TextStyle(fontSize: 18),
             ),
           ],
         )),
         backgroundColor: isTickedBlack ? Colors.black : Colors.white,
         body: Stack(
           children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: GestureDetector(
-                onTapDown: (details) {
-                  showToolbar(context, details.localPosition);
+            GestureDetector(
+              onTapDown: (details) {
+                showToolbar(context, details.localPosition);
+              },
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: textSegments.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    child: SelectableText(
+                      textSegments[index],
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: isTickedBlack ? Colors.white : Colors.black,
+                          fontSize: fontSize),
+                      showCursor: true,
+                      toolbarOptions: const ToolbarOptions(
+                          selectAll: false, copy: false, cut: true),
+                      onSelectionChanged: (selection, cause) {
+                        if (selection.start == selection.end) {
+                          _hideToolbar();
+                        }
+                        setState(() {
+                          selectedText = textSegments[index]
+                              .substring(selection.start, selection.end);
+                        });
+                      },
+                    ),
+                  );
                 },
-                child: SelectableText(
-                  currentPage < textSegments.length
-                      ? textSegments[currentPage]
-                      : '',
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      // Chỉnh màu văn bản tùy thuộc vào màu nền
-                      color: isTickedBlack ? Colors.white : Colors.black,
-                      fontSize: fontSize),
-                  showCursor: true,
-                  toolbarOptions: const ToolbarOptions(
-                      selectAll: false, copy: false, cut: true),
-                  onSelectionChanged: (selection, cause) {
-                    if (selection.start == selection.end) {
-                      _hideToolbar(); // Hide the toolbar when no text is selected
-                    }
-                    setState(() {
-                      if (currentPage < textSegments.length) {
-                        final start = selection.start
-                            .clamp(0, textSegments[currentPage].length);
-                        final end = selection.end
-                            .clamp(0, textSegments[currentPage].length);
-
-                        selectedText =
-                            textSegments[currentPage].substring(start, end);
-                      } else {
-                        selectedText = '';
-                      }
-                    });
-                  },
-                ),
-              ),
+                onPageChanged: (int page) {
+                  setState(() {
+                    currentPage = page;
+                  });
+                },
+              )
+              ,
             ),
           ],
         ),
