@@ -1,4 +1,7 @@
+
+import 'package:e_book_app/config/theme/theme_provider.dart';
 import 'package:e_book_app/cubits/cubits.dart';
+
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,11 +20,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
   // static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   // static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
 
@@ -54,6 +61,13 @@ class _MyAppState extends State<MyApp> {
             userRepository: UserRepository(),
           ),
           child: const EditProfileScreen(),
+        ),
+        BlocProvider(
+          create: (_) => SignupCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const SignupScreen(),
         ),
         BlocProvider(
           create: (_) => AuthBloc(
@@ -93,17 +107,21 @@ class _MyAppState extends State<MyApp> {
           )..add(LoadUser()),
         ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
-        BlocProvider(create: (_) => LibraryBloc(
-            libraryRepository: LibraryRepository(),)..add(LoadLibrary()),
+        BlocProvider(
+          create: (_) => LibraryBloc(
+            libraryRepository: LibraryRepository(),
+          )..add(LoadLibrary()),
         ),
-        BlocProvider(create: (_) => ChaptersBloc(chaptersRepository: ChaptersRepository()))
+        BlocProvider(
+            create: (_) =>
+                ChaptersBloc(chaptersRepository: ChaptersRepository()))
       ],
       child: MaterialApp(
         title: 'E Book App',
         debugShowCheckedModeBanner: false,
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
+        theme: Provider.of<ThemeProvider>(context).themeData,
+        // darkTheme: darkTheme,
+        // themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
         initialRoute: SplashScreen.routeName,
         // navigatorObservers: <NavigatorObserver>[MyApp.observer],

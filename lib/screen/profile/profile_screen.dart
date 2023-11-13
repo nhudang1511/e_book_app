@@ -152,15 +152,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           //avatar
                           Column(
                             children: [
-                              CircleAvatar(
-                                radius: 53,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                child: const CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  radius: 50,
-                                  child: Image(
-                                    image: AssetImage("assets/logo/logo1.png"),
+                              InkWell(
+                                child: CircleAvatar(
+                                  radius: 53,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 50,
+                                    child: Image.network(state.user.imageUrl),
                                   ),
                                 ),
                               ),
