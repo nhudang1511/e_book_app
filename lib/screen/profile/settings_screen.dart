@@ -1,8 +1,10 @@
 import 'package:e_book_app/blocs/blocs.dart';
+import 'package:e_book_app/config/theme/theme.dart';
 import 'package:e_book_app/screen/screen.dart';
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const String routeName = '/settings';
@@ -63,8 +65,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(
                         flex: 1,
                         child: Switch(
-                          value: true,
-                          onChanged: (bool value) {},
+                          activeColor: Theme.of(context).colorScheme.primary,
+                          value: Provider.of<ThemeProvider>(context).themeData == darkTheme,
+                          onChanged: (bool value) {
+                            Provider.of<ThemeProvider>(context, listen:  false).toggleTheme();
+                          },
                         )),
                   ],
                 ),

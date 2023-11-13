@@ -86,12 +86,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             radius: 53,
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
-                            child: const CircleAvatar(
+                            child: CircleAvatar(
                               backgroundColor: Colors.white,
                               radius: 50,
-                              child: Image(
-                                image: AssetImage("assets/logo/logo1.png"),
-                              ),
+                              child: Image.network(state.user.imageUrl),
                             ),
                           ),
                           CustomEditTextField(

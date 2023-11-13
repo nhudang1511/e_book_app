@@ -19,6 +19,16 @@ class User extends Equatable {
       required this.phoneNumber,
       required this.status});
 
+  Map<String, Object> toDocument() {
+    return{
+      "fullName": fullName,
+      "email": email,
+      "imageUrl": imageUrl,
+      "passWord": passWord,
+      "phoneNumber": phoneNumber,
+      "status": status
+    };
+  }
   static User fromSnapshot(DocumentSnapshot snap) {
     User user = User(
         id: snap.id,
@@ -33,5 +43,5 @@ class User extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, fullName, email, imageUrl, passWord, phoneNumber, status];
+      [id, fullName, email, passWord, phoneNumber, status];
 }

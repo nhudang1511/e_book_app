@@ -31,6 +31,17 @@ class CustomTextField extends StatelessWidget {
             } else if (!emailValid) {
               return "Enter Valid Email";
             }
+          } else if (hint == "Phone Number") {
+            bool phoneNumberValid = RegExp(r'^[0-9]{10}$').hasMatch(value!);
+            if (value!.isEmpty) {
+              return "Enter Phone number";
+            } else if (!phoneNumberValid) {
+              return "Enter Valid Phone number";
+            }
+          } else if (hint == "Full Name") {
+            if (value!.isEmpty) {
+              return "Enter Full name";
+            }
           }
         },
         onChanged: onChanged,

@@ -20,14 +20,13 @@ class UserRepository extends BaseUserRepository {
 
   @override
   Future<void> updateUser(User user) async {
-    final data = {
-      "email": user.email,
-      "fullName": user.fullName,
-      "imageUrl": user.imageUrl,
-      "passWord": user.passWord,
-      "phoneNumber": user.phoneNumber,
-      "status": user.status
-    };
-    await _firebaseFirestore.collection('user').doc(user.id).update(data);
+    await _firebaseFirestore.collection('user').doc(user.id).update(user.toDocument());
   }
+
+  @override
+  Future<void> addUser(User user) async{
+    await _firebaseFirestore.collection('user').doc(user.id).set(user.toDocument());
+  }
+
+
 }
