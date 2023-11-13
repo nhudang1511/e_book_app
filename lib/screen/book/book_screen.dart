@@ -47,7 +47,7 @@ class _BookScreenState extends State<BookScreen> {
     // Lấy chapter đầu tiên và thiết lập selectedTableText
     BlocProvider.of<ChaptersBloc>(context).stream.listen((state) {
       if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
-        final firstChapterEntry = state.chapters.chapterList.entries.lastWhere(
+        final firstChapterEntry = state.chapters.chapterList.entries.firstWhere(
           (entry) => entry.key.startsWith('Chương 1'),
         );
         if (mounted) {

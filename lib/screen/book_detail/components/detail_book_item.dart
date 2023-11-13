@@ -20,24 +20,24 @@ class DetailBookItem extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Text('100', style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  Text(book.chapters.toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary
                   )),
-                  const Text('PAGES')
+                  const Text('CHAPTERS')
                 ],
               ),
               Column(
                 children: [
-                  Text('12+', style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  Text(book.country, style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary)),
-                  const Text('AGE')
+                  const Text('COUNTRY')
                 ],
               ),
               Column(
                 children: [
-                  Text('5.0', style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  Text(book.price == 0 ? 'FREE': book.price.toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(
                       color: Theme.of(context).colorScheme.primary)),
-                  const Text('RATINGS')
+                  const Text('PRICE')
                 ],
               ),
             ],

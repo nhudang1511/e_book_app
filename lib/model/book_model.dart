@@ -13,6 +13,8 @@ class Book extends Equatable{
   final bool status;
   final String title;
   final List<String> bookPreview;
+  final int chapters;
+  final String country;
 
   const Book({
     required this.id,
@@ -25,11 +27,14 @@ class Book extends Equatable{
     required this.publishDate,
     required this.status,
     required this.title,
-    required this.bookPreview
+    required this.bookPreview,
+    required this.chapters,
+    required this.country
   });
 
   @override
-  List<Object?> get props =>[authodId, categoryId, description, imageUrl, language, price, publishDate, status, title];
+  List<Object?> get props =>[authodId, categoryId, description, imageUrl,
+    language, price, publishDate, status, title, bookPreview, chapters, country];
 
   static Book fromSnapshot(DocumentSnapshot snap) {
     Book book = Book(
@@ -42,7 +47,9 @@ class Book extends Equatable{
         publishDate: (snap['publishDate'] as Timestamp).toDate(),
         status: snap['status'],
         title: snap['title'],
-        bookPreview: List<String>.from(snap['bookPreview'])
+        bookPreview: List<String>.from(snap['bookPreview']),
+        country: snap['country'],
+        chapters: snap['chapters']
     );
     return book;
   }

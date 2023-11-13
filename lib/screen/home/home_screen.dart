@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
 import '../../widget/widget.dart';
+import 'components/custom_appbar_home.dart';
 import 'components/list_quote.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -58,13 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     ),
   )).toList();
-
   @override
   Widget build(BuildContext context) {
     final now = TimeOfDay.now();
     String period = getDayPeriod(now);
     return Scaffold(
-      appBar: CustomAppBar(title: period),
+      appBar: CustomAppBarHome(
+          title: period),
       body: SingleChildScrollView(
         child:  BlocBuilder<BookBloc, BookState>(
           builder: (context, state) {
@@ -109,10 +110,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     }).toList(),),
                   const SectionTitle(title: 'New reals'),
                   ListBook(books: state.books,inLibrary: false,),
-                  const SectionTitle(title: 'Recomendation'),
+                  const SectionTitle(title: 'Continue Reading'),
                   ListBookMain(books: state.books,scrollDirection: Axis.horizontal, height: 180, inLibrary: false),
-                  const SectionTitle(title: 'Countinue Reading'),
-                  ListBookMain(books: state.books,scrollDirection: Axis.horizontal,height: 180, inLibrary: false,),
+                  const SectionTitle(title: 'Recommendation'),
+                  ListBookMain(books: state.books,scrollDirection: Axis.vertical,height: 500, inLibrary: false,),
                 ],
               );
             }
