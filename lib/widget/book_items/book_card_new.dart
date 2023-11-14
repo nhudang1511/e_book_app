@@ -10,7 +10,6 @@ class BookCard extends StatelessWidget {
   BookCard({
     super.key, required this.book, required this.inLibrary
   });
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -18,12 +17,12 @@ class BookCard extends StatelessWidget {
         Navigator.pushNamed(context, '/book_detail',  arguments: {'book': book, 'inLibrary': inLibrary},);
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         height: 132,
         width: (MediaQuery.of(context).size.width)/2.2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Color(0xFFF2A5B5),),
+          color: const Color(0xFFF2A5B5),),
         child: Row(
           children: [
             Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineSmall )),
@@ -32,7 +31,7 @@ class BookCard extends StatelessWidget {
                 child: BlocBuilder<AuthorBloc, AuthorState>(
                   builder: (context, state) {
                     if(state is AuthorLoading){
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
                     if(state is AuthorLoaded){
                       Author? author = state.authors.firstWhere(
@@ -41,7 +40,7 @@ class BookCard extends StatelessWidget {
                       return Text(author.fullName);
                     }
                     else{
-                      return Text('Somthing went wrong');
+                      return const Text('Somthing went wrong');
                     }
                     },
                 )
@@ -52,4 +51,5 @@ class BookCard extends StatelessWidget {
       ),
     );
   }
+
 }

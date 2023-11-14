@@ -15,7 +15,7 @@ class LibraryRepository extends BaseLibraryRepository{
   }
 
   @override
-  Stream<List<Library>> getAllLibrries() {
+  Stream<List<Library>> getAllLibraries() {
     return _firebaseFirestore
         .collection('libraries')
         .snapshots()

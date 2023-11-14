@@ -6,3 +6,4 @@ export 'user_model.dart';
 export 'admin_model.dart';
 export 'library_model.dart';
 export 'chapters_model.dart';
+export 'history_model.dart';

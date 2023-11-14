@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_book_app/widget/book_items/list_book.dart';
+import 'package:e_book_app/widget/book_items/list_book_history.dart';
 import 'package:e_book_app/widget/book_items/list_book_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,56 +24,69 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 class _HomeScreenState extends State<HomeScreen> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
-  final List<Widget> imageSliders = listQuote.map((item) => Container(
-    margin: const EdgeInsets.all(5.0),
-    decoration: BoxDecoration(color: item.color, borderRadius: BorderRadius.circular(10)),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(width: 10,),
-        Flexible(
-          child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-              child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
-        ),
-        const SizedBox(width: 10),
-        Flexible(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ReadMoreText(
-                item.quote,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                trimLength: 100,
-                colorClickableText: Colors.white.withAlpha(80),
-              ),
-              Text(item.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal))
-            ],
-          ),
-        ),
-        const SizedBox(width: 10,)
-      ],
-    ),
-  )).toList();
+  final List<Widget> imageSliders = listQuote
+      .map((item) => Container(
+            margin: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+                color: item.color, borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  width: 10,
+                ),
+                Flexible(
+                  child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(5.0)),
+                      child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ReadMoreText(
+                        item.quote,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        trimLength: 100,
+                        colorClickableText: Colors.white.withAlpha(80),
+                      ),
+                      Text(item.name,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.normal))
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                )
+              ],
+            ),
+          ))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     final now = TimeOfDay.now();
     String period = getDayPeriod(now);
     return Scaffold(
-      appBar: CustomAppBarHome(
-          title: period),
+      appBar: CustomAppBarHome(title: period),
       body: SingleChildScrollView(
-        child:  BlocBuilder<BookBloc, BookState>(
+        child: BlocBuilder<BookBloc, BookState>(
           builder: (context, state) {
-            if(state is BookLoading){
+            if (state is BookLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if(state is BookLoaded){
+            if (state is BookLoaded) {
+              final book = state.books;
               return Column(
                 children: [
                   Padding(
@@ -98,32 +112,75 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           width: 12.0,
                           height: 12.0,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 4.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: (Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                                  .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                              color: (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black)
+                                  .withOpacity(
+                                      _current == entry.key ? 0.9 : 0.4)),
                         ),
                       );
-                    }).toList(),),
+                    }).toList(),
+                  ),
                   const SectionTitle(title: 'New reals'),
-                  ListBook(books: state.books,inLibrary: false,),
-                  const SectionTitle(title: 'Continue Reading'),
-                  ListBookMain(books: state.books,scrollDirection: Axis.horizontal, height: 180, inLibrary: false),
+                  ListBook(
+                    books: book,
+                    inLibrary: false,
+                  ),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if(state is AuthenticateState){
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SectionTitle(title: 'Continue Reading'),
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/library',
+                                      );
+                                    },
+                                    icon: const Icon(Icons.more_horiz_outlined))
+                              ],
+                            ),
+                            ListBookHistory(
+                                books: book,
+                                scrollDirection: Axis.horizontal,
+                                height: 180,
+                                inLibrary: false),
+                          ],
+                        );
+                      }
+                      else{
+                        return const SizedBox();
+                      }
+                    },
+                  ),
                   const SectionTitle(title: 'Recommendation'),
-                  ListBookMain(books: state.books,scrollDirection: Axis.vertical,height: 500, inLibrary: false,),
+                  ListBookMain(
+                    books: book,
+                    scrollDirection: Axis.vertical,
+                    height: MediaQuery.of(context).size.height,
+                    inLibrary: false,
+                  ),
                 ],
               );
+            } else {
+              return const Text('Something went wrong');
             }
-            else{
-              return const Text('Something went wrong');}
           },
         ),
       ),
     );
   }
+
   String getDayPeriod(TimeOfDay time) {
     if (time.hour < 12) {
       return 'Good morning!';

@@ -1,5 +1,6 @@
 import 'package:e_book_app/blocs/auth/auth_bloc.dart';
 import 'package:e_book_app/model/library_model.dart';
+import 'package:e_book_app/widget/book_items/list_book_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
@@ -130,7 +131,7 @@ class _CustomTabState extends State<CustomTab> {
                   labelStyle: const TextStyle(fontWeight: FontWeight.w500),
                   tabs: const [
                     Tab(
-                      text: 'Collection',
+                      text: 'History',
                     ),
                     Tab(
                       text: 'Favourites',
@@ -141,7 +142,7 @@ class _CustomTabState extends State<CustomTab> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    CollectionTab(),
+                    HistoriesTab(uId: widget.uId,),
                     FavouritesTab(uId: widget.uId),
                   ],
                 ),
@@ -155,13 +156,47 @@ class _CustomTabState extends State<CustomTab> {
   }
 }
 
-class CollectionTab extends StatelessWidget {
-  const CollectionTab({super.key});
-
+class HistoriesTab extends StatelessWidget {
+  const HistoriesTab({super.key, required this.uId});
+  final String uId;
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('hello')),
+    return Scaffold(
+      body: Center(
+          child: SingleChildScrollView(
+              child: BlocBuilder<LibraryBloc, LibraryState>(
+                builder: (context, state) {
+                  if(state is LibraryLoaded){
+                    List<Library> libraries = state.libraries.where((element) => element.userId == uId ).toList();
+                    return BlocBuilder<BookBloc, BookState>(
+                      builder: (context, state) {
+                        if(state is BookLoaded){
+                          List<Book> matchingBooks = state.books
+                              .where((book) =>
+                              libraries.any((library) =>
+                              library.bookId == book.id))
+                              .toList();
+                          if (matchingBooks.isNotEmpty) {
+                            return ListBookHistory(
+                                books: matchingBooks,
+                                scrollDirection: Axis.vertical,
+                                height: MediaQuery.of(context).size.height-50,
+                                inLibrary: true
+                            );
+                          } else {
+                            return const Text('No matching books found');
+                          }
+                        }
+                        else{
+                          return const CircularProgressIndicator();
+                        }
+                      },
+                    );
+                  }
+                  else{
+                    return const CircularProgressIndicator();
+                  }},)
+          )),
     );
   }
 }

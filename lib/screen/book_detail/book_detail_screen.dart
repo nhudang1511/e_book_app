@@ -62,93 +62,104 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           actions: [
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
-               if(state is AuthenticateState){
-                 return BlocBuilder<UserBloc, UserState>(
-                     builder: (context, state) {
-                       if (state is UserLoaded) {
-                         return IconButton(
-                             onPressed: () {
-                               widget.inLibrary = !widget.inLibrary;
-                               !widget.inLibrary
-                                   ? BlocProvider.of<LibraryBloc>(context).add(
-                                   RemoveFromLibraryEvent(
-                                       userId: state.user.id,
-                                       bookId: widget.book.id))
-                                   : BlocProvider.of<LibraryBloc>(context).add(
-                                   AddToLibraryEvent(
-                                       userId: state.user.id,
-                                       bookId: widget.book.id));
-                               showDialog(
-                                 context: context,
-                                 builder: (BuildContext context) {
-                                   widget._timer =
-                                       Timer(const Duration(seconds: 5), () {
-                                         BlocProvider.of<LibraryBloc>(context)
-                                             .add(LoadLibrary());
-                                         Navigator.of(context).pop();
-                                       });
-                                   return CustomDialogNotice(
-                                     title: Icons.downloading,
-                                     content: widget.inLibrary
-                                         ? 'Wait to Add '
-                                         : 'Wait to Removing',
-                                   );
-                                 },
-                               ).then((value) {
-                                 if (widget._timer.isActive) {
-                                   widget._timer.cancel();
-                                 }
-                               });
-                             },
-                             icon: Icon(
-                               Icons.bookmark_outlined,
-                               color: widget.inLibrary
-                                   ? const Color(0xFF8C2EEE)
-                                   : const Color(0xFFDFE2E0),
-                             ));
-                       } else {
-                         return IconButton(
-                             onPressed: () {
-                               widget._timer = Timer(
-                                   const Duration(seconds: 1), () {
-                                 Navigator.of(context).pop();
-                               });
-                               showDialog(
-                                 context: context,
-                                 builder: (BuildContext context) {
-                                   Navigator.pop(context);
-                                   return const CustomDialogNotice(
-                                     title: Icons.downloading,
-                                     content: 'Please log in to add',
-                                   );
-                                 },
-                               );
-                             },
-                             icon: const Icon(Icons.bookmark_outlined,
-                                 color: Color(0xFFDFE2E0)));
-                       }
-                     });
-               }
-               else{
-                 return IconButton(
-                     onPressed: () {
-                       widget._timer = Timer(
-                           const Duration(seconds: 1), () {
-                         Navigator.of(context).pop();
-                       });
-                       showDialog(
-                         context: context,
-                         builder: (BuildContext context) {
-                           return const CustomDialogNotice(
-                             title: Icons.downloading,
-                             content: 'Please log in to add',
-                           );
-                         },
-                       );
-                     },
-                     icon: const Icon(Icons.bookmark_outlined,
-                         color: Color(0xFFDFE2E0)));
-               }
+                if (state is AuthenticateState) {
+                  return BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                    if (state is UserLoaded) {
+                      String uId = state.user.id;
+                      return IconButton(onPressed: () {
+                        widget.inLibrary = !widget.inLibrary;
+                        !widget.inLibrary
+                            ? BlocProvider.of<LibraryBloc>(context).add(
+                                RemoveFromLibraryEvent(
+                                    userId: state.user.id,
+                                    bookId: widget.book.id))
+                            : BlocProvider.of<LibraryBloc>(context).add(
+                                AddToLibraryEvent(
+                                    userId: state.user.id,
+                                    bookId: widget.book.id));
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            widget._timer =
+                                Timer(const Duration(seconds: 5), () {
+                              BlocProvider.of<LibraryBloc>(context)
+                                  .add(LoadLibrary());
+                              Navigator.of(context).pop();
+                            });
+                            return CustomDialogNotice(
+                              title: Icons.downloading,
+                              content: widget.inLibrary
+                                  ? 'Wait to Add '
+                                  : 'Wait to Removing',
+                            );
+                          },
+                        ).then((value) {
+                          if (widget._timer.isActive) {
+                            widget._timer.cancel();
+                          }
+                        });
+                      }, icon: BlocBuilder<LibraryBloc, LibraryState>(
+                        builder: (context, state) {
+                          if (state is LibraryLoaded) {
+                            bool isBookInLibrary =
+                            state.libraries.any((b) =>
+                            b.userId == uId &&
+                                b.bookId == widget.book.id);
+                            if (isBookInLibrary) {
+                              widget.inLibrary =
+                              true; // Nếu sách có trong Library, đặt inLibrary thành true
+                            }
+                          }
+                          return Icon(
+                            Icons.bookmark_outlined,
+                            color: widget.inLibrary
+                                ? const Color(0xFF8C2EEE)
+                                : const Color(0xFFDFE2E0),
+                          );
+                        },
+                      ));
+                    } else {
+                      return IconButton(
+                          onPressed: () {
+                            widget._timer =
+                                Timer(const Duration(seconds: 1), () {
+                              Navigator.of(context).pop();
+                            });
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                Navigator.pop(context);
+                                return const CustomDialogNotice(
+                                  title: Icons.downloading,
+                                  content: 'Please log in to add',
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.bookmark_outlined,
+                              color: Color(0xFFDFE2E0)));
+                    }
+                  });
+                } else {
+                  return IconButton(
+                      onPressed: () {
+                        widget._timer = Timer(const Duration(seconds: 1), () {
+                          Navigator.of(context).pop();
+                        });
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const CustomDialogNotice(
+                              title: Icons.downloading,
+                              content: 'Please log in to add',
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.bookmark_outlined,
+                          color: Color(0xFFDFE2E0)));
+                }
               },
             ),
             IconButton(

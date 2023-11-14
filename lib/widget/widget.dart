@@ -13,3 +13,4 @@ export 'profile_items/custom_inkwell.dart';
 export 'profile_items/custom_edit_text_field.dart';
 export 'profile_items/text_note_card.dart';
 export 'custom_dialog_notice.dart';
+export 'book_items/book_card_history.dart';

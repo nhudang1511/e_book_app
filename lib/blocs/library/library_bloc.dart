@@ -47,7 +47,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     _librarySubscription?.cancel();
     _librarySubscription =
         _libraryRepository
-            .getAllLibrries()
+            .getAllLibraries()
             .listen((event) => add(UpdateLibrary(event)));
   }
   void _onUpdateLibrary(event, Emitter<LibraryState> emit) async{
