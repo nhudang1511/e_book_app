@@ -8,7 +8,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 import '../../widget/custom_dialog_notice.dart';
-import '../screen.dart';
 import 'components/custom_tab_in_book.dart';
 
 class BookDetailScreen extends StatefulWidget {

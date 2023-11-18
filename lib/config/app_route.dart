@@ -55,8 +55,11 @@ class AppRouter{
           return MainScreen.route();
         }
       case BookScreen.routeName:
-        if (settings.arguments is Book) {
-          return BookScreen.route(book: settings.arguments as Book);
+        if (settings.arguments is Map<String, dynamic>) {
+          final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+          final Book book = arguments['book'] as Book;
+          final String uId = arguments['uId'] as String;
+          return BookScreen.route(book: book, uId: uId);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return MainScreen.route();

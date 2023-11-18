@@ -9,7 +9,6 @@ import '../../model/models.dart';
 class BookCardHistory extends StatelessWidget {
   final Book book;
   late bool inLibrary;
-  late Timer _timer;
 
   BookCardHistory({
     super.key,
