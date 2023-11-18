@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:e_book_app/cubits/cubits.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final phoneNumberController = TextEditingController();
   late EditProfileCubit _editProfileCubit;
   late Timer _timer;
+  bool isPicked = false;
+  File? pickedImage;
 
   @override
   void initState() {
@@ -40,9 +44,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final currentHeight = MediaQuery.of(context).size.height;
     return BlocListener<EditProfileCubit, EditProfileState>(
       listener: (context, state) {
+        if (state.status == EditProfileStatus.submitting) {}
         if (state.status == EditProfileStatus.success) {
+          _editProfileCubit.reset();
+          isPicked = false;
+          pickedImage = null;
           Navigator.of(context).pop();
-
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -59,7 +66,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _timer.cancel();
             }
           });
-
         }
       },
       child: Scaffold(
@@ -82,14 +88,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: 53,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                          InkWell(
+                            onTap: () async {
+                              final ImagePicker picker = ImagePicker();
+                              final XFile? image = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                              if (image != null) {
+                                pickedImage = File(image.path);
+                                setState(() {
+                                  isPicked = true;
+                                });
+                                _editProfileCubit
+                                    .fileAvatarChanged(pickedImage!);
+                              }
+                            },
                             child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 50,
-                              child: Image.network(state.user.imageUrl),
+                              radius: 53,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              child: Stack(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 50,
+                                    child: ClipOval(
+                                      child: isPicked
+                                          ? Image.file(
+                                              pickedImage!,
+                                              width: 98,
+                                              height: 98,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.network(
+                                              state.user.imageUrl,
+                                              width: 98,
+                                              height: 98,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                      ),
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           CustomEditTextField(
@@ -112,7 +170,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               title: "Update",
                               onPressed: () {
                                 if (formField.currentState!.validate()) {
-                                  _editProfileCubit.updateProfire();
+                                  _editProfileCubit.updateProfile();
                                 }
                               }),
                           SizedBox(

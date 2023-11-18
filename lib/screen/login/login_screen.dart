@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   late LoginCubit _loginCubit;
   late Timer _timer;
 
-
   @override
   void initState() {
     super.initState();
@@ -157,28 +156,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
-                          height: 72,
-                          width: 72,
-                          decoration: const BoxDecoration(
-                            color: Colors.black38,
-                          ),
-                          child: const Icon(
-                            Icons.facebook_rounded,
-                            size: 52,
+                        InkWell(
+                          child: LogoMedia(
+                            logo: Image.asset(
+                              'assets/icon/icons_google.png',
+                            ),
                           ),
                         ),
-                        Container(
-                          height: 72,
-                          width: 72,
-                          decoration: const BoxDecoration(
-                            color: Colors.black38,
+                        InkWell(
+                          child: LogoMedia(
+                            logo: Image.asset(
+                              'assets/icon/logos_facebook.png',
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.facebook_rounded,
-                            size: 52,
-                          ),
-                        )
+                        ),
                       ],
                     ),
 

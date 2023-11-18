@@ -48,7 +48,6 @@ class ChooseRecoveryMethodScreen extends StatelessWidget {
                       title: "Email",
                       onPressed: () {
                         Navigator.pushNamed(context, "/enter_email");
-                        print('Nút tùy chỉnh đã được nhấn');
                       },
                     ),
                     const SizedBox(
@@ -57,7 +56,6 @@ class ChooseRecoveryMethodScreen extends StatelessWidget {
                     CustomButton(
                       title: "Phone number",
                       onPressed: () {
-                        print('Nút tùy chỉnh đã được nhấn');
                       },
                     ),
                   ],
