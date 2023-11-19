@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "238194152930",
+    "firebase_url": "https://flutter-e-book-app-default-rtdb.firebaseio.com",
     "project_id": "flutter-e-book-app",
     "storage_bucket": "flutter-e-book-app.appspot.com"
   },
@@ -12,7 +13,28 @@
           "package_name": "com.example.e_book_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "238194152930-ojnlvmrapd3abhd1marldd6le358uhus.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_book_app",
+            "certificate_hash": "5b37f4aaf01a835750795aaa05032e569e9a25e1"
+          }
+        },
+        {
+          "client_id": "238194152930-utjemc7saccgqo2r88jgqf23sdkign65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_book_app",
+            "certificate_hash": "f1a526de8ee3783a55537a3bd1cb6876a5427f8a"
+          }
+        },
+        {
+          "client_id": "238194152930-oqht8q6opkrh9s939q7fscgqae78k4i6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAP1txEoEbdJT46zdmCQX558NhC5nlI-9M"
@@ -20,7 +42,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238194152930-cvpqoldibtl3fo6ei2v8nj1p899ndgld.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "238194152930-14956329vd8asa0agb0msvakqdfi066g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eBookApp"
+              }
+            }
+          ]
         }
       }
     }

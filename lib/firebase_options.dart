@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '238194152930',
     projectId: 'flutter-e-book-app',
     authDomain: 'flutter-e-book-app.firebaseapp.com',
+    databaseURL: 'https://flutter-e-book-app-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-e-book-app.appspot.com',
     measurementId: 'G-C86Z1LKRQC',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:238194152930:android:61d2ad826f482a30c8d5bb',
     messagingSenderId: '238194152930',
     projectId: 'flutter-e-book-app',
+    databaseURL: 'https://flutter-e-book-app-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-e-book-app.appspot.com',
   );
 
@@ -66,7 +68,10 @@ class DefaultFirebaseOptions {
     appId: '1:238194152930:ios:6412ea8f249287b8c8d5bb',
     messagingSenderId: '238194152930',
     projectId: 'flutter-e-book-app',
+    databaseURL: 'https://flutter-e-book-app-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-e-book-app.appspot.com',
+    androidClientId: '238194152930-ojnlvmrapd3abhd1marldd6le358uhus.apps.googleusercontent.com',
+    iosClientId: '238194152930-14956329vd8asa0agb0msvakqdfi066g.apps.googleusercontent.com',
     iosBundleId: 'com.example.eBookApp',
   );
 
@@ -75,7 +80,10 @@ class DefaultFirebaseOptions {
     appId: '1:238194152930:ios:402e51f1342119f6c8d5bb',
     messagingSenderId: '238194152930',
     projectId: 'flutter-e-book-app',
+    databaseURL: 'https://flutter-e-book-app-default-rtdb.firebaseio.com',
     storageBucket: 'flutter-e-book-app.appspot.com',
+    androidClientId: '238194152930-ojnlvmrapd3abhd1marldd6le358uhus.apps.googleusercontent.com',
+    iosClientId: '238194152930-tr14t2tlcebfvsstkmtkagnaajr9q7mn.apps.googleusercontent.com',
     iosBundleId: 'com.example.eBookApp.RunnerTests',
   );
 }
