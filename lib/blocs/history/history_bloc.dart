@@ -20,7 +20,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<UpdateHistory>(_onUpdateHistory);
   }
   void _onAddToHistory(event, Emitter<HistoryState> emit) async{
-    final histories = History(uId: event.uId, chapters: event.chapters, percent: event.percent, times: event.times);
+    final histories = History(uId: event.uId, chapters: event.chapters,
+        percent: event.percent, times: event.times, chapterScrollPositions: event.chapterScrollPositions);
     _historySubscription?.cancel();
     emit(HistoryLoading());
     try {
@@ -37,7 +38,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     _historySubscription =
         _historyRepository
             .getAllHistories()
-            .listen((event) => add(UpdateHistory(event)));
+            .listen((event) => add(UpdateHistory(event.first)));
   }
   void _onUpdateHistory(event, Emitter<HistoryState> emit) async{
     emit(HistoryLoaded(histories: event.histories));

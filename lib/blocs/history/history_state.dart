@@ -15,8 +15,8 @@ class HistoryLoading extends HistoryState {
 }
 
 class HistoryLoaded extends HistoryState {
-  final List<History> histories;
-  const HistoryLoaded({this.histories = const <History>[]});
+  final History histories;
+  const HistoryLoaded({required this.histories});
   @override
   List<Object?> get props => [histories];
 }

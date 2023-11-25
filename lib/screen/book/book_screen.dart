@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +11,10 @@ import '../../model/models.dart';
 class BookScreen extends StatefulWidget {
   static const String routeName = '/book';
 
-  static Route route({required Book book, required String uId}) {
+  static Route route({
+    required Book book,
+    required String uId,
+  }) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (_) => BookScreen(
@@ -21,7 +26,11 @@ class BookScreen extends StatefulWidget {
   final Book book;
   final String uId;
 
-  const BookScreen({super.key, required this.book, required this.uId});
+  const BookScreen({
+    super.key,
+    required this.book,
+    required this.uId,
+  });
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -39,36 +48,44 @@ class _BookScreenState extends State<BookScreen> {
   bool _isToolbarVisible = false;
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
-  Map<String, double> chapterScrollPositions = {};
+  Map<String, dynamic> chapterScrollPositions = {};
   Map<String, double> chapterScrollPercentages = {};
-  late final totalChapters;
+  var totalChapters = 0;
   double overallPercentage = 0;
+  int times = 1;
   var firstChapterEntry;
+  late ChaptersBloc chaptersBloc;
+  late StreamSubscription chaptersSub;
+  String localSelectedTableText = '';
+  String localSelectedChapterId = '';
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
     // Lấy chapter đầu tiên và thiết lập selectedTableText
-    addChapters();
+    // chaptersBloc =  BlocProvider.of<ChaptersBloc>(context);
+    // chaptersSub = chaptersBloc.stream.listen((state) {
+    //   if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
+    //     firstChapterEntry = state.chapters.chapterList.entries.firstWhere(
+    //           (entry) => entry.key.startsWith('Chương 1:'),
+    //     );
+    //     if (mounted) {
+    //       setState(() {
+    //         selectedTableText = firstChapterEntry.value;
+    //         selectedChapterId = firstChapterEntry.key;
+    //         totalChapters = state.chapters.chapterList.length * 100;
+    //       });
+    //     }
+    //   }
+    // });
   }
 
-  void addChapters() {
-    BlocProvider.of<ChaptersBloc>(context).stream.listen((state) {
-      if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
-        firstChapterEntry = state.chapters.chapterList.entries.firstWhere(
-          (entry) => entry.key.startsWith('Chương 1:'),
-        );
-        if (mounted) {
-          setState(() {
-            selectedTableText = firstChapterEntry.value;
-            selectedChapterId = firstChapterEntry.key;
-            totalChapters = state.chapters.chapterList.length * 100;
-          });
-        }
-      }
-    });
-  }
+  // @override
+  // void dispose() {
+  //   chaptersSub.cancel();
+  //   super.dispose();
+  // }
 
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
@@ -99,19 +116,24 @@ class _BookScreenState extends State<BookScreen> {
     });
   }
 
+  int? numberInString(String? words) {
+    if (words == null) return null;
+    RegExp regex = RegExp(r'\d+');
+    var matches = regex.allMatches(words);
+    if (matches.isEmpty) return null;
+    return int.parse(matches.first.group(0)!);
+  }
+
   @override
   Widget build(BuildContext context) {
-    textSegments.clear();
-    textSegments.add(selectedTableText);
     return WillPopScope(
       onWillPop: () async {
         _hideToolbar();
-
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
             chapters: widget.book.id,
             percent: overallPercentage,
-            times: 1
+            times: 1, chapterScrollPositions: {}
         ));
         return true;
       },
@@ -136,53 +158,56 @@ class _BookScreenState extends State<BookScreen> {
                 showToolbar(context, details.localPosition);
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                child: BlocBuilder<ChaptersBloc, ChaptersState>(
-                  builder: (context, state) {
-                   if(state is ChaptersLoaded){
-                     final chapterList = state.chapters.chapterList;
-                     // Convert the chapterList to a list of Map<String, dynamic>.
-                     final chapterListMap = chapterList.entries.map((entry) {
-                       return {
-                         'id': entry.key,
-                         'title': entry.value,
-                       };
-                     }).toList();
-                     chapterListMap.sort((a, b) {
-                       // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-                       int aNumber = int.parse(
-                           a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                       int bNumber = int.parse(
-                           b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                       return aNumber.compareTo(bNumber);
-                     });
-                     final chapter = chapterListMap.first;
-                     return SelectableText(
-                      firstChapterEntry == null ? chapter['title'] : selectedTableText,
-                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                           color: isTickedBlack ? Colors.white : Colors.black,
-                           fontSize: fontSize),
-                       showCursor: true,
-                       toolbarOptions: const ToolbarOptions(
-                           selectAll: false, copy: false, cut: true),
-                       onSelectionChanged: (selection, cause) {
-                         if (selection.start == selection.end) {
-                           _hideToolbar();
-                         }
-                         setState(() {
-                           selectedText = selectedTableText.substring(
-                               selection.start, selection.end);
-                         });
-                       },
-                     );
-                   }
-                   else{
-                     return const Center(child: CircularProgressIndicator());
-                   }
-                  },
-                ),
-              ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  child: BlocBuilder<ChaptersBloc, ChaptersState>(
+                    builder: (context, state) {
+                      final chapter;
+                      if (state is ChaptersLoaded) {
+                        final chapterList = state.chapters.chapterList;
+                        // Convert the chapterList to a list of Map<String, dynamic>.
+                        final chapterListMap = chapterList.entries.map((entry) {
+                          return {
+                            'id': entry.key,
+                            'title': entry.value,
+                          };
+                        }).toList();
+                        // Sắp xếp danh sách theo key (chapter['id'])
+                        chapterListMap.sort((a, b) {
+                          // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+                          int aNumber = int.parse(
+                              a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                          int bNumber = int.parse(
+                              b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                          return aNumber.compareTo(bNumber);
+                        });
+                        chapter = chapterListMap[0];
+                        localSelectedTableText = chapter['title'];
+                        localSelectedChapterId = chapter['id'];
+                      }
+                      return SelectableText(
+                        (numberInString(localSelectedChapterId) ==
+                                numberInString(selectedChapterId))
+                            ? localSelectedTableText
+                            : selectedTableText,
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: isTickedBlack ? Colors.white : Colors.black,
+                            fontSize: fontSize),
+                        showCursor: true,
+                        toolbarOptions: const ToolbarOptions(
+                            selectAll: false, copy: false, cut: true),
+                        onSelectionChanged: (selection, cause) {
+                          if (selection.start == selection.end) {
+                            _hideToolbar();
+                          }
+                          setState(() {
+                            selectedText = selectedTableText.substring(
+                                selection.start, selection.end);
+                          });
+                        },
+                      );
+                    },
+                  )),
             ),
           ],
         ),
@@ -386,20 +411,28 @@ class _BookScreenState extends State<BookScreen> {
                                 style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                  chapter['id'] == selectedChapterId
+                                  (chapter['id'] == selectedChapterId ||
+                                          ((numberInString(selectedChapterId) ==
+                                                  numberInString(
+                                                      localSelectedChapterId)) &&
+                                              (chapter['id'] ==
+                                                  localSelectedChapterId)))
                                       ? const Color(0xFFD9D9D9)
                                       : Colors.transparent,
                                 )),
                                 onPressed: () {
-                                  setState(() {
-                                    selectedTableText = chapter['title'];
-                                    selectedChapterId = chapter['id'];
-                                    _scrollController.jumpTo(
+                                  if (chapter['id'] != selectedChapterId) {
+                                    setState(() {
+                                      selectedTableText = chapter['title'];
+                                      selectedChapterId = chapter['id'];
+                                      _scrollController.jumpTo(
                                         chapterScrollPositions[
                                                 selectedChapterId] ??
-                                            0.0);
-                                    Navigator.pop(context);
-                                  });
+                                            0.0,
+                                      );
+                                      Navigator.pop(context);
+                                    });
+                                  }
                                 },
                                 child: Text(
                                   chapter['id'],

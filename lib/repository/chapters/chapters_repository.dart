@@ -19,5 +19,17 @@ class ChaptersRepository extends BaseChaptersRepository{
         .snapshots()
         .map((snapshot) => Chapters.fromSnapshot(snapshot.docs.first));
   }
+  @override
+  Future<Chapters> getChapters(String bookId) async {
+    if (bookId.isEmpty) {
+      throw Exception("The bookId parameter cannot be empty.");
+    }
 
+    final snapshot = await _firebaseFirestore
+        .collection('chapters')
+        .where('bookId', isEqualTo: bookId)
+        .get();
+
+    return Chapters.fromSnapshot(snapshot.docs.first);
+  }
 }

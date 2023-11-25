@@ -10,7 +10,7 @@ class LoadHistory extends HistoryEvent{
 }
 
 class UpdateHistory extends HistoryEvent{
-  final List<History> histories;
+  final History histories;
   const UpdateHistory(this.histories);
   @override
   List<Object?> get props => [histories];
@@ -20,8 +20,10 @@ class AddToHistoryEvent extends HistoryEvent {
   final String chapters;
   final double percent;
   final int times;
+  final Map<String, dynamic> chapterScrollPositions;
 
-  const AddToHistoryEvent({required this.uId, required this.chapters, required this.percent, required this.times});
+  const AddToHistoryEvent({required this.uId, required this.chapters,
+    required this.percent, required this.times, required this.chapterScrollPositions});
 
   @override
   List<Object?> get props => [uId,chapters,percent,times];
