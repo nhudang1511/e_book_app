@@ -69,6 +69,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
               imageUrl: currentUser!.imageUrl,
               passWord: state.newPassword,
               phoneNumber: currentUser!.phoneNumber,
+              provider: currentUser!.provider,
               status: currentUser!.status),
         );
       } else {

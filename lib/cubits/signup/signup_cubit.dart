@@ -63,13 +63,14 @@ class SignupCubit extends Cubit<SignupState> {
           email: state.email, password: state.password);
       if (credential != null) {
         await _userRepository.addUser(User(
-            id: credential!.uid,
+            id: credential.uid,
             fullName: state.fullName,
             email: state.email,
             imageUrl:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-e-book-app.appspot.com/o/avatar_user%2Fdefault_avatar.png?alt=media&token=f9d5f654-f6b7-4f01-80e0-40cc22d5d183",
+                "https://firebasestorage.googleapis.com/v0/b/flutter-e-book-app.appspot.com/o/avatar_user%2Fdefault_avatar.png?alt=media&token=8389d86c-b1bf-4af6-ad6f-a09f41ce7c44",
             passWord: state.password,
             phoneNumber: state.phoneNumber,
+            provider: 'email',
             status: true));
         emit(state.copyWith(status: SignupStatus.success));
       } else {

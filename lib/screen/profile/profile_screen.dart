@@ -236,30 +236,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 //change password
-                                CustomInkwell(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, '/change_password');
-                                    },
-                                    mainIcon: Icon(
-                                      Icons.lock,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                    title: "Change Password",
-                                    currentHeight: currentHeight),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 64, right: 64),
-                                  child: Container(
-                                    height: 0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
+                                if (state.user.provider == 'email')
+                                  Column(
+                                    children: [
+                                      CustomInkwell(
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, '/change_password');
+                                          },
+                                          mainIcon: Icon(
+                                            Icons.lock,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                          title: "Change Password",
+                                          currentHeight: currentHeight),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 64, right: 64),
+                                        child: Container(
+                                          height: 0.5,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
                                 //text notes
                                 CustomInkwell(
                                     onTap: () {

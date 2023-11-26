@@ -8,6 +8,7 @@ class User extends Equatable {
   final String imageUrl;
   final String passWord;
   final String phoneNumber;
+  final String provider;
   final bool status;
 
   const User(
@@ -17,6 +18,7 @@ class User extends Equatable {
       required this.imageUrl,
       required this.passWord,
       required this.phoneNumber,
+      required this.provider,
       required this.status});
 
   Map<String, Object> toDocument() {
@@ -26,6 +28,7 @@ class User extends Equatable {
       "imageUrl": imageUrl,
       "passWord": passWord,
       "phoneNumber": phoneNumber,
+      "provider": provider,
       "status": status
     };
   }
@@ -38,11 +41,12 @@ class User extends Equatable {
         imageUrl: snap['imageUrl'],
         passWord: snap['passWord'],
         phoneNumber: snap['phoneNumber'],
+        provider: snap['provider'],
         status: snap['status']);
     return user;
   }
 
   @override
   List<Object?> get props =>
-      [id, fullName, email, imageUrl, passWord, phoneNumber, status];
+      [id, fullName, email, imageUrl, passWord, phoneNumber, provider, status];
 }

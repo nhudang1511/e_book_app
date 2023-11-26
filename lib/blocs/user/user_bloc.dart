@@ -23,7 +23,7 @@ class UserBloc extends Bloc<UserEvent, UserState>{
     _authSubscription = _authRepository.user.listen((auth.User? authUser) {
       if(authUser!=null) {
         _userSubscription = _userRepository.getUser(authUser.uid).listen((user) {
-          add(UpdateUser(user));
+          add(UpdateUser(user!));
         });
       }
     });

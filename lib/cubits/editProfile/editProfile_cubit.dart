@@ -88,6 +88,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
             phoneNumber: state.phoneNumber == ''
                 ? currentUser!.phoneNumber
                 : state.phoneNumber,
+            provider: currentUser!.provider,
             status: currentUser!.status,
           ),
         );

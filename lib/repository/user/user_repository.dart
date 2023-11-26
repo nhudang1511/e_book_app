@@ -38,7 +38,6 @@ class UserRepository extends BaseUserRepository {
         .doc(user.id)
         .set(user.toDocument());
   }
-  
 
   @override
   Future<String> uploadAvatar(File? fileAvatar) async {
@@ -56,7 +55,17 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Future<void> removeOldAvatar(String imageUrl) async{
+  Future<void> removeOldAvatar(String imageUrl) async {
     await _firebaseStorage.refFromURL(imageUrl).delete();
+  }
+
+  @override
+  Future<bool> getUserByEmail(String? email) async {
+    QuerySnapshot querySnapshot = await _firebaseFirestore
+        .collection("user")
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
   }
 }
