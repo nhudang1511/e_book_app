@@ -17,4 +17,8 @@ abstract class BaseAuthRepository {
 
   Future<bool> changePassword({required String newPassword});
 
+  Future<auth.User?> logInWithGoogle();
+
+  Future<auth.User?> logInWithFacebook();
+
 }

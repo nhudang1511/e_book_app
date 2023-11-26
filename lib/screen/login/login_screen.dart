@@ -42,6 +42,24 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == LoginStatus.success) {
           Navigator.pop(context);
         }
+        if (state.status == LoginStatus.emailDiffProvider) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              _timer = Timer(const Duration(seconds: 2), () {
+                Navigator.of(context).pop();
+              });
+              return const CustomDialogNotice(
+                title: Icons.info,
+                content: 'Email already exists and is registered with another provider.',
+              );
+            },
+          ).then((value) {
+            if (_timer.isActive) {
+              _timer.cancel();
+            }
+          });
+        }
         if (state.status == LoginStatus.error) {
           showDialog(
             context: context,
@@ -157,6 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
+                          onTap: () {
+                            _loginCubit.logInWithGoogle();
+                          },
                           child: LogoMedia(
                             logo: Image.asset(
                               'assets/icon/icons_google.png',
@@ -164,6 +185,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         InkWell(
+                          onTap: () {
+                            _loginCubit.logInWithFacebook();
+                          },
                           child: LogoMedia(
                             logo: Image.asset(
                               'assets/icon/logos_facebook.png',

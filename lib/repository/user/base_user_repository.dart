@@ -8,4 +8,5 @@ abstract class BaseUserRepository {
   Future<void> addUser(User user);
   Future<String> uploadAvatar(File fileAvatar);
   Future<void> removeOldAvatar (String imageUrl);
+  Future<bool> getUserByEmail (String? email);
 }

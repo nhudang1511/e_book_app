@@ -1,6 +1,9 @@
 import 'dart:async';
 
 
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import 'base_auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -19,6 +22,7 @@ class AuthRepository extends BaseAuthRepository {
       final user = credential.user;
       return user;
     } catch (_) {}
+    return null;
   }
 
   @override
@@ -43,6 +47,7 @@ class AuthRepository extends BaseAuthRepository {
         throw Exception(e.code);
       }
     }
+    return null;
   }
 
   @override
@@ -56,6 +61,49 @@ class AuthRepository extends BaseAuthRepository {
         .then((_) => {success = true});
     return success;
   }
+
+  @override
+  Future<User?> logInWithGoogle() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      return userCredential.user;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<User?> logInWithFacebook() async {
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login( permissions: (["public_profile", "email"]));
+
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+      // Once signed in, return the UserCredential
+      final credential =
+          await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+      return credential.user;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
 
 
 }

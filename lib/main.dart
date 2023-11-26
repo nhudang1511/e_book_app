@@ -1,4 +1,3 @@
-
 import 'package:e_book_app/config/theme/theme_provider.dart';
 import 'package:e_book_app/cubits/cubits.dart';
 
@@ -45,6 +44,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (_) => LoginCubit(
             authRepository: AuthRepository(),
+            userRepository: UserRepository(),
           ),
           child: const LoginScreen(),
         ),
