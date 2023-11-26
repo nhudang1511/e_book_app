@@ -110,7 +110,9 @@ class _BookScreenState extends State<BookScreen> {
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
             chapters: widget.book.id,
-            percent: overallPercentage));
+            percent: overallPercentage,
+            times: 1
+        ));
         return true;
       },
       child: Scaffold(

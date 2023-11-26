@@ -19,9 +19,10 @@ class AddToHistoryEvent extends HistoryEvent {
   final String uId;
   final String chapters;
   final double percent;
+  final int times;
 
-  const AddToHistoryEvent({required this.uId, required this.chapters, required this.percent});
+  const AddToHistoryEvent({required this.uId, required this.chapters, required this.percent, required this.times});
 
   @override
-  List<Object?> get props => [uId,chapters,percent];
+  List<Object?> get props => [uId,chapters,percent,times];
 }
