@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,22 +12,25 @@ class BookScreen extends StatefulWidget {
   static Route route({
     required Book book,
     required String uId,
+    required Map<String,dynamic> chapterScrollPositions,
   }) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (_) => BookScreen(
               book: book,
-              uId: uId,
+              uId: uId, chapterScrollPositions: chapterScrollPositions,
             ));
   }
 
   final Book book;
   final String uId;
+  final Map<String,dynamic> chapterScrollPositions;
 
   const BookScreen({
     super.key,
     required this.book,
     required this.uId,
+    required this.chapterScrollPositions
   });
 
   @override
@@ -48,56 +49,53 @@ class _BookScreenState extends State<BookScreen> {
   bool _isToolbarVisible = false;
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
-  Map<String, dynamic> chapterScrollPositions = {};
-  Map<String, double> chapterScrollPercentages = {};
+  Map<String, double> temp_chapterScrollPercentages = {};
   var totalChapters = 0;
   double overallPercentage = 0;
   int times = 1;
-  var firstChapterEntry;
-  late ChaptersBloc chaptersBloc;
-  late StreamSubscription chaptersSub;
   String localSelectedTableText = '';
   String localSelectedChapterId = '';
+  bool isFirst = true;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    // Lấy chapter đầu tiên và thiết lập selectedTableText
-    // chaptersBloc =  BlocProvider.of<ChaptersBloc>(context);
-    // chaptersSub = chaptersBloc.stream.listen((state) {
-    //   if (state is ChaptersLoaded && state.chapters.chapterList.isNotEmpty) {
-    //     firstChapterEntry = state.chapters.chapterList.entries.firstWhere(
-    //           (entry) => entry.key.startsWith('Chương 1:'),
-    //     );
-    //     if (mounted) {
-    //       setState(() {
-    //         selectedTableText = firstChapterEntry.value;
-    //         selectedChapterId = firstChapterEntry.key;
-    //         totalChapters = state.chapters.chapterList.length * 100;
-    //       });
-    //     }
-    //   }
-    // });
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // Delay the jumpTo operation after the build is complete
+      _jumpToChapterScrollPosition();
+    });
   }
 
-  // @override
-  // void dispose() {
-  //   chaptersSub.cancel();
-  //   super.dispose();
-  // }
+  void _jumpToChapterScrollPosition() {
+    if (widget.chapterScrollPositions.entries.last.value != null) {
+      final chapterScrollPosition = widget.chapterScrollPositions.entries.last.value;
+      _scrollController.jumpTo(chapterScrollPosition);
+    }
+    else{
+      _scrollController.jumpTo(0.0);
+    }
+  }
 
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
     double percentage = (currentScroll / maxScrollExtent) * 100;
-    // Lưu vị trí khi người dùng kéo tới
-    chapterScrollPositions[selectedChapterId] = currentScroll;
-    // Lưu phần trăm đã đọc của chương hiện tại
-    chapterScrollPercentages[selectedChapterId] = percentage;
+    if(isFirst){
+      // Lưu vị trí khi người dùng kéo tới
+      widget.chapterScrollPositions[localSelectedChapterId] = currentScroll;
+      // Lưu phần trăm đã đọc của chương hiện tại
+      temp_chapterScrollPercentages[localSelectedChapterId] = percentage;
+    }
+    else{
+      // Lưu vị trí khi người dùng kéo tới
+      widget.chapterScrollPositions[selectedChapterId] = currentScroll;
+      // Lưu phần trăm đã đọc của chương hiện tại
+      temp_chapterScrollPercentages[selectedChapterId] = percentage;
+    }
 
     // Tính tổng phần trăm đã đọc của tất cả các chương
-    double totalPercentage = chapterScrollPercentages.values
+    double totalPercentage = temp_chapterScrollPercentages.values
         .fold(0, (sum, percentage) => sum + percentage);
 
     overallPercentage =
@@ -133,7 +131,8 @@ class _BookScreenState extends State<BookScreen> {
             uId: widget.uId,
             chapters: widget.book.id,
             percent: overallPercentage,
-            times: 1, chapterScrollPositions: {}
+            times: 1,
+            chapterScrollPositions: widget.chapterScrollPositions
         ));
         return true;
       },
@@ -182,13 +181,19 @@ class _BookScreenState extends State<BookScreen> {
                           return aNumber.compareTo(bNumber);
                         });
                         chapter = chapterListMap[0];
-                        localSelectedTableText = chapter['title'];
-                        localSelectedChapterId = chapter['id'];
+                        totalChapters = state.chapters.chapterList.length * 100;
+                        if(widget.chapterScrollPositions.entries.last.value != null){
+                          final chapter_items = chapterListMap[numberInString(localSelectedChapterId) ?? 1];
+                          localSelectedTableText = chapter_items['title'];
+                          localSelectedChapterId = chapter_items['id'];
+                        }
+                        else{
+                          localSelectedTableText = chapter['title'];
+                          localSelectedChapterId = chapter['id'];
+                        }
                       }
                       return SelectableText(
-                        (numberInString(localSelectedChapterId) ==
-                                numberInString(selectedChapterId))
-                            ? localSelectedTableText
+                        isFirst ? localSelectedTableText
                             : selectedTableText,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: isTickedBlack ? Colors.white : Colors.black,
@@ -412,9 +417,7 @@ class _BookScreenState extends State<BookScreen> {
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
                                   (chapter['id'] == selectedChapterId ||
-                                          ((numberInString(selectedChapterId) ==
-                                                  numberInString(
-                                                      localSelectedChapterId)) &&
+                                          ( isFirst &&
                                               (chapter['id'] ==
                                                   localSelectedChapterId)))
                                       ? const Color(0xFFD9D9D9)
@@ -423,10 +426,11 @@ class _BookScreenState extends State<BookScreen> {
                                 onPressed: () {
                                   if (chapter['id'] != selectedChapterId) {
                                     setState(() {
+                                      isFirst = false;
                                       selectedTableText = chapter['title'];
                                       selectedChapterId = chapter['id'];
                                       _scrollController.jumpTo(
-                                        chapterScrollPositions[
+                                        widget.chapterScrollPositions[
                                                 selectedChapterId] ??
                                             0.0,
                                       );

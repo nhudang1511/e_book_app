@@ -18,6 +18,11 @@ class DetailBookItem extends StatefulWidget {
 
 class _DetailBookItemState extends State<DetailBookItem> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 50),
@@ -51,7 +56,10 @@ class _DetailBookItemState extends State<DetailBookItem> {
               ),
               Column(
                 children: [
-                  Text(widget.book.price == 0 ? 'FREE' : widget.book.price.toString(),
+                  Text(
+                      widget.book.price == 0
+                          ? 'FREE'
+                          : widget.book.price.toString(),
                       style: Theme.of(context)
                           .textTheme
                           .displayMedium!
@@ -72,26 +80,64 @@ class _DetailBookItemState extends State<DetailBookItem> {
           const SizedBox(
             height: 10,
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width - 20,
-            child: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                return ElevatedButton(
-                    onPressed: () {
-                      if (state is AuthInitial ||
-                          state is UnAuthenticateState) {
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is AuthenticateState) {
+                String? uId = state.authUser?.uid;
+                return BlocBuilder<HistoryBloc, HistoryState>(
+                  builder: (context, state) {
+                    if (state is HistoryLoaded &&
+                        state.histories.chapters.contains(widget.book.id)) {
+                      //print(state.histories.chapterScrollPositions.entries.last);
+                      return SizedBox(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              BlocProvider.of<ChaptersBloc>(context)
+                                  .add(LoadChapters(widget.book.id));
+                              Navigator.pushNamed(context, '/book', arguments: {
+                                'book': widget.book,
+                                'uId': uId,
+                                'chapterScrollPositions':
+                                    state.histories.chapterScrollPositions
+                              });
+                            },
+                            child: const Text('CONTINUE READ',
+                                style: TextStyle(color: Colors.white)),
+                          ));
+                    } else {
+                      //print('out');
+                      return SizedBox(
+                          width: MediaQuery.of(context).size.width - 20,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              final Map<String, dynamic> temp = {};
+                              BlocProvider.of<ChaptersBloc>(context)
+                                  .add(LoadChapters(widget.book.id));
+                              Navigator.pushNamed(context, '/book', arguments: {
+                                'book': widget.book,
+                                'uId': uId,
+                                'chapterScrollPositions': temp
+                              });
+                            },
+                            child: const Text('READ',
+                                style: TextStyle(color: Colors.white)),
+                          ));
+                    }
+                  },
+                );
+              } else {
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width - 20,
+                    child: ElevatedButton(
+                      onPressed: () {
                         Navigator.pushNamed(context, '/login');
-                      } if(state is AuthenticateState) {
-                        BlocProvider.of<ChaptersBloc>(context).add(LoadChapters(widget.book.id));
-                        Navigator.pushNamed(context, '/book', arguments: {'book': widget.book, 'uId': state.authUser?.uid });
-                      }
-                    },
-                    child: const Text(
-                      'READ',
-                      style: TextStyle(color: Colors.white),
+                      },
+                      child: const Text('READ',
+                          style: TextStyle(color: Colors.white)),
                     ));
-              },
-            ),
+              }
+            },
           )
         ],
       ),

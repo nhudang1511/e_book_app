@@ -63,5 +63,17 @@ class HistoryRepository extends BaseHistoryRepository{
       return snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
     });
   }
+  @override
+  Stream<History> getHistories(String bookId) {
+    if (bookId.isEmpty) {
+      // Throw an error if the bookId parameter is empty.
+      throw Exception("The bookId parameter cannot be empty.");
+    }
+    return _firebaseFirestore
+        .collection('histories')
+        .where('chapters', isEqualTo: bookId)
+        .snapshots()
+        .map((snapshot) => History.fromSnapshot(snapshot.docs.first));
+  }
 
 }

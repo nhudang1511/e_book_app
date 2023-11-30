@@ -59,7 +59,8 @@ class AppRouter{
           final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
           final Book book = arguments['book'] as Book;
           final String uId = arguments['uId'] as String;
-          return BookScreen.route(book: book, uId: uId);
+          final Map<String,dynamic> chapterScrollPositions = arguments['chapterScrollPositions'] ;
+          return BookScreen.route(book: book, uId: uId, chapterScrollPositions: chapterScrollPositions);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return MainScreen.route();
