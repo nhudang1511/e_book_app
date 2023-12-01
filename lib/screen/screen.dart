@@ -18,3 +18,4 @@ export 'profile/settings_screen.dart';
 export 'profile/text_notes_screen.dart';
 export 'book/book_screen.dart';
 export 'admin/admin_panel.screen.dart';
+export 'reviews/reviews_screen.dart';

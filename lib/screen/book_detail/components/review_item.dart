@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -6,41 +7,73 @@ import '../../../model/models.dart';
 
 class ReviewItem extends StatelessWidget {
   final Book book;
+
   const ReviewItem({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
-    return  SingleChildScrollView(
+    return SingleChildScrollView(
       child: Column(
         children: [
-          BlocBuilder<ReviewBloc, ReviewState>(
-            builder: (context, state) {
-              if(state is ReviewLoading){
-               return const SizedBox(child: CircularProgressIndicator(),);
-              }
-              if(state is ReviewLoaded){
-                List<Review> reviewsByBook = state.reviews.where((e) => e.bookId == book.id ).toList();
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('review')
+                .orderBy("time", descending: false)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
                 return SizedBox(
                   height: 100,
                   child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: reviewsByBook.length,
-                      itemBuilder: (context,index){
-                        return ReviewItemCard(review: reviewsByBook[index],);
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final reviews = snapshot.data!.docs[index];
+                        if (reviews['bookId'] == book.id) {
+                          return ReviewItemCard(
+                            content: reviews['content'],
+                            userId: reviews['userId'],
+                            time: reviews['time'],
+                          );
+                        } else {
+                          return SizedBox.shrink();
+                        }
                       }),
                 );
+              } else {
+                return Text('something went wrong');
               }
-              else{
-                return const SizedBox(child: Text('Something went wrong'),);
-              }
-              },
+            },
           ),
-          const SizedBox(height: 20,),
+          const SizedBox(
+            height: 20,
+          ),
           SizedBox(
             width: MediaQuery.of(context).size.width - 20,
-            child: ElevatedButton(
-                onPressed: (){},
-                child: const Text('ADD REVIEWS', style: TextStyle(color: Colors.white),)),
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthenticateState) {
+                  return ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/reviews',
+                            arguments: book);
+                      },
+                      child: const Text(
+                        'ADD REVIEWS',
+                        style: TextStyle(color: Colors.white),
+                      ));
+                } else {
+                  return ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text(
+                        'ADD REVIEWS',
+                        style: TextStyle(color: Colors.white),
+                      ));
+                }
+              },
+            ),
           )
         ],
       ),
@@ -49,10 +82,15 @@ class ReviewItem extends StatelessWidget {
 }
 
 class ReviewItemCard extends StatelessWidget {
-  final Review review;
-  const ReviewItemCard({
-    super.key, required this.review,
-  });
+  final String content;
+  final String userId;
+  final Timestamp time;
+
+  const ReviewItemCard(
+      {super.key,
+      required this.content,
+      required this.userId,
+      required this.time});
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +100,16 @@ class ReviewItemCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
       decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(5)),
-          border: Border.all(color: Theme.of(context).colorScheme.primary)
-      ),
+          border: Border.all(color: Theme.of(context).colorScheme.primary)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             flex: 1,
-            child: ClipOval(child: Image.asset('assets/image/quote_image_1.png'),),
+            child: ClipOval(
+              child: Image.asset('assets/image/quote_image_1.png'),
+            ),
           ),
           Expanded(
             flex: 3,
@@ -78,9 +117,29 @@ class ReviewItemCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(review.userId, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                Text(review.rating.toString()),
-                Expanded(flex: 2, child: Text(review.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)))
+                BlocBuilder<UserBloc, UserState>(
+                  builder: (context, state) {
+                    if(state is UserLoaded && state.user.id == userId){
+                      return Text(
+                        state.user.fullName,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      );
+                    }
+                    else{
+                      return Text(
+                        userId,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      );
+                    }
+                  },
+                ),
+                Expanded(
+                    flex: 2,
+                    child: Text(content,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.normal)))
               ],
             ),
           ),

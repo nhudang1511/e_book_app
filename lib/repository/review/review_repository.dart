@@ -11,11 +11,16 @@ class ReviewRepository extends BaseReviewRepository{
   @override
   Stream<List<Review>> getAllReview() {
     return _firebaseFirestore
-        .collection('review')
+        .collection('review').orderBy("time",descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) => Review.fromSnapshot(doc)).toList();
     });
+  }
+
+  @override
+  Future<void> addBookInHistory(Review review) {
+    return _firebaseFirestore.collection('review').add(review.toDocument());
   }
 
 }

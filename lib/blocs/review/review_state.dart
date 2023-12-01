@@ -5,6 +5,10 @@ abstract class ReviewState extends Equatable {
   @override
   List<Object?> get props => [];
 }
+class ReviewInitial extends ReviewState {
+  @override
+  List<Object?> get props => [];
+}
 class ReviewLoading extends ReviewState{
   @override
   List<Object?> get props => [];
@@ -14,4 +18,12 @@ class ReviewLoaded extends ReviewState{
   const ReviewLoaded({this.reviews = const <Review>[]});
   @override
   List<Object?> get props => [reviews];
+}
+class ReviewError extends ReviewState {
+  final String error;
+
+  const ReviewError(this.error);
+
+  @override
+  List<Object?> get props => [error];
 }

@@ -67,6 +67,13 @@ class AppRouter{
         }
       case AdminPanel.routeName:
         return AdminPanel.route();
+      case ReviewsScreen.routeName:
+        if (settings.arguments is Book) {
+          return ReviewsScreen.route(book: settings.arguments as Book);
+        } else {
+          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
+          return MainScreen.route();
+        }
       default:
         return _errorRoute();
     }
