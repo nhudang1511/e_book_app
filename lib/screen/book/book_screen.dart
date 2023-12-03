@@ -44,14 +44,11 @@ class _BookScreenState extends State<BookScreen> {
   OverlayEntry? _overlayEntry;
   bool isTickedWhite = true;
   bool isTickedBlack = false;
-  List<String> textSegments = [];
-  List<TextSpan> highlightedTextSpans = [];
   double fontSize = 16.0;
   bool _isToolbarVisible = false;
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
   Map<String, double> temp_chapterScrollPercentages = {};
-  var temp_scroll;
   var totalChapters = 0;
   double overallPercentage = 0;
   int times = 1;
@@ -65,23 +62,7 @@ class _BookScreenState extends State<BookScreen> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   // Delay the jumpTo operation after the build is complete
-    //   _jumpToChapterScrollPosition();
-    // });
-
   }
-
-  // void _jumpToChapterScrollPosition() {
-  //   if (widget.chapterScrollPositions.entries.last.value != null) {
-  //     final chapterScrollPosition =
-  //         widget.chapterScrollPositions.entries.last.value;
-  //     _scrollController.jumpTo(chapterScrollPosition);
-  //   } else {
-  //     _scrollController.jumpTo(0.0);
-  //   }
-  // }
-
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
@@ -213,24 +194,41 @@ class _BookScreenState extends State<BookScreen> {
                                   .expand((element) => element)
                                   .toList();
                               if (historyListMap.isNotEmpty) {
-                                final first = historyListMap[0];
+                                historyListMap.sort((a, b) {
+                                  int aNumber = int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int bNumber = int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  return aNumber.compareTo(bNumber);
+                                });
+                                final first = historyListMap.last;
                                 localSelectedChapterId = first['id'];
                                 final chapterHistory =  chapterListMap[numberInString(localSelectedChapterId)! - 1];
                                 localSelectedTableText = chapterHistory['title'];
                                 if(isFirst){
-                                  _scrollController.jumpTo(first['title']);
+                                  Future.delayed(Duration.zero, () {
+                                    _scrollController.jumpTo(first['title']);
+                                  });
                                 }
                                 else{
+                                  var tempId;
                                   for (var chapter in historyListMap) {
-                                    print('Chapter ID: ${numberInString(chapter['id'])}, Title: ${chapter['title']}');
+                                    //print('Chapter ID: ${numberInString(chapter['id'])}, Title: ${chapter['title']}');
                                     if(selectedChapterId == chapter['id']){
-                                      _scrollController.jumpTo(chapter['title']);
-                                    }
-                                    else{
-                                      _scrollController.jumpTo(0);
+                                      //print(chapter['title']);
+                                     tempId = chapter['title'];
                                     }
                                   }
+                                 if(tempId !=null){
+                                   Future.delayed(Duration.zero, () {
+                                     _scrollController.jumpTo(tempId);
+                                   });
+                                 }
+                                 else{
+                                   Future.delayed(Duration.zero, () {
+                                     _scrollController.jumpTo(0.0);
+                                   });
+                                 }
                                 }
+
                               }
                               else{}
                             }
@@ -472,6 +470,7 @@ class _BookScreenState extends State<BookScreen> {
                                       isFirst = false;
                                       selectedTableText = chapter['title'];
                                       selectedChapterId = chapter['id'];
+
                                       Navigator.pop(context);
                                     });
                                   }

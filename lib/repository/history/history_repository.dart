@@ -50,7 +50,7 @@ class HistoryRepository extends BaseHistoryRepository{
         });
       }
     } catch (e) {
-      print('Error adding book in history: $e');
+      //print('Error adding book in history: $e');
     }
   }
 
@@ -73,7 +73,15 @@ class HistoryRepository extends BaseHistoryRepository{
         .collection('histories')
         .where('chapters', isEqualTo: bookId)
         .snapshots()
-        .map((snapshot) => History.fromSnapshot(snapshot.docs.first));
+        .map((snapshot)  {
+      if (snapshot.docs.isNotEmpty) {
+        return History.fromSnapshot(snapshot.docs.first);
+      } else {
+        // If no documents are found, return a default or handle it as needed.
+        // Here, returning an empty History object for illustration.
+        return const History(uId: '', chapters: '', percent: 0, times: 0, chapterScrollPositions: {}); // Replace with appropriate handling.
+      }
+    });
   }
 
 }
