@@ -93,14 +93,6 @@ class _MyAppState extends State<MyApp> {
           )..add(LoadedReview()),
         ),
         BlocProvider(
-            create: (_) => AuthorBloc(
-                  authorRepository: AuthorRepository(),
-                )..add(LoadedAuthor())),
-        BlocProvider(
-            create: (_) => ReviewBloc(
-                  reviewRepository: ReviewRepository(),
-                )..add(LoadedReview())),
-        BlocProvider(
           create: (_) => UserBloc(
             authRepository: AuthRepository(),
             userRepository: UserRepository(),
@@ -117,8 +109,7 @@ class _MyAppState extends State<MyApp> {
                 ChaptersBloc(chaptersRepository: ChaptersRepository(),)),
         BlocProvider(
           create: (_) => HistoryBloc(
-            historyRepository: HistoryRepository(),
-          )..add(LoadHistory()),
+            historyRepository: HistoryRepository()),
         ),
       ],
       child: MaterialApp(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,26 +13,26 @@ class BookScreen extends StatefulWidget {
   static Route route({
     required Book book,
     required String uId,
-    required Map<String,dynamic> chapterScrollPositions,
+    required Map<String, dynamic> chapterScrollPositions,
   }) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (_) => BookScreen(
               book: book,
-              uId: uId, chapterScrollPositions: chapterScrollPositions,
+              uId: uId,
+              chapterScrollPositions: chapterScrollPositions,
             ));
   }
 
   final Book book;
   final String uId;
-  final Map<String,dynamic> chapterScrollPositions;
+  final Map<String, dynamic> chapterScrollPositions;
 
-  const BookScreen({
-    super.key,
-    required this.book,
-    required this.uId,
-    required this.chapterScrollPositions
-  });
+  const BookScreen(
+      {super.key,
+      required this.book,
+      required this.uId,
+      required this.chapterScrollPositions});
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -50,44 +51,47 @@ class _BookScreenState extends State<BookScreen> {
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
   Map<String, double> temp_chapterScrollPercentages = {};
+  var temp_scroll;
   var totalChapters = 0;
   double overallPercentage = 0;
   int times = 1;
   String localSelectedTableText = '';
   String localSelectedChapterId = '';
   bool isFirst = true;
+  var chapterListMap;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // Delay the jumpTo operation after the build is complete
-      _jumpToChapterScrollPosition();
-    });
+    BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
+    // WidgetsBinding.instance?.addPostFrameCallback((_) {
+    //   // Delay the jumpTo operation after the build is complete
+    //   _jumpToChapterScrollPosition();
+    // });
+
   }
 
-  void _jumpToChapterScrollPosition() {
-    if (widget.chapterScrollPositions.entries.last.value != null) {
-      final chapterScrollPosition = widget.chapterScrollPositions.entries.last.value;
-      _scrollController.jumpTo(chapterScrollPosition);
-    }
-    else{
-      _scrollController.jumpTo(0.0);
-    }
-  }
+  // void _jumpToChapterScrollPosition() {
+  //   if (widget.chapterScrollPositions.entries.last.value != null) {
+  //     final chapterScrollPosition =
+  //         widget.chapterScrollPositions.entries.last.value;
+  //     _scrollController.jumpTo(chapterScrollPosition);
+  //   } else {
+  //     _scrollController.jumpTo(0.0);
+  //   }
+  // }
 
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
     double percentage = (currentScroll / maxScrollExtent) * 100;
-    if(isFirst){
+    if (isFirst) {
       // Lưu vị trí khi người dùng kéo tới
       widget.chapterScrollPositions[localSelectedChapterId] = currentScroll;
       // Lưu phần trăm đã đọc của chương hiện tại
       temp_chapterScrollPercentages[localSelectedChapterId] = percentage;
-    }
-    else{
+    } else {
       // Lưu vị trí khi người dùng kéo tới
       widget.chapterScrollPositions[selectedChapterId] = currentScroll;
       // Lưu phần trăm đã đọc của chương hiện tại
@@ -132,8 +136,7 @@ class _BookScreenState extends State<BookScreen> {
             chapters: widget.book.id,
             percent: overallPercentage,
             times: 1,
-            chapterScrollPositions: widget.chapterScrollPositions
-        ));
+            chapterScrollPositions: widget.chapterScrollPositions));
         return true;
       },
       child: Scaffold(
@@ -161,11 +164,11 @@ class _BookScreenState extends State<BookScreen> {
                       const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: BlocBuilder<ChaptersBloc, ChaptersState>(
                     builder: (context, state) {
-                      final chapter;
                       if (state is ChaptersLoaded) {
+                        final chapter;
                         final chapterList = state.chapters.chapterList;
                         // Convert the chapterList to a list of Map<String, dynamic>.
-                        final chapterListMap = chapterList.entries.map((entry) {
+                        chapterListMap = chapterList.entries.map((entry) {
                           return {
                             'id': entry.key,
                             'title': entry.value,
@@ -182,35 +185,75 @@ class _BookScreenState extends State<BookScreen> {
                         });
                         chapter = chapterListMap[0];
                         totalChapters = state.chapters.chapterList.length * 100;
-                        if(widget.chapterScrollPositions.entries.last.value != null){
-                          final chapter_items = chapterListMap[numberInString(localSelectedChapterId) ?? 1];
-                          localSelectedTableText = chapter_items['title'];
-                          localSelectedChapterId = chapter_items['id'];
-                        }
-                        else{
-                          localSelectedTableText = chapter['title'];
-                          localSelectedChapterId = chapter['id'];
-                        }
+                        localSelectedTableText = chapter['title'];
+                        localSelectedChapterId = chapter['id'];
                       }
-                      return SelectableText(
-                        isFirst ? localSelectedTableText
-                            : selectedTableText,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: isTickedBlack ? Colors.white : Colors.black,
-                            fontSize: fontSize),
-                        showCursor: true,
-                        toolbarOptions: const ToolbarOptions(
-                            selectAll: false, copy: false, cut: true),
-                        onSelectionChanged: (selection, cause) {
-                          if (selection.start == selection.end) {
-                            _hideToolbar();
-                          }
-                          setState(() {
-                            selectedText = selectedTableText.substring(
-                                selection.start, selection.end);
+                      return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('histories')
+                              .where('chapters', isEqualTo: widget.book.id)
+                              .snapshots(),
+                          builder: (context, snap) {
+                            if (snap.hasData) {
+                              List<History> histories =
+                                  snap.data!.docs.map((doc) {
+                                return History.fromSnapshot(doc);
+                              }).toList();
+                              final historyListMap = histories
+                                  .map((histories) {
+                                    return histories
+                                        .chapterScrollPositions.entries
+                                        .map((entry) {
+                                      return {
+                                        'id': entry.key,
+                                        'title': entry.value,
+                                      };
+                                    }).toList();
+                                  })
+                                  .expand((element) => element)
+                                  .toList();
+                              if (historyListMap.isNotEmpty) {
+                                final first = historyListMap[0];
+                                localSelectedChapterId = first['id'];
+                                final chapterHistory =  chapterListMap[numberInString(localSelectedChapterId)! - 1];
+                                localSelectedTableText = chapterHistory['title'];
+                                if(isFirst){
+                                  _scrollController.jumpTo(first['title']);
+                                }
+                                else{
+                                  for (var chapter in historyListMap) {
+                                    print('Chapter ID: ${numberInString(chapter['id'])}, Title: ${chapter['title']}');
+                                    if(selectedChapterId == chapter['id']){
+                                      _scrollController.jumpTo(chapter['title']);
+                                    }
+                                    else{
+                                      _scrollController.jumpTo(0);
+                                    }
+                                  }
+                                }
+                              }
+                              else{}
+                            }
+                            return SelectableText(
+                              isFirst ? localSelectedTableText
+                                  : selectedTableText,
+                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                  color: isTickedBlack ? Colors.white : Colors.black,
+                                  fontSize: fontSize),
+                              showCursor: true,
+                              toolbarOptions: const ToolbarOptions(
+                                  selectAll: false, copy: false, cut: true),
+                              onSelectionChanged: (selection, cause) {
+                                if (selection.start == selection.end) {
+                                  _hideToolbar();
+                                }
+                                setState(() {
+                                  selectedText = selectedTableText.substring(
+                                      selection.start, selection.end);
+                                });
+                              },
+                            );
                           });
-                        },
-                      );
                     },
                   )),
             ),
@@ -417,7 +460,7 @@ class _BookScreenState extends State<BookScreen> {
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
                                   (chapter['id'] == selectedChapterId ||
-                                          ( isFirst &&
+                                          (isFirst &&
                                               (chapter['id'] ==
                                                   localSelectedChapterId)))
                                       ? const Color(0xFFD9D9D9)
@@ -429,11 +472,6 @@ class _BookScreenState extends State<BookScreen> {
                                       isFirst = false;
                                       selectedTableText = chapter['title'];
                                       selectedChapterId = chapter['id'];
-                                      _scrollController.jumpTo(
-                                        widget.chapterScrollPositions[
-                                                selectedChapterId] ??
-                                            0.0,
-                                      );
                                       Navigator.pop(context);
                                     });
                                   }

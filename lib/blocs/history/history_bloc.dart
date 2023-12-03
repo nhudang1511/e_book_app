@@ -37,8 +37,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     _historySubscription?.cancel();
     _historySubscription =
         _historyRepository
-            .getAllHistories()
-            .listen((event) => add(UpdateHistory(event.first)));
+            .getHistories(event.bookId)
+            .listen((event) => add(UpdateHistory(event)));
   }
   void _onUpdateHistory(event, Emitter<HistoryState> emit) async{
     emit(HistoryLoaded(histories: event.histories));

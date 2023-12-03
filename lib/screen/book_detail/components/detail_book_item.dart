@@ -83,49 +83,24 @@ class _DetailBookItemState extends State<DetailBookItem> {
           BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthenticateState) {
-                String? uId = state.authUser?.uid;
-                return BlocBuilder<HistoryBloc, HistoryState>(
-                  builder: (context, state) {
-                    if (state is HistoryLoaded &&
-                        state.histories.chapters.contains(widget.book.id)) {
-                      //print(state.histories.chapterScrollPositions.entries.last);
-                      return SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              BlocProvider.of<ChaptersBloc>(context)
-                                  .add(LoadChapters(widget.book.id));
-                              Navigator.pushNamed(context, '/book', arguments: {
-                                'book': widget.book,
-                                'uId': uId,
-                                'chapterScrollPositions':
-                                    state.histories.chapterScrollPositions
-                              });
-                            },
-                            child: const Text('CONTINUE READ',
-                                style: TextStyle(color: Colors.white)),
-                          ));
-                    } else {
-                      //print('out');
-                      return SizedBox(
-                          width: MediaQuery.of(context).size.width - 20,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              final Map<String, dynamic> temp = {};
-                              BlocProvider.of<ChaptersBloc>(context)
-                                  .add(LoadChapters(widget.book.id));
-                              Navigator.pushNamed(context, '/book', arguments: {
-                                'book': widget.book,
-                                'uId': uId,
-                                'chapterScrollPositions': temp
-                              });
-                            },
-                            child: const Text('READ',
-                                style: TextStyle(color: Colors.white)),
-                          ));
-                    }
-                  },
-                );
+                final uId = state.authUser?.uid;
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width - 20,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final Map<String, dynamic> temp = {};
+                        BlocProvider.of<ChaptersBloc>(context)
+                            .add(LoadChapters(widget.book.id));
+                        BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
+                        Navigator.pushNamed(context, '/book', arguments: {
+                          'book': widget.book,
+                          'uId': uId,
+                          'chapterScrollPositions': temp
+                        });
+                      },
+                      child: const Text('READ',
+                          style: TextStyle(color: Colors.white)),
+                    ));
               } else {
                 return SizedBox(
                     width: MediaQuery.of(context).size.width - 20,
