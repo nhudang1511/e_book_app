@@ -56,6 +56,7 @@ class _BookScreenState extends State<BookScreen> {
   String localSelectedChapterId = '';
   bool isFirst = true;
   var chapterListMap;
+  var percent = 0.0;
 
   @override
   void initState() {
@@ -63,6 +64,7 @@ class _BookScreenState extends State<BookScreen> {
     _scrollController.addListener(_scrollListener);
     BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
   }
+
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
@@ -111,6 +113,9 @@ class _BookScreenState extends State<BookScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (overallPercentage < percent) {
+          overallPercentage = percent;
+        }
         _hideToolbar();
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
@@ -173,6 +178,7 @@ class _BookScreenState extends State<BookScreen> {
                           stream: FirebaseFirestore.instance
                               .collection('histories')
                               .where('chapters', isEqualTo: widget.book.id)
+                              .where('uId', isEqualTo: widget.uId)
                               .snapshots(),
                           builder: (context, snap) {
                             if (snap.hasData) {
@@ -180,6 +186,12 @@ class _BookScreenState extends State<BookScreen> {
                                   snap.data!.docs.map((doc) {
                                 return History.fromSnapshot(doc);
                               }).toList();
+                              List<double> percentList =
+                                  histories.map((e) => e.percent).toList();
+                              if (percentList.isNotEmpty) {
+                                percent = percentList.first;
+                                // Sử dụng giá trị double `firstPercent` ở đây
+                              }
                               final historyListMap = histories
                                   .map((histories) {
                                     return histories
@@ -195,49 +207,54 @@ class _BookScreenState extends State<BookScreen> {
                                   .toList();
                               if (historyListMap.isNotEmpty) {
                                 historyListMap.sort((a, b) {
-                                  int aNumber = int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                                  int bNumber = int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int aNumber = int.parse(a['id']
+                                      .replaceAll(RegExp(r'[^0-9]'), ''));
+                                  int bNumber = int.parse(b['id']
+                                      .replaceAll(RegExp(r'[^0-9]'), ''));
                                   return aNumber.compareTo(bNumber);
                                 });
                                 final first = historyListMap.last;
                                 localSelectedChapterId = first['id'];
-                                final chapterHistory =  chapterListMap[numberInString(localSelectedChapterId)! - 1];
-                                localSelectedTableText = chapterHistory['title'];
-                                if(isFirst){
+                                final chapterHistory = chapterListMap[
+                                    numberInString(localSelectedChapterId)! -
+                                        1];
+                                localSelectedTableText =
+                                    chapterHistory['title'];
+                                if (isFirst) {
                                   Future.delayed(Duration.zero, () {
                                     _scrollController.jumpTo(first['title']);
                                   });
-                                }
-                                else{
+                                } else {
                                   var tempId;
                                   for (var chapter in historyListMap) {
-                                    //print('Chapter ID: ${numberInString(chapter['id'])}, Title: ${chapter['title']}');
-                                    if(selectedChapterId == chapter['id']){
-                                      //print(chapter['title']);
-                                     tempId = chapter['title'];
+                                    if (selectedChapterId == chapter['id']) {
+                                      tempId = chapter['title'];
                                     }
                                   }
-                                 if(tempId !=null){
-                                   Future.delayed(Duration.zero, () {
-                                     _scrollController.jumpTo(tempId);
-                                   });
-                                 }
-                                 else{
-                                   Future.delayed(Duration.zero, () {
-                                     _scrollController.jumpTo(0.0);
-                                   });
-                                 }
+                                  if (tempId != null) {
+                                    Future.delayed(Duration.zero, () {
+                                      _scrollController.jumpTo(tempId);
+                                    });
+                                  } else {
+                                    Future.delayed(Duration.zero, () {
+                                      _scrollController.jumpTo(0.0);
+                                    });
+                                  }
                                 }
-
-                              }
-                              else{}
+                              } else {}
                             }
                             return SelectableText(
-                              isFirst ? localSelectedTableText
+                              isFirst
+                                  ? localSelectedTableText
                                   : selectedTableText,
-                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  color: isTickedBlack ? Colors.white : Colors.black,
-                                  fontSize: fontSize),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: fontSize),
                               showCursor: true,
                               toolbarOptions: const ToolbarOptions(
                                   selectAll: false, copy: false, cut: true),
@@ -246,8 +263,11 @@ class _BookScreenState extends State<BookScreen> {
                                   _hideToolbar();
                                 }
                                 setState(() {
-                                  selectedText = selectedTableText.substring(
-                                      selection.start, selection.end);
+                                  selectedText = isFirst
+                                      ? localSelectedTableText.substring(
+                                          selection.start, selection.end)
+                                      : selectedTableText.substring(
+                                          selection.start, selection.end);
                                 });
                               },
                             );
@@ -465,6 +485,9 @@ class _BookScreenState extends State<BookScreen> {
                                       : Colors.transparent,
                                 )),
                                 onPressed: () {
+                                  Future.delayed(Duration.zero, () {
+                                    _scrollController.jumpTo(0.0);
+                                  });
                                   if (chapter['id'] != selectedChapterId) {
                                     setState(() {
                                       isFirst = false;
