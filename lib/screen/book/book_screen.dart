@@ -41,11 +41,10 @@ class BookScreen extends StatefulWidget {
 class _BookScreenState extends State<BookScreen> {
   String selectedText = '';
   String selectedTableText = '';
-  OverlayEntry? _overlayEntry;
   bool isTickedWhite = true;
   bool isTickedBlack = false;
+  var isToolbar = false;
   double fontSize = 16.0;
-  bool _isToolbarVisible = false;
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
   Map<String, double> temp_chapterScrollPercentages = {};
@@ -64,11 +63,27 @@ class _BookScreenState extends State<BookScreen> {
     _scrollController.addListener(_scrollListener);
     BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
   }
-
   void _scrollListener() {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
     double percentage = (currentScroll / maxScrollExtent) * 100;
+    if(widget.chapterScrollPositions[localSelectedChapterId] !=null){
+      setState(() {
+        isToolbar = true;
+      });
+    }
+    // if(widget.chapterScrollPositions[localSelectedChapterId]!= null){
+    //   if(currentScroll!=widget.chapterScrollPositions[localSelectedChapterId]){
+    //     setState(() {
+    //       isToolbar = true;
+    //     });
+    //   }
+    // }
+    // else if(widget.chapterScrollPositions[selectedChapterId] !=null){
+    //   if(currentScroll!=widget.chapterScrollPositions[selectedChapterId]){
+    //     isToolbar = true;
+    //   }
+    // }
     if (isFirst) {
       // Lưu vị trí khi người dùng kéo tới
       widget.chapterScrollPositions[localSelectedChapterId] = currentScroll;
@@ -116,7 +131,6 @@ class _BookScreenState extends State<BookScreen> {
         if (overallPercentage < percent) {
           overallPercentage = percent;
         }
-        _hideToolbar();
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
             chapters: widget.book.id,
@@ -141,140 +155,181 @@ class _BookScreenState extends State<BookScreen> {
         body: ListView(
           controller: _scrollController,
           children: [
-            GestureDetector(
-              onTapDown: (details) {
-                showToolbar(context, details.localPosition);
-              },
-              child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  child: BlocBuilder<ChaptersBloc, ChaptersState>(
-                    builder: (context, state) {
-                      if (state is ChaptersLoaded) {
-                        final chapter;
-                        final chapterList = state.chapters.chapterList;
-                        // Convert the chapterList to a list of Map<String, dynamic>.
-                        chapterListMap = chapterList.entries.map((entry) {
-                          return {
-                            'id': entry.key,
-                            'title': entry.value,
-                          };
-                        }).toList();
-                        // Sắp xếp danh sách theo key (chapter['id'])
-                        chapterListMap.sort((a, b) {
-                          // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-                          int aNumber = int.parse(
-                              a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                          int bNumber = int.parse(
-                              b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                          return aNumber.compareTo(bNumber);
-                        });
-                        chapter = chapterListMap[0];
-                        totalChapters = state.chapters.chapterList.length * 100;
-                        localSelectedTableText = chapter['title'];
-                        localSelectedChapterId = chapter['id'];
-                      }
-                      return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('histories')
-                              .where('chapters', isEqualTo: widget.book.id)
-                              .where('uId', isEqualTo: widget.uId)
-                              .snapshots(),
-                          builder: (context, snap) {
-                            if (snap.hasData) {
-                              List<History> histories =
-                                  snap.data!.docs.map((doc) {
-                                return History.fromSnapshot(doc);
-                              }).toList();
-                              List<double> percentList =
-                                  histories.map((e) => e.percent).toList();
-                              if (percentList.isNotEmpty) {
-                                percent = percentList.first;
-                                // Sử dụng giá trị double `firstPercent` ở đây
-                              }
-                              final historyListMap = histories
-                                  .map((histories) {
-                                    return histories
-                                        .chapterScrollPositions.entries
-                                        .map((entry) {
-                                      return {
-                                        'id': entry.key,
-                                        'title': entry.value,
-                                      };
-                                    }).toList();
-                                  })
-                                  .expand((element) => element)
-                                  .toList();
-                              if (historyListMap.isNotEmpty) {
-                                historyListMap.sort((a, b) {
-                                  int aNumber = int.parse(a['id']
-                                      .replaceAll(RegExp(r'[^0-9]'), ''));
-                                  int bNumber = int.parse(b['id']
-                                      .replaceAll(RegExp(r'[^0-9]'), ''));
-                                  return aNumber.compareTo(bNumber);
-                                });
-                                final first = historyListMap.last;
-                                localSelectedChapterId = first['id'];
-                                final chapterHistory = chapterListMap[
-                                    numberInString(localSelectedChapterId)! -
-                                        1];
-                                localSelectedTableText =
-                                    chapterHistory['title'];
-                                if (isFirst) {
+            Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: BlocBuilder<ChaptersBloc, ChaptersState>(
+                  builder: (context, state) {
+                    if (state is ChaptersLoaded) {
+                      final chapter;
+                      final chapterList = state.chapters.chapterList;
+                      // Convert the chapterList to a list of Map<String, dynamic>.
+                      chapterListMap = chapterList.entries.map((entry) {
+                        return {
+                          'id': entry.key,
+                          'title': entry.value,
+                        };
+                      }).toList();
+                      // Sắp xếp danh sách theo key (chapter['id'])
+                      chapterListMap.sort((a, b) {
+                        // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+                        int aNumber = int.parse(
+                            a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                        int bNumber = int.parse(
+                            b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                        return aNumber.compareTo(bNumber);
+                      });
+                      chapter = chapterListMap[0];
+                      totalChapters = state.chapters.chapterList.length * 100;
+                      localSelectedTableText = chapter['title'];
+                      localSelectedChapterId = chapter['id'];
+                    }
+                    return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('histories')
+                            .where('chapters', isEqualTo: widget.book.id)
+                            .where('uId', isEqualTo: widget.uId)
+                            .snapshots(),
+                        builder: (context, snap) {
+                          if (snap.hasData) {
+                            List<History> histories =
+                                snap.data!.docs.map((doc) {
+                              return History.fromSnapshot(doc);
+                            }).toList();
+                            List<double> percentList =
+                                histories.map((e) => e.percent).toList();
+                            if (percentList.isNotEmpty) {
+                              percent = percentList.first;
+                              // Sử dụng giá trị double `firstPercent` ở đây
+                            }
+                            final historyListMap = histories
+                                .map((histories) {
+                                  return histories
+                                      .chapterScrollPositions.entries
+                                      .map((entry) {
+                                    return {
+                                      'id': entry.key,
+                                      'title': entry.value,
+                                    };
+                                  }).toList();
+                                })
+                                .expand((element) => element)
+                                .toList();
+                            if (historyListMap.isNotEmpty) {
+                              historyListMap.sort((a, b) {
+                                int aNumber = int.parse(a['id']
+                                    .replaceAll(RegExp(r'[^0-9]'), ''));
+                                int bNumber = int.parse(b['id']
+                                    .replaceAll(RegExp(r'[^0-9]'), ''));
+                                return aNumber.compareTo(bNumber);
+                              });
+                              final first = historyListMap.last;
+                              localSelectedChapterId = first['id'];
+                              final chapterHistory = chapterListMap[
+                                  numberInString(localSelectedChapterId)! -
+                                      1];
+                              localSelectedTableText =
+                                  chapterHistory['title'];
+                              if(isFirst && !isToolbar){
                                   Future.delayed(Duration.zero, () {
                                     _scrollController.jumpTo(first['title']);
                                   });
-                                } else {
-                                  var tempId;
-                                  for (var chapter in historyListMap) {
-                                    if (selectedChapterId == chapter['id']) {
-                                      tempId = chapter['title'];
-                                    }
-                                  }
-                                  if (tempId != null) {
-                                    Future.delayed(Duration.zero, () {
-                                      _scrollController.jumpTo(tempId);
-                                    });
-                                  } else {
-                                    Future.delayed(Duration.zero, () {
-                                      _scrollController.jumpTo(0.0);
-                                    });
-                                  }
-                                }
-                              } else {}
+                              }
                             }
-                            return SelectableText(
-                              isFirst
-                                  ? localSelectedTableText
-                                  : selectedTableText,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(
-                                      color: isTickedBlack
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontSize: fontSize),
-                              showCursor: true,
-                              toolbarOptions: const ToolbarOptions(
-                                  selectAll: false, copy: false, cut: true),
-                              onSelectionChanged: (selection, cause) {
-                                if (selection.start == selection.end) {
-                                  _hideToolbar();
-                                }
-                                setState(() {
-                                  selectedText = isFirst
-                                      ? localSelectedTableText.substring(
-                                          selection.start, selection.end)
-                                      : selectedTableText.substring(
-                                          selection.start, selection.end);
-                                });
-                              },
-                            );
-                          });
-                    },
-                  )),
-            ),
+                          }
+                          return SelectableText(
+                            isFirst
+                                ? localSelectedTableText
+                                : selectedTableText,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(
+                                    color: isTickedBlack
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: fontSize),
+                            showCursor: true,
+                            contextMenuBuilder: (context,editableTextState){
+                              return AdaptiveTextSelectionToolbar(
+                                  anchors: editableTextState.contextMenuAnchors,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width - 120,
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xFF8C2EEE),
+                                          borderRadius: BorderRadius.circular(5)),
+                                      child: Row(
+                                        children: [
+                                          TextButton(
+                                            child: const Row(
+                                              children: [
+                                                Text(
+                                                  'Copy',
+                                                  style: TextStyle(fontSize: 13, color: Colors.white),
+                                                ),
+                                                Icon(Icons.copy, color: Colors.white)
+                                              ],
+                                            ),
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(text: selectedText));
+                                            },
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(text: selectedText));
+                                              _showClipboardDialog(context);
+                                            },
+                                            child: const Row(
+                                              children: [
+                                                Text('Save',
+                                                    style:
+                                                    TextStyle(fontSize: 13, color: Colors.white)),
+                                                Icon(
+                                                  Icons.save,
+                                                  color: Colors.white,
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              final translator = GoogleTranslator();
+                                              translator.translate(selectedText, to: 'vi').then(
+                                                      (result) => ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                      SnackBar(content: Text(result.toString()))));
+                                            },
+                                            child: const Row(
+                                              children: [
+                                                Text('Trans',
+                                                    style:
+                                                    TextStyle(fontSize: 13, color: Colors.white)),
+                                                Icon(
+                                                  Icons.g_translate,
+                                                  color: Colors.white,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ]);
+                            },
+                            onSelectionChanged: (selection, cause) {
+                              setState(() {
+                                selectedText = isFirst
+                                    ? localSelectedTableText.substring(
+                                        selection.start, selection.end)
+                                    : selectedTableText.substring(
+                                        selection.start, selection.end);
+                              });
+                            },
+                          );
+                        });
+                  },
+                )),
           ],
         ),
       ),
@@ -284,7 +339,6 @@ class _BookScreenState extends State<BookScreen> {
   IconButton settingIcon(BuildContext context) {
     return IconButton(
       onPressed: () {
-        _hideToolbar();
         Dialogs.bottomMaterialDialog(
             context: context,
             color: const Color(0xFF122158),
@@ -434,7 +488,6 @@ class _BookScreenState extends State<BookScreen> {
   IconButton chaptersListIcon(BuildContext context) {
     return IconButton(
       onPressed: () {
-        _hideToolbar();
         Dialogs.bottomMaterialDialog(
             context: context,
             color: const Color(0xFF122158),
@@ -493,7 +546,6 @@ class _BookScreenState extends State<BookScreen> {
                                       isFirst = false;
                                       selectedTableText = chapter['title'];
                                       selectedChapterId = chapter['id'];
-
                                       Navigator.pop(context);
                                     });
                                   }
@@ -529,93 +581,8 @@ class _BookScreenState extends State<BookScreen> {
     );
   }
 
-  void showToolbar(BuildContext context, Offset localPosition) {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-    }
-    if (!_isToolbarVisible) {
-      _overlayEntry = OverlayEntry(
-        builder: (context) {
-          return Positioned(
-            right: 30,
-            top: localPosition.dy + 30,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: const Color(0xFF8C2EEE),
-                  borderRadius: BorderRadius.circular(5)),
-              child: Row(
-                children: [
-                  TextButton(
-                    child: const Row(
-                      children: [
-                        Text(
-                          'Copy',
-                          style: TextStyle(fontSize: 13, color: Colors.white),
-                        ),
-                        Icon(Icons.copy, color: Colors.white)
-                      ],
-                    ),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: selectedText));
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: selectedText));
-                      _showClipboardDialog(context);
-                    },
-                    child: const Row(
-                      children: [
-                        Text('Save',
-                            style:
-                                TextStyle(fontSize: 13, color: Colors.white)),
-                        Icon(
-                          Icons.save,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      final translator = GoogleTranslator();
-                      translator.translate(selectedText, to: 'vi').then(
-                          (result) => ScaffoldMessenger.of(context)
-                              .showSnackBar(
-                                  SnackBar(content: Text(result.toString()))));
-                    },
-                    child: const Row(
-                      children: [
-                        Text('Trans',
-                            style:
-                                TextStyle(fontSize: 13, color: Colors.white)),
-                        Icon(
-                          Icons.g_translate,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    }
-    Overlay.of(context)!.insert(_overlayEntry!);
-  }
-
-  void _hideToolbar() {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = null;
-      _isToolbarVisible = false;
-    }
-  }
 
   void _showClipboardDialog(BuildContext context) {
-    _hideToolbar();
     showDialog(
       context: context,
       builder: (context) {
@@ -714,6 +681,15 @@ class _BookScreenState extends State<BookScreen> {
             ],
           ),
           actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();

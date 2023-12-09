@@ -79,7 +79,7 @@ class HistoryRepository extends BaseHistoryRepository{
       } else {
         // If no documents are found, return a default or handle it as needed.
         // Here, returning an empty History object for illustration.
-        return const History(uId: '', chapters: '', percent: 0, times: 0, chapterScrollPositions: {}); // Replace with appropriate handling.
+        return const History(uId: '', chapters: '', percent: 0.0, times: 0, chapterScrollPositions: {}); // Replace with appropriate handling.
       }
     });
   }
