@@ -59,13 +59,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                             );
                           } else {
                             // Nếu không phù hợp, trả về một widget rỗng hoặc null
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           }
                         }),
                   );
                 }
                 else {
-                  return Text('something went wrong');
+                  return const Text('something went wrong');
                 }
               },
             ),

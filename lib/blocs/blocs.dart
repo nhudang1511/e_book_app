@@ -7,3 +7,4 @@ export 'user/user_bloc.dart';
 export 'library/library_bloc.dart';
 export 'chapters/chapters_bloc.dart';
 export 'history/history_bloc.dart';
+export 'note/note_bloc.dart';

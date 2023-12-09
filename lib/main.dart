@@ -111,6 +111,11 @@ class _MyAppState extends State<MyApp> {
           create: (_) => HistoryBloc(
             historyRepository: HistoryRepository()),
         ),
+        BlocProvider(
+          create: (_) => NoteBloc(
+            noteRepository: NoteRepository(),
+          )..add(LoadedNote()),
+        ),
       ],
       child: MaterialApp(
         title: 'E Book App',
