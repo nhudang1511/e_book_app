@@ -5,14 +5,12 @@ abstract class HistoryEvent extends Equatable{
   List<Object?> get props => [];
 }
 class LoadHistory extends HistoryEvent{
-  final String bookId;
-  const LoadHistory(this.bookId);
   @override
-  List<Object?> get props => [bookId];
+  List<Object?> get props => [];
 }
 
 class UpdateHistory extends HistoryEvent{
-  final History histories;
+  final List<History> histories;
   const UpdateHistory(this.histories);
   @override
   List<Object?> get props => [histories];

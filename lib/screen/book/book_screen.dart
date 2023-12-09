@@ -62,7 +62,7 @@ class _BookScreenState extends State<BookScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
+    BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
   }
 
   void _scrollListener() {
@@ -714,7 +714,6 @@ class _BookScreenState extends State<BookScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                print(widget.uId);
                 BlocProvider.of<NoteBloc>(context).add(AddNewNoteEvent(
                     bookId: widget.book.id,
                     content: selectedText,

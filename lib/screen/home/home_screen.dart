@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is BookLoaded) {
-              final book = state.books;
+              var book = state.books;
               return Column(
                 children: [
                   Padding(
@@ -133,32 +133,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
-                      if(state is AuthenticateState){
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const SectionTitle(title: 'Continue Reading'),
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/library',
-                                      );
-                                    },
-                                    icon: const Icon(Icons.more_horiz_outlined))
-                              ],
-                            ),
-                            ListBookHistory(
-                                books: book,
-                                scrollDirection: Axis.horizontal,
-                                height: 180,
-                                inLibrary: false),
-                          ],
+                      if (state is AuthenticateState) {
+                        final uId = state.authUser?.uid;
+                        return BlocBuilder<HistoryBloc, HistoryState>(
+                          builder: (context, state) {
+                            if (state is HistoryLoaded) {
+                              final listHistories = state.histories
+                                  .where((element) => element.uId == uId);
+                              if (listHistories.isNotEmpty) {
+                                book = book.where((item) => listHistories.any((historyItem) => historyItem.chapters == item.id) ).toList();
+                              }
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const SectionTitle(
+                                          title: 'Continue Reading'),
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/library',
+                                            );
+                                          },
+                                          icon: const Icon(
+                                              Icons.more_horiz_outlined))
+                                    ],
+                                  ),
+                                  ListBookHistory(
+                                      books: book,
+                                      scrollDirection: Axis.horizontal,
+                                      height: 180,
+                                      inLibrary: false),
+                                ],
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
                         );
-                      }
-                      else{
+                      } else {
                         return const SizedBox();
                       }
                     },
@@ -190,4 +206,5 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'Good evening!';
     }
   }
+
 }

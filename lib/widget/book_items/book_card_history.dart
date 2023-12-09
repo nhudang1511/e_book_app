@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -40,7 +38,7 @@ class BookCardHistory extends StatelessWidget {
               List<String> categoryNames = [];
               for (String categoryId in book.categoryId) {
                 Category? category = state.categories.firstWhere(
-                      (cat) => cat.id == categoryId,
+                  (cat) => cat.id == categoryId,
                 );
                 if (category != null) {
                   categoryNames.add(category.name);
@@ -55,56 +53,71 @@ class BookCardHistory extends StatelessWidget {
                       child: Column(
                         children: [
                           Expanded(
-                            flex: 2,
+                              flex: 2,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                Text(
-                              book.title,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall,
-                            ),
-                                BlocBuilder<AuthorBloc, AuthorState>(
-                              builder: (context, state) {
-                                if (state is AuthorLoading) {
-                                  return const Expanded(
-                                      child:
-                                      CircularProgressIndicator());
-                                }
-                                if (state is AuthorLoaded) {
-                                  Author? author =
-                                  state.authors.firstWhere(
-                                        (author) =>
-                                    author.id == book.authodId,
-                                  );
-                                  return Text(
-                                    author.fullName,
+                                  Text(
+                                    book.title,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headlineSmall!
-                                        .copyWith(
-                                        color:
-                                        const Color(0xFFC7C7C7),
-                                        fontWeight:
-                                        FontWeight.normal),
-                                  );
-                                } else {
-                                  return const Text(
-                                      "Something went wrong");
-                                }
-                              },
-                            ),
-                          ],)),
+                                        .headlineSmall,
+                                  ),
+                                  BlocBuilder<AuthorBloc, AuthorState>(
+                                    builder: (context, state) {
+                                      if (state is AuthorLoading) {
+                                        return const Expanded(
+                                            child: CircularProgressIndicator());
+                                      }
+                                      if (state is AuthorLoaded) {
+                                        Author? author =
+                                            state.authors.firstWhere(
+                                          (author) =>
+                                              author.id == book.authodId,
+                                        );
+                                        return Text(
+                                          author.fullName,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall!
+                                              .copyWith(
+                                                  color:
+                                                      const Color(0xFFC7C7C7),
+                                                  fontWeight:
+                                                      FontWeight.normal),
+                                        );
+                                      } else {
+                                        return const Text(
+                                            "Something went wrong");
+                                      }
+                                    },
+                                  ),
+                                ],
+                              )),
                           Expanded(
                             flex: 3,
-                            child: LinearPercentIndicator(
-                              animation: true,
-                              lineHeight: 10.0,
-                              animationDuration: 2500,
-                              percent: 0.8,
-                              center: const Text("", style: TextStyle(color: Colors.white),),
-                              progressColor: const Color(0xFF8C2EEE),
+                            child: BlocBuilder<HistoryBloc, HistoryState>(
+                              builder: (context, state) {
+                                double percent = 0.0;
+                                if(state is HistoryLoaded){
+                                  History? history =
+                                  state.histories.firstWhere(
+                                          (historyItem) =>
+                                      historyItem.chapters == book.id);
+                                  percent = double.parse((history.percent /100).toStringAsFixed(2));
+                                }
+                                return LinearPercentIndicator(
+                                  animation: true,
+                                  lineHeight: 10.0,
+                                  animationDuration: 2500,
+                                  percent: percent,
+                                  center: const Text(
+                                    "",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  progressColor: const Color(0xFF8C2EEE),
+                                );
+                              },
                             ),
                           ),
                         ],

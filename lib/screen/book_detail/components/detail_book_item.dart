@@ -91,7 +91,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                         final Map<String, dynamic> temp = {};
                         BlocProvider.of<ChaptersBloc>(context)
                             .add(LoadChapters(widget.book.id));
-                        BlocProvider.of<HistoryBloc>(context).add(LoadHistory(widget.book.id));
+                        BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
                         Navigator.pushNamed(context, '/book', arguments: {
                           'book': widget.book,
                           'uId': uId,
