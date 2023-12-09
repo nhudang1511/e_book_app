@@ -99,12 +99,12 @@ class BookCardHistory extends StatelessWidget {
                             child: BlocBuilder<HistoryBloc, HistoryState>(
                               builder: (context, state) {
                                 double percent = 0.0;
-                                if(state is HistoryLoaded){
-                                  History? history =
-                                  state.histories.firstWhere(
-                                          (historyItem) =>
-                                      historyItem.chapters == book.id);
-                                  percent = double.parse((history.percent /100).toStringAsFixed(2));
+                                if (state is HistoryLoaded) {
+                                  History? history = state.histories.firstWhere(
+                                      (historyItem) =>
+                                          historyItem.chapters == book.id);
+                                  percent = double.parse((history.percent / 100)
+                                      .toStringAsFixed(2));
                                 }
                                 return LinearPercentIndicator(
                                   animation: true,

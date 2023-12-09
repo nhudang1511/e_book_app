@@ -1,5 +1,3 @@
-import 'package:e_book_app/blocs/auth/auth_bloc.dart';
-import 'package:e_book_app/model/library_model.dart';
 import 'package:e_book_app/widget/book_items/list_book_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -164,17 +162,18 @@ class HistoriesTab extends StatelessWidget {
     return Scaffold(
       body: Center(
           child: SingleChildScrollView(
-              child: BlocBuilder<LibraryBloc, LibraryState>(
+              child: BlocBuilder<HistoryBloc, HistoryState>(
                 builder: (context, state) {
-                  if(state is LibraryLoaded){
-                    List<Library> libraries = state.libraries.where((element) => element.userId == uId ).toList();
+                  if(state is HistoryLoaded){
+                    final listHistories = state.histories
+                        .where((element) => element.uId == uId);
                     return BlocBuilder<BookBloc, BookState>(
                       builder: (context, state) {
                         if(state is BookLoaded){
                           List<Book> matchingBooks = state.books
                               .where((book) =>
-                              libraries.any((library) =>
-                              library.bookId == book.id))
+                              listHistories.any((item) =>
+                              item.chapters == book.id))
                               .toList();
                           if (matchingBooks.isNotEmpty) {
                             return ListBookHistory(
