@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 class History extends Equatable {
   final String uId;
   final String chapters;
-  final double percent;
+  final num percent;
   final int times;
   final Map<String,dynamic> chapterScrollPositions;
 

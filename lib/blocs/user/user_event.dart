@@ -19,13 +19,3 @@ class UpdateUser extends UserEvent{
   @override
   List<Object?> get props => [user];
 }
-class LoadListUser extends UserEvent {
-  @override
-  List<Object?> get props => [];
-}
-class UpdateListUser extends UserEvent{
-  final List<User> users;
-  const UpdateListUser(this.users);
-  @override
-  List<Object?> get props => [users];
-}

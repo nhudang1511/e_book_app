@@ -18,7 +18,7 @@ class UpdateHistory extends HistoryEvent{
 class AddToHistoryEvent extends HistoryEvent {
   final String uId;
   final String chapters;
-  final double percent;
+  final num percent;
   final int times;
   final Map<String, dynamic> chapterScrollPositions;
 

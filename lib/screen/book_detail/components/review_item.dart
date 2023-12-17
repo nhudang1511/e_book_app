@@ -126,7 +126,7 @@ class ReviewItemCard extends StatelessWidget {
                   spreadRadius: 1,
                 )
               ]),
-          child: BlocBuilder<UserBloc, UserState>(
+          child: BlocBuilder<ListUserBloc, ListUserState>(
             builder: (context, state) {
               if (state is ListUserLoaded) {
                 User? user = state.users.firstWhere(
@@ -180,7 +180,11 @@ class ReviewItemCard extends StatelessWidget {
                     ),
                   ],
                 );
-              } else {
+              }
+              else if(state is UserLoaded){
+                return Text('data');
+              }
+              else {
                 return const CircularProgressIndicator();
               }
             },

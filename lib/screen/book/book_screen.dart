@@ -49,13 +49,13 @@ class _BookScreenState extends State<BookScreen> {
   final ScrollController _scrollController = ScrollController();
   Map<String, double> tempChapterScrollPercentages = {};
   var totalChapters = 0;
-  double overallPercentage = 0;
+  num overallPercentage = 0;
   int times = 1;
   String localSelectedTableText = '';
   String localSelectedChapterId = '';
   bool isFirst = true;
   var chapterListMap;
-  var percent = 0.0;
+  num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
 
   @override
@@ -185,7 +185,7 @@ class _BookScreenState extends State<BookScreen> {
                                 snap.data!.docs.map((doc) {
                               return History.fromSnapshot(doc);
                             }).toList();
-                            List<double> percentList =
+                            List<num> percentList =
                                 histories.map((e) => e.percent).toList();
                             if (percentList.isNotEmpty) {
                               percent = percentList.first;
@@ -212,7 +212,6 @@ class _BookScreenState extends State<BookScreen> {
                                     b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
                                 return aNumber.compareTo(bNumber);
                               });
-                              print(historyListMap);
                               final first = historyListMap.last;
                               localSelectedChapterId = first['id'];
                               final chapterHistory = chapterListMap[

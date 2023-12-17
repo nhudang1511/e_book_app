@@ -36,6 +36,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -99,7 +100,7 @@ class _MyAppState extends State<MyApp> {
           )..add(LoadUser()),
         ),
         BlocProvider(
-          create: (_) => UserBloc(
+          create: (_) => ListUserBloc(
             authRepository: AuthRepository(),
             userRepository: UserRepository(),
           )..add(LoadListUser()),
@@ -131,6 +132,7 @@ class _MyAppState extends State<MyApp> {
         // themeMode: ThemeMode.system,
         onGenerateRoute: AppRouter.onGenerateRoute,
         initialRoute: SplashScreen.routeName,
+        navigatorKey: navigatorKey,
         // navigatorObservers: <NavigatorObserver>[MyApp.observer],
       ),
     );

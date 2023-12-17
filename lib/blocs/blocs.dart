@@ -8,3 +8,4 @@ export 'library/library_bloc.dart';
 export 'chapters/chapters_bloc.dart';
 export 'history/history_bloc.dart';
 export 'note/note_bloc.dart';
+export 'list_user/list_user_bloc.dart';
