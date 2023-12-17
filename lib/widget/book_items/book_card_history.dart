@@ -7,11 +7,12 @@ import '../../model/models.dart';
 class BookCardHistory extends StatelessWidget {
   final Book book;
   late bool inLibrary;
+  final num percent;
 
   BookCardHistory({
     super.key,
     required this.book,
-    required this.inLibrary,
+    required this.inLibrary, required this.percent,
   });
 
   @override

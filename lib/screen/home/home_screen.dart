@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       books: book,
                                       scrollDirection: Axis.horizontal,
                                       height: 180,
-                                      inLibrary: false),
+                                      inLibrary: false, percent: [],),
                                 ],
                               );
                             } else {

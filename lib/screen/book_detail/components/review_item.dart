@@ -181,9 +181,6 @@ class ReviewItemCard extends StatelessWidget {
                   ],
                 );
               }
-              else if(state is UserLoaded){
-                return Text('data');
-              }
               else {
                 return const CircularProgressIndicator();
               }

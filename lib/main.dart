@@ -101,7 +101,6 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (_) => ListUserBloc(
-            authRepository: AuthRepository(),
             userRepository: UserRepository(),
           )..add(LoadListUser()),
         ),
