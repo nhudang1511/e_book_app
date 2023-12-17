@@ -98,6 +98,12 @@ class _MyAppState extends State<MyApp> {
             userRepository: UserRepository(),
           )..add(LoadUser()),
         ),
+        BlocProvider(
+          create: (_) => UserBloc(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          )..add(LoadListUser()),
+        ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LibraryBloc(

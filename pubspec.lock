@@ -422,6 +422,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.17"
+  flutter_rating_bar:
+    dependency: transitive
+    description:
+      name: flutter_rating_bar
+      sha256: d2af03469eac832c591a1eba47c91ecc871fe5708e69967073c043b2d775ed93
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   flutter_secure_storage:
     dependency: transitive
     description:
@@ -470,14 +478,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  flutter_spinkit:
-    dependency: transitive
-    description:
-      name: flutter_spinkit
-      sha256: b39c753e909d4796906c5696a14daf33639a76e017136c8d82bf3e620ce5bb8e
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.2.0"
   flutter_svg:
     dependency: transitive
     description:
@@ -912,14 +912,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
-  rating:
+  rating_dialog:
     dependency: "direct main"
     description:
-      name: rating
-      sha256: db86bc1f778a6ef89f3aba98f170a12bb159387636e41acb3f491bf6b5f41324
+      name: rating_dialog
+      sha256: "4856ba266c255081f05c57148345ea13f0d86c4049859d66e14c47e2ab1f90d3"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-dev.1"
+    version: "2.0.4"
   readmore:
     dependency: "direct main"
     description:

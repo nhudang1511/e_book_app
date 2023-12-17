@@ -18,6 +18,8 @@ class UserBloc extends Bloc<UserEvent, UserState>{
   UserBloc({required AuthRepository authRepository, required UserRepository userRepository}): _authRepository = authRepository, _userRepository = userRepository, super(UserLoading()){
     on<LoadUser>(_onLoadUser);
     on<UpdateUser>(_onUpdateUser);
+    on<LoadListUser>(_onLoadListUser);
+    on<UpdateListUser>(_onUpdateListUser);
   }
   void _onLoadUser(LoadUser event, Emitter<UserState> emit) async {
     _authSubscription = _authRepository.user.listen((auth.User? authUser) {
@@ -30,6 +32,16 @@ class UserBloc extends Bloc<UserEvent, UserState>{
   }
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) async {
     emit(UserLoaded(user: event.user));
+  }
+  void _onLoadListUser(event, Emitter<UserState> emit) async{
+    _userSubscription?.cancel();
+    _userSubscription =
+        _userRepository
+            .getAllUsers()
+            .listen((event) => add(UpdateListUser(event)));
+  }
+  void _onUpdateListUser(event, Emitter<UserState> emit) async{
+    emit(ListUserLoaded(users: event.users));
   }
 
   @override

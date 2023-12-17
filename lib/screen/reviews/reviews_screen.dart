@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
@@ -56,6 +57,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               content: reviews['content'],
                               userId: reviews['userId'],
                               time: reviews['time'],
+                              rating: reviews['rating'],
                             );
                           } else {
                             // Nếu không phù hợp, trả về một widget rỗng hoặc null
@@ -70,46 +72,54 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                  controller: textEditingController,
-                  obscureText: false,
-                  decoration: InputDecoration(
-                      enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      fillColor: Colors.grey.shade200,
-                      filled: true,
-                      hintText: 'Please',
-                      hintStyle: TextStyle(color: Colors.grey[500])),
-                )),
-                IconButton(
-                    onPressed: () {
-                      if (textEditingController.text.isNotEmpty) {
-                        BlocProvider.of<ReviewBloc>(context).add(
-                            AddNewReviewEvent(
-                                bookId: widget.book.id,
-                                content: textEditingController.text,
-                                status: true,
-                                userId: current!.uid,
-                                time: Timestamp.now()));
-                        setState(() {
-                          textEditingController.clear();
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.arrow_circle_up)),
-                //Text(current!.uid)
-              ],
-            ),
-          )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          showDialog(
+            context: context,
+            barrierDismissible: true, // set to false if you want to force a rating
+            builder: (context) {
+              return RatingDialog(
+                initialRating: 1.0,
+                // your app's name?
+                title: const Text(
+                  'Rating Dialog',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // encourage your user to leave a high rating?
+                message: const Text(
+                  'Tap to rate the book',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15),
+                ),
+                // your app's logo?
+                image: Image.asset('assets/logo/logo.png', height: 100),
+                submitButtonText: 'Submit',
+                commentHint: 'Add your reviews',
+                onCancelled: () => print('cancelled'),
+                onSubmitted: (response) {
+                  //print('rating: ${response.rating}, comment: ${response.comment}');
+                  BlocProvider.of<ReviewBloc>(context).add(
+                      AddNewReviewEvent(
+                          bookId: widget.book.id,
+                          content: response.comment,
+                          status: true,
+                          userId: current!.uid,
+                          rating: response.rating.round(),
+                          time: Timestamp.now()));
+                },
+              );
+            }
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
+

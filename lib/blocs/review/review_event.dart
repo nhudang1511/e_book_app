@@ -27,13 +27,16 @@ class AddNewReviewEvent extends ReviewEvent {
   final bool status;
   final String userId;
   final Timestamp time;
+  final int rating;
 
   const AddNewReviewEvent(
       {required this.bookId,
       required this.content,
       required this.status,
       required this.userId,
-      required this.time});
+      required this.time,
+      required this.rating
+      });
 
   @override
   List<Object?> get props => [bookId, content, status, userId, time];

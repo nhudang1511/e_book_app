@@ -19,3 +19,10 @@ class UserLoaded extends UserState{
   @override
   List<Object?> get props => [user];
 }
+class ListUserLoaded extends UserState{
+  final List<User> users;
+
+  const ListUserLoaded({this.users = const <User>[]});
+  @override
+  List<Object?> get props => [users];
+}

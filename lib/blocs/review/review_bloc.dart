@@ -41,7 +41,8 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         content: event.content,
         status: event.status,
         userId: event.userId,
-        time: event.time);
+        time: event.time,
+        rating: event.rating);
     _reviewSubscription?.cancel();
     emit(ReviewLoading());
     try {

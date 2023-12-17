@@ -22,6 +22,15 @@ class UserRepository extends BaseUserRepository {
         .snapshots()
         .map((snap) => User.fromSnapshot(snap));
   }
+  @override
+  Stream<List<User>> getAllUsers() {
+    return _firebaseFirestore
+        .collection('user')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => User.fromSnapshot(doc)).toList();
+    });
+  }
 
   @override
   Future<void> updateUser(User user) async {
