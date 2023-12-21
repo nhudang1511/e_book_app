@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/models.dart';
 import '../screen/screen.dart';
 
-class AppRouter{
+class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
@@ -39,7 +39,8 @@ class AppRouter{
         return TextNotesScreen.route();
       case BookDetailScreen.routeName:
         if (settings.arguments is Map<String, dynamic>) {
-          final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+          final Map<String, dynamic> arguments =
+              settings.arguments as Map<String, dynamic>;
           final Book book = arguments['book'] as Book;
           final bool inLibrary = arguments['inLibrary'] as bool;
           return BookDetailScreen.route(book: book, inLibrary: inLibrary);
@@ -56,11 +57,19 @@ class AppRouter{
         }
       case BookScreen.routeName:
         if (settings.arguments is Map<String, dynamic>) {
-          final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+          final Map<String, dynamic> arguments =
+              settings.arguments as Map<String, dynamic>;
           final Book book = arguments['book'] as Book;
           final String uId = arguments['uId'] as String;
-          final Map<String,dynamic> chapterScrollPositions = arguments['chapterScrollPositions'] ;
-          return BookScreen.route(book: book, uId: uId, chapterScrollPositions: chapterScrollPositions);
+          final Map<String, dynamic> chapterScrollPositions =
+              arguments['chapterScrollPositions'];
+          final Map<String, dynamic> chapterScrollPercentages =
+          arguments['chapterScrollPercentages'];
+          return BookScreen.route(
+              book: book,
+              uId: uId,
+              chapterScrollPositions: chapterScrollPositions,
+              chapterScrollPercentages: chapterScrollPercentages);
         } else {
           // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
           return MainScreen.route();
@@ -78,11 +87,14 @@ class AppRouter{
         return _errorRoute();
     }
   }
-  static Route _errorRoute(){
+
+  static Route _errorRoute() {
     return MaterialPageRoute(
         settings: const RouteSettings(name: '/error'),
         builder: (_) => Scaffold(
-          appBar: AppBar(title: const Text('Error'),),
-        ));
+              appBar: AppBar(
+                title: const Text('Error'),
+              ),
+            ));
   }
 }

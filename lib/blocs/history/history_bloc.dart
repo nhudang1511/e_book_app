@@ -7,21 +7,29 @@ import '../../model/models.dart';
 import '../../repository/repository.dart';
 
 part 'history_event.dart';
+
 part 'history_state.dart';
 
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryRepository _historyRepository;
   StreamSubscription? _historySubscription;
+
   HistoryBloc({required HistoryRepository historyRepository})
       : _historyRepository = historyRepository,
-        super(HistoryInitial()){
+        super(HistoryInitial()) {
     on<AddToHistoryEvent>(_onAddToHistory);
     on<LoadHistory>(_onLoadHistory);
     on<UpdateHistory>(_onUpdateHistory);
   }
-  void _onAddToHistory(event, Emitter<HistoryState> emit) async{
-    final histories = History(uId: event.uId, chapters: event.chapters,
-        percent: event.percent, times: event.times, chapterScrollPositions: event.chapterScrollPositions);
+
+  void _onAddToHistory(event, Emitter<HistoryState> emit) async {
+    final histories = History(
+        uId: event.uId,
+        chapters: event.chapters,
+        percent: event.percent,
+        times: event.times,
+        chapterScrollPositions: event.chapterScrollPositions,
+        chapterScrollPercentages: event.chapterScrollPercentages);
     _historySubscription?.cancel();
     emit(HistoryLoading());
     try {
@@ -32,15 +40,16 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       emit(HistoryError('error in add'));
     }
   }
-  void _onLoadHistory(event, Emitter<HistoryState> emit) async{
+
+  void _onLoadHistory(event, Emitter<HistoryState> emit) async {
     emit(HistoryLoading());
     _historySubscription?.cancel();
-    _historySubscription =
-        _historyRepository
-            .getAllHistories()
-            .listen((event) => add(UpdateHistory(event)));
+    _historySubscription = _historyRepository
+        .getAllHistories()
+        .listen((event) => add(UpdateHistory(event)));
   }
-  void _onUpdateHistory(event, Emitter<HistoryState> emit) async{
+
+  void _onUpdateHistory(event, Emitter<HistoryState> emit) async {
     emit(HistoryLoaded(histories: event.histories));
   }
 }

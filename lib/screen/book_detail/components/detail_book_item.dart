@@ -88,14 +88,17 @@ class _DetailBookItemState extends State<DetailBookItem> {
                     width: MediaQuery.of(context).size.width - 20,
                     child: ElevatedButton(
                       onPressed: () {
-                        final Map<String, dynamic> temp = {};
+                        final Map<String, dynamic> tempPosition = {};
+                        final Map<String, dynamic> tempPercent = {};
                         BlocProvider.of<ChaptersBloc>(context)
                             .add(LoadChapters(widget.book.id));
-                        BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
+                        BlocProvider.of<HistoryBloc>(context)
+                            .add(LoadHistory());
                         Navigator.pushNamed(context, '/book', arguments: {
                           'book': widget.book,
                           'uId': uId,
-                          'chapterScrollPositions': temp
+                          'chapterScrollPositions': tempPosition,
+                          'chapterScrollPercentages': tempPercent,
                         });
                       },
                       child: const Text('READ',

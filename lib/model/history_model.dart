@@ -6,18 +6,26 @@ class History extends Equatable {
   final String chapters;
   final num percent;
   final int times;
-  final Map<String,dynamic> chapterScrollPositions;
+  final Map<String, dynamic> chapterScrollPositions;
+  final Map<String, dynamic> chapterScrollPercentages;
 
   const History(
       {required this.uId,
       required this.chapters,
       required this.percent,
       required this.times,
-      required this.chapterScrollPositions});
+      required this.chapterScrollPositions,
+      required this.chapterScrollPercentages});
 
   @override
-  List<Object?> get props =>
-      [uId, chapters, percent, times, chapterScrollPositions];
+  List<Object?> get props => [
+        uId,
+        chapters,
+        percent,
+        times,
+        chapterScrollPositions,
+        chapterScrollPercentages
+      ];
 
   Map<String, Object> toDocument() {
     return {
@@ -25,7 +33,8 @@ class History extends Equatable {
       'chapters': chapters,
       'percent': percent,
       'times': times,
-      'chapterScrollPositions': chapterScrollPositions
+      'chapterScrollPositions': chapterScrollPositions,
+      'chapterScrollPercentages': chapterScrollPercentages
     };
   }
 
@@ -35,7 +44,8 @@ class History extends Equatable {
         chapters: snap['chapters'],
         percent: snap['percent'],
         times: snap['times'],
-        chapterScrollPositions: snap['chapterScrollPositions']);
+        chapterScrollPositions: snap['chapterScrollPositions'],
+        chapterScrollPercentages: snap['chapterScrollPercentages']);
     return history;
   }
 }

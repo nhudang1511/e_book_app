@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/models.dart';
 import 'base_history_repository.dart';
 
-class HistoryRepository extends BaseHistoryRepository{
-
+class HistoryRepository extends BaseHistoryRepository {
   final FirebaseFirestore _firebaseFirestore;
 
   HistoryRepository({FirebaseFirestore? firebaseFirestore})
@@ -26,10 +25,14 @@ class HistoryRepository extends BaseHistoryRepository{
 
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
-        var existingData = doc.data() as Map<String, dynamic>;
+        var existingData = doc.data();
 
         // Lấy giá trị chapterScrollPositions từ Firebase
-        var existingChapterScrollPositions = existingData['chapterScrollPositions'] as Map<String, dynamic> ?? {};
+        var existingChapterScrollPositions =
+            existingData['chapterScrollPositions'] as Map<String, dynamic>;
+        var existingChapterScrollPercentages =
+            existingData['chapterScrollPercentages'] as Map<String, dynamic>;
+        var existingOverallPercentage = existingData['overallPercentage'];
 
         // Cập nhật giá trị chapterScrollPositions, times và percent mới
         var updatedData = {
@@ -39,6 +42,10 @@ class HistoryRepository extends BaseHistoryRepository{
             ...existingChapterScrollPositions,
             ...history.chapterScrollPositions,
           },
+          'chapterScrollPercentages': {
+            ...existingChapterScrollPercentages,
+            ...history.chapterScrollPercentages
+          }
         };
 
         await doc.reference.update(updatedData);
@@ -47,6 +54,7 @@ class HistoryRepository extends BaseHistoryRepository{
         await _firebaseFirestore.collection('histories').add({
           ...history.toDocument(),
           'chapterScrollPositions': history.chapterScrollPositions,
+          'chapterScrollPercentages': history.chapterScrollPercentages
         });
       }
     } catch (e) {
@@ -63,6 +71,7 @@ class HistoryRepository extends BaseHistoryRepository{
       return snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
     });
   }
+
   @override
   Stream<History> getHistories(String bookId) {
     if (bookId.isEmpty) {
@@ -73,15 +82,20 @@ class HistoryRepository extends BaseHistoryRepository{
         .collection('histories')
         .where('chapters', isEqualTo: bookId)
         .snapshots()
-        .map((snapshot)  {
+        .map((snapshot) {
       if (snapshot.docs.isNotEmpty) {
         return History.fromSnapshot(snapshot.docs.first);
       } else {
         // If no documents are found, return a default or handle it as needed.
         // Here, returning an empty History object for illustration.
-        return const History(uId: '', chapters: '', percent: 0.0, times: 0, chapterScrollPositions: {}); // Replace with appropriate handling.
+        return const History(
+            uId: '',
+            chapters: '',
+            percent: 0.0,
+            times: 0,
+            chapterScrollPositions: {},
+            chapterScrollPercentages: {}); // Replace with appropriate handling.
       }
     });
   }
-
 }
