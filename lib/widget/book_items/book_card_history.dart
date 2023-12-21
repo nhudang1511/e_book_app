@@ -12,7 +12,8 @@ class BookCardHistory extends StatelessWidget {
   BookCardHistory({
     super.key,
     required this.book,
-    required this.inLibrary, required this.percent,
+    required this.inLibrary,
+    required this.percent,
   });
 
   @override
@@ -97,29 +98,29 @@ class BookCardHistory extends StatelessWidget {
                               )),
                           Expanded(
                             flex: 3,
-                            child: BlocBuilder<HistoryBloc, HistoryState>(
-                              builder: (context, state) {
-                                double percent = 0.0;
-                                if (state is HistoryLoaded) {
-                                  History? history = state.histories.firstWhere(
-                                      (historyItem) =>
-                                          historyItem.chapters == book.id);
-                                  percent = double.parse((history.percent / 100)
-                                      .toStringAsFixed(2));
-                                }
-                                return LinearPercentIndicator(
-                                  animation: true,
-                                  lineHeight: 10.0,
-                                  animationDuration: 2500,
-                                  percent: percent,
-                                  center: const Text(
-                                    "",
-                                    style: TextStyle(color: Colors.white),
+                            child: percent.isNaN
+                                ? LinearPercentIndicator(
+                                    animation: true,
+                                    lineHeight: 10.0,
+                                    animationDuration: 2500,
+                                    percent: 0,
+                                    center: const Text(
+                                      "",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    progressColor: const Color(0xFF8C2EEE),
+                                  )
+                                : LinearPercentIndicator(
+                                    animation: true,
+                                    lineHeight: 10.0,
+                                    animationDuration: 2500,
+                                    percent: percent / 100,
+                                    center: const Text(
+                                      "",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    progressColor: const Color(0xFF8C2EEE),
                                   ),
-                                  progressColor: const Color(0xFF8C2EEE),
-                                );
-                              },
-                            ),
                           ),
                         ],
                       ))

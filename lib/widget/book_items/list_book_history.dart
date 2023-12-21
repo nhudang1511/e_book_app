@@ -9,7 +9,8 @@ class ListBookHistory extends StatelessWidget {
   final double height;
   final bool inLibrary;
   final List<num> percent;
-  const ListBookHistory({super.key, required this.books, required this.scrollDirection, required this.height, required this.inLibrary, required this.percent});
+  final bool scroll;
+  const ListBookHistory({super.key, required this.books, required this.scrollDirection, required this.height, required this.inLibrary, required this.percent, required this.scroll});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,7 @@ class ListBookHistory extends StatelessWidget {
       height: height,
       child: ListView.builder(
           scrollDirection: scrollDirection,
+          physics: scroll ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
           itemCount: books.length,
           itemBuilder: (context,index){
             return BookCardHistory(book: books[index], inLibrary: inLibrary, percent: percent[index]);

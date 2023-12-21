@@ -120,11 +120,14 @@ class _BookScreenState extends State<BookScreen> {
         if (overallPercentage < percent) {
           overallPercentage = percent;
         }
+        if (overallPercentage.isNaN) {
+          overallPercentage = 0;
+        }
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
             chapters: widget.book.id,
             percent: overallPercentage,
-            times: 1,
+            times: times,
             chapterScrollPositions: widget.chapterScrollPositions));
         return true;
       },
@@ -173,18 +176,15 @@ class _BookScreenState extends State<BookScreen> {
                       localSelectedTableText = chapter['title'];
                       localSelectedChapterId = chapter['id'];
                     }
-                    return StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('histories')
-                            .where('chapters', isEqualTo: widget.book.id)
-                            .where('uId', isEqualTo: widget.uId)
-                            .snapshots(),
-                        builder: (context, snap) {
-                          if (snap.hasData) {
-                            List<History> histories =
-                                snap.data!.docs.map((doc) {
-                              return History.fromSnapshot(doc);
-                            }).toList();
+                    return BlocBuilder<HistoryBloc, HistoryState>(
+                      builder: (context, state) {
+                        if (state is HistoryLoaded) {
+                          final histories = state.histories
+                              .where((history) =>
+                                  history.chapters == widget.book.id &&
+                                  history.uId == widget.uId)
+                              .toList();
+                          if (histories.isNotEmpty) {
                             List<num> percentList =
                                 histories.map((e) => e.percent).toList();
                             if (percentList.isNotEmpty) {
@@ -223,6 +223,8 @@ class _BookScreenState extends State<BookScreen> {
                                 });
                               }
                             }
+                          } else {
+                            //print('is empty');
                           }
                           return SelectableText(
                             isFirst
@@ -329,7 +331,12 @@ class _BookScreenState extends State<BookScreen> {
                               });
                             },
                           );
-                        });
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                      },
+                    );
                   },
                 )),
           ],

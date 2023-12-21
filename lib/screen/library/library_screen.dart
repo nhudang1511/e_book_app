@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_book_app/widget/book_items/list_book_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
-import '../../model/models.dart';
-import '../../widget/book_items/list_book_main.dart';
 import '../../widget/widget.dart';
 import '../screen.dart';
+import 'components/favourites_tab.dart';
+import 'components/histories_tab.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -152,111 +150,3 @@ class _CustomTabState extends State<CustomTab> {
   }
 }
 
-class HistoriesTab extends StatelessWidget {
-  const HistoriesTab({super.key, required this.uId});
-
-  final String uId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: SingleChildScrollView(
-              child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('histories')
-            .where('uId', isEqualTo: uId)
-            .snapshots(),
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.hasData) {
-            List<History> histories = snapshot.data!.docs.map((doc) {
-              return History.fromSnapshot(doc);
-            }).toList();
-            //print(histories);
-            return BlocBuilder<BookBloc, BookState>(
-              builder: (context, state) {
-                if (state is BookLoaded) {
-                  List<Book> matchingBooks = state.books
-                      .where((book) =>
-                          histories.any((item) => item.chapters == book.id))
-                      .toList();
-                  if (matchingBooks.isNotEmpty) {
-                    List<num> percent = [];
-                    for (var book in matchingBooks) {
-                      List<History> matchedHistories = histories
-                          .where((item) => item.chapters == book.id)
-                          .toList();
-                      for (var history in matchedHistories) {
-                        //print('Book ID: ${book.id}, Percent: ${history.percent}');
-                        // Do something with history.percent here
-                        percent.add(history.percent);
-                      }
-                    }
-                    return ListBookHistory(
-                        books: matchingBooks,
-                        scrollDirection: Axis.vertical,
-                        height: MediaQuery.of(context).size.height - 50,
-                        inLibrary: true, percent: percent,);
-                  } else {
-                    return const Text('No matching books found');
-                  }
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              },
-            );
-          } else {
-            return const CircularProgressIndicator();
-          }
-        },
-      ))),
-    );
-  }
-}
-
-class FavouritesTab extends StatelessWidget {
-  const FavouritesTab({super.key, required this.uId});
-
-  final String uId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child:
-            SingleChildScrollView(child: BlocBuilder<LibraryBloc, LibraryState>(
-          builder: (context, state) {
-            if (state is LibraryLoaded) {
-              List<Library> libraries = state.libraries
-                  .where((element) => element.userId == uId)
-                  .toList();
-              return BlocBuilder<BookBloc, BookState>(
-                builder: (context, state) {
-                  if (state is BookLoaded) {
-                    List<Book> matchingBooks = state.books
-                        .where((book) => libraries
-                            .any((library) => library.bookId == book.id))
-                        .toList();
-                    if (matchingBooks.isNotEmpty) {
-                      return ListBookMain(
-                          books: matchingBooks,
-                          scrollDirection: Axis.vertical,
-                          height: MediaQuery.of(context).size.height - 50,
-                          inLibrary: true);
-                    } else {
-                      return const Text('No matching books found');
-                    }
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                },
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        )),
-      ),
-    );
-  }
-}

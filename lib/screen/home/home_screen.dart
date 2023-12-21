@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
 import '../../widget/widget.dart';
+import '../library/components/histories_tab.dart';
 import 'components/custom_appbar_home.dart';
 import 'components/list_quote.dart';
 
@@ -135,44 +136,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, state) {
                       if (state is AuthenticateState) {
                         final uId = state.authUser?.uid;
-                        return BlocBuilder<HistoryBloc, HistoryState>(
-                          builder: (context, state) {
-                            if (state is HistoryLoaded) {
-                              final listHistories = state.histories
-                                  .where((element) => element.uId == uId);
-                              if (listHistories.isNotEmpty) {
-                                book = book.where((item) => listHistories.any((historyItem) => historyItem.chapters == item.id) ).toList();
-                              }
-                              return Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const SectionTitle(
-                                          title: 'Continue Reading'),
-                                      IconButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/library',
-                                            );
-                                          },
-                                          icon: const Icon(
-                                              Icons.more_horiz_outlined))
-                                    ],
-                                  ),
-                                  ListBookHistory(
-                                      books: book,
-                                      scrollDirection: Axis.horizontal,
-                                      height: 180,
-                                      inLibrary: false, percent: [],),
-                                ],
-                              );
-                            } else {
-                              return const SizedBox();
-                            }
-                          },
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SectionTitle(title: 'Continue Reading'),
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/library',
+                                      );
+                                    },
+                                    icon: const Icon(Icons.more_horiz_outlined))
+                              ],
+                            ),
+                            DisplayHistories(
+                              uId: uId,
+                              scrollDirection: Axis.horizontal,
+                              height: 180,
+                              scroll: true,
+                            )
+                          ],
                         );
                       } else {
                         return const SizedBox();
@@ -206,5 +192,4 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'Good evening!';
     }
   }
-
 }
