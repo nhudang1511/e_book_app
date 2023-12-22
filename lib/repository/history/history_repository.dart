@@ -32,8 +32,6 @@ class HistoryRepository extends BaseHistoryRepository {
             existingData['chapterScrollPositions'] as Map<String, dynamic>;
         var existingChapterScrollPercentages =
             existingData['chapterScrollPercentages'] as Map<String, dynamic>;
-        var existingOverallPercentage = existingData['overallPercentage'];
-
         // Cập nhật giá trị chapterScrollPositions, times và percent mới
         var updatedData = {
           'percent': history.percent,

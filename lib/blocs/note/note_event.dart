@@ -54,3 +54,20 @@ class RemoveNoteEvent extends NoteEvent {
   @override
   List<Object?> get props => [bookId, content, title, userId, noteId];
 }
+class EditNoteEvent extends NoteEvent {
+  final String content;
+  final String bookId;
+  final String title;
+  final String userId;
+  final String noteId;
+
+  const EditNoteEvent({
+    required this.bookId,
+    required this.content,
+    required this.title,
+    required this.userId,
+    required this.noteId
+  });
+  @override
+  List<Object?> get props => [bookId, content, title, userId, noteId];
+}

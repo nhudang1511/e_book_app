@@ -27,4 +27,12 @@ class NoteRepository extends BaseNoteRepository{
     return _firebaseFirestore
         .collection('notes').doc(note.noteId).delete();
   }
+
+  @override
+  Future<void> editNote(Note note) {
+    return _firebaseFirestore
+        .collection('notes')
+        .doc(note.noteId)
+        .update(note.toDocument());
+  }
 }
