@@ -19,6 +19,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
     on<LoadedNote>(_onLoadNote);
     on<UpdateNote>(_onUpdateNote);
     on<AddNewNoteEvent>(_onAddNewNote);
+    on<RemoveNoteEvent>(_onRemoveNote);
   }
 
   void _onLoadNote(event, Emitter<NoteState> emit) async {
@@ -37,11 +38,28 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
         bookId: event.bookId,
         content: event.content,
         title: event.title,
-        uId: event.userId);
+        uId: event.userId,
+      noteId: ''
+    );
     _noteSubscription?.cancel();
     emit(NoteLoading());
     try {
       await _noteRepository.addNote(note);
+      emit(NoteLoaded(notes: event.notes));
+    } catch (e) {
+      emit(const NoteError('error'));
+    }
+  }
+  void _onRemoveNote(event, Emitter<NoteState> emit) async {
+    final note = Note(
+        bookId: event.bookId,
+        content: event.content,
+        title: event.title,
+        uId: event.userId, noteId: event.noteId);
+    _noteSubscription?.cancel();
+    emit(NoteLoading());
+    try {
+      await _noteRepository.removeNote(note);
       emit(NoteLoaded(notes: event.notes));
     } catch (e) {
       emit(const NoteError('error'));

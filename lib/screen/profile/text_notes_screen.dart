@@ -7,6 +7,7 @@ import '../../model/models.dart';
 
 class TextNotesScreen extends StatefulWidget {
   final User user;
+
   const TextNotesScreen({super.key, required this.user});
 
   static const String routeName = '/text_notes';
@@ -14,7 +15,7 @@ class TextNotesScreen extends StatefulWidget {
   static Route route({required User user}) {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (_) =>  TextNotesScreen(user: user),
+      builder: (_) => TextNotesScreen(user: user),
     );
   }
 
@@ -24,14 +25,12 @@ class TextNotesScreen extends StatefulWidget {
 
 class _TextNotesScreenState extends State<TextNotesScreen> {
   @override
-  void initState(){
+  void initState() {
     super.initState();
     BlocProvider.of<NoteBloc>(context).add(LoadedNote());
   }
   @override
   Widget build(BuildContext context) {
-    final currentHeight = MediaQuery.of(context).size.height;
-    final currentWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: const CustomAppBar(
@@ -41,8 +40,10 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
         children: [
           BlocBuilder<NoteBloc, NoteState>(
             builder: (context, state) {
-              if(state is NoteLoaded){
-                var listNotes = state.notes.where((element) => element.uId == widget.user.id).toList();
+              if (state is NoteLoaded) {
+                var listNotes = state.notes
+                    .where((element) => element.uId == widget.user.id)
+                    .toList();
                 // print(listNotes);
                 return Expanded(
                   child: ListView.builder(
@@ -50,16 +51,11 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
                     itemCount: listNotes.length,
                     itemBuilder: (BuildContext context, int index) {
                       // double noteHeight = 200 ;
-                      return TextNoteCard(
-                        title: listNotes[index].title,
-                        content: listNotes[index].content,
-                        bookName: listNotes[index].bookId,
-                      );
+                      return TextNoteCard(note: listNotes[index]);
                     },
                   ),
                 );
-              }
-              else{
+              } else {
                 return const Center(child: CircularProgressIndicator());
               }
             },

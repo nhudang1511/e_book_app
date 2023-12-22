@@ -20,9 +20,15 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
   }
   void _onLoadListUser(event, Emitter<ListUserState> emit) async {
     _userSubscription?.cancel();
-    _userSubscription = _userRepository
-        .getAllUsers()
-        .listen((event) => add(UpdateListUser(event)));
+    try{
+      _userSubscription = _userRepository
+          .getAllUsers()
+          .listen((event) => add(UpdateListUser(event)));
+    }
+    catch (e){
+      print('Error: $e');
+    }
+
   }
 
   void _onUpdateListUser(event, Emitter<ListUserState> emit) async {

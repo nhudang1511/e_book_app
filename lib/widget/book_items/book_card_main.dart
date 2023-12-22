@@ -127,7 +127,7 @@ class BookCardMain extends StatelessWidget {
                                             context: context,
                                             builder: (BuildContext context) {
                                               _timer = Timer(
-                                                  const Duration(seconds: 5),
+                                                  const Duration(seconds: 1),
                                                   () {
                                                 BlocProvider.of<LibraryBloc>(
                                                         context)
