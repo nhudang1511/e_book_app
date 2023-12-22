@@ -5,6 +5,7 @@ import 'package:translator/translator.dart';
 import 'package:material_dialogs/dialogs.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import 'components/normal_void.dart';
 
 class BookScreen extends StatefulWidget {
   static const String routeName = '/book';
@@ -102,42 +103,11 @@ class _BookScreenState extends State<BookScreen> {
       fontSize += 2.0; // You can adjust the increment as needed
     });
   }
-
   void decreaseFontSize() {
     setState(() {
       fontSize -= 2.0;
     });
   }
-
-  int? numberInString(String? words) {
-    if (words == null) return null;
-    RegExp regex = RegExp(r'\d+');
-    var matches = regex.allMatches(words);
-    if (matches.isEmpty) return null;
-    return int.parse(matches.first.group(0)!);
-  }
-
-  Map<String, dynamic> mergePercentages(Map<String, dynamic> percentListMap,
-      Map<String, dynamic> chapterScrollPercentages) {
-    Map<String, dynamic> mergedPercentages = chapterScrollPercentages;
-
-    // Add values from percentListMap to mergedPercentages
-    for (var entry in percentListMap.entries) {
-      String id = entry.key;
-      num percentage = entry.value ?? 0; // Assign 0 if the percentage is null
-
-      // Check if the ID exists in chapterScrollPercentages
-      if (chapterScrollPercentages.containsKey(id)) {
-        // If the ID exists in both, prioritize value from chapterScrollPercentages
-        mergedPercentages[id] = chapterScrollPercentages[id];
-      } else {
-        // If the ID doesn't exist in chapterScrollPercentages, add it to mergedPercentages
-        mergedPercentages[id] = percentage;
-      }
-    }
-    return mergedPercentages;
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -148,7 +118,6 @@ class _BookScreenState extends State<BookScreen> {
         if (overallPercentage.isNaN) {
           overallPercentage = 0;
         }
-        print(overallPercentage);
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
             chapters: widget.book.id,
@@ -711,6 +680,8 @@ class _BookScreenState extends State<BookScreen> {
                                         color: Colors.white, width: 2)),
                                 child: Text(
                                   selectedText,
+                                  maxLines: 5,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(color: Colors.white),
                                 ))
                             : TextFormField(

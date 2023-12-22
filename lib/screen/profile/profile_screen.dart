@@ -270,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 CustomInkwell(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/text_notes');
+                                          context, '/text_notes', arguments: state.user);
                                     },
                                     mainIcon: Icon(
                                       Icons.edit_note,

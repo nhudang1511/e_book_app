@@ -37,40 +37,37 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       appBar: const CustomAppBar(title: 'Reviews'),
       body: Column(
         children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('review')
-                  .orderBy("time", descending: false)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          final reviews = snapshot.data!.docs[index];
-                          if (reviews['bookId'] == widget.book.id) {
-                            return ReviewItemCard(
-                              content: reviews['content'],
-                              userId: reviews['userId'],
-                              time: reviews['time'],
-                              rating: reviews['rating'],
-                            );
-                          } else {
-                            // Nếu không phù hợp, trả về một widget rỗng hoặc null
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                  );
-                }
-                else {
-                  return const Text('something went wrong');
-                }
-              },
-            ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('review')
+                .orderBy("time", descending: false)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Expanded(
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final reviews = snapshot.data!.docs[index];
+                        if (reviews['bookId'] == widget.book.id) {
+                          return ReviewItemCard(
+                            content: reviews['content'],
+                            userId: reviews['userId'],
+                            time: reviews['time'],
+                            rating: reviews['rating'],
+                          );
+                        } else {
+                          // Nếu không phù hợp, trả về một widget rỗng hoặc null
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                );
+              }
+              else {
+                return const Text('something went wrong');
+              }
+            },
           ),
         ],
       ),

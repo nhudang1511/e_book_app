@@ -52,7 +52,6 @@ class DisplayHistories extends StatelessWidget {
           List<History> histories = snapshot.data!.docs.map((doc) {
             return History.fromSnapshot(doc);
           }).toList();
-          //print(histories);
           return BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
               if (state is BookLoaded) {

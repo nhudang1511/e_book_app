@@ -36,7 +36,12 @@ class AppRouter {
       case SignupScreen.routeName:
         return SignupScreen.route();
       case TextNotesScreen.routeName:
-        return TextNotesScreen.route();
+        if (settings.arguments is User) {
+          return TextNotesScreen.route(user: settings.arguments as User);
+        } else {
+          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
+          return MainScreen.route();
+        }
       case BookDetailScreen.routeName:
         if (settings.arguments is Map<String, dynamic>) {
           final Map<String, dynamic> arguments =

@@ -1,18 +1,33 @@
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TextNotesScreen extends StatelessWidget {
-  const TextNotesScreen({super.key});
+import '../../blocs/blocs.dart';
+import '../../model/models.dart';
+
+class TextNotesScreen extends StatefulWidget {
+  final User user;
+  const TextNotesScreen({super.key, required this.user});
 
   static const String routeName = '/text_notes';
 
-  static Route route() {
+  static Route route({required User user}) {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (_) => const TextNotesScreen(),
+      builder: (_) =>  TextNotesScreen(user: user),
     );
   }
 
+  @override
+  State<TextNotesScreen> createState() => _TextNotesScreenState();
+}
+
+class _TextNotesScreenState extends State<TextNotesScreen> {
+  @override
+  void initState(){
+    super.initState();
+    BlocProvider.of<NoteBloc>(context).add(LoadedNote());
+  }
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
@@ -22,40 +37,34 @@ class TextNotesScreen extends StatelessWidget {
       appBar: const CustomAppBar(
         title: "Text notes",
       ),
-      body: const SingleChildScrollView(
-        child: Column(
-          children: [
-            TextNoteCard(
-              title: 'Trích đoạn hay',
-              content:
-                  "Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...họp cùng anh chị em hàng xóm quanh bờ ruộng,...",
-              time: "24/09/2023 tại Dế mèn phiêu lưu ký",
-            ),
-            TextNoteCard(
-              title: 'Trích đoạn hay',
-              content:
-                  "Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...họp cùng anh chị em hàng xóm quanh bờ ruộng,...",
-              time: "24/09/2023 tại Dế mèn phiêu lưu ký",
-            ),
-            TextNoteCard(
-              title: 'Trích đoạn hay',
-              content:
-                  "Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...họp cùng anh chị em hàng xóm quanh bờ ruộng,...",
-              time: "24/09/2023 tại Dế mèn phiêu lưu ký",
-            ),
-            TextNoteCard(
-              title: 'Trích đoạn hay',
-              content:
-                  "Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...họp cùng anh chị em hàng xóm quanh bờ ruộng,...",
-              time: "24/09/2023 tại Dế mèn phiêu lưu ký",
-            ),
-            TextNoteCard(
-                title: 'Trích đoạn hay',
-                content:
-                    "Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...Chập tối, tôi tạm nghỉ tay và ra đứng ngoài cửa, họp cùng anh chị em hàng xóm quanh bờ ruộng,...họp cùng anh chị em hàng xóm quanh bờ ruộng,...",
-                time: "24/09/2023 tại Dế mèn phiêu lưu ký"),
-          ],
-        ),
+      body: Column(
+        children: [
+          BlocBuilder<NoteBloc, NoteState>(
+            builder: (context, state) {
+              if(state is NoteLoaded){
+                var listNotes = state.notes.where((element) => element.uId == widget.user.id).toList();
+                // print(listNotes);
+                return Expanded(
+                  child: ListView.builder(
+                    // physics: const NeverScrollableScrollPhysics(),
+                    itemCount: listNotes.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      // double noteHeight = 200 ;
+                      return TextNoteCard(
+                        title: listNotes[index].title,
+                        content: listNotes[index].content,
+                        bookName: listNotes[index].bookId,
+                      );
+                    },
+                  ),
+                );
+              }
+              else{
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ],
       ),
     );
   }
