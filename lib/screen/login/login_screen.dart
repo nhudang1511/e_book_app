@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           InkWell(
                             onTap: () {
                               Navigator.pushNamed(
-                                  context, "/choose_recovery_method");
+                                  context, "/enter_email");
                             },
                             child: Text(
                               "Forgot Password?",

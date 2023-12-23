@@ -9,8 +9,6 @@ class AppRouter {
         return MainScreen.route();
       case ChangePasswordScreen.routeName:
         return ChangePasswordScreen.route();
-      case ChooseRecoveryMethodScreen.routeName:
-        return ChooseRecoveryMethodScreen.route();
       case EnterEmailScreen.routeName:
         return EnterEmailScreen.route();
       case EnterNewPasswordScreen.routeName:

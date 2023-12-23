@@ -15,10 +15,12 @@ abstract class BaseAuthRepository {
 
   Future<void> signOut();
 
-  Future<bool> changePassword({required String newPassword});
+  Future<bool> changePassword({required String newPassword, required String oldPassword,});
 
   Future<auth.User?> logInWithGoogle();
 
   Future<auth.User?> logInWithFacebook();
+
+  Future<bool> forgotPassword(String email);
 
 }

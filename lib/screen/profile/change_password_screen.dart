@@ -37,7 +37,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   bool validatePassword(String value) {
     String pattern =
-        r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$";
+        r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()\-_+=<>?/{}[\]]{8,}$";
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(value);
   }
@@ -114,7 +114,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           InkWell(
                             onTap: () {
                               Navigator.pushNamed(
-                                  context, "/choose_recovery_method");
+                                  context, "/enter_email");
                             },
                             child: Text(
                               "Forgot Password?",

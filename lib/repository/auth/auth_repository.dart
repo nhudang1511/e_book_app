@@ -54,12 +54,23 @@ class AuthRepository extends BaseAuthRepository {
   Stream<User?> get user => _firebaseAuth.authStateChanges();
 
   @override
-  Future<bool> changePassword({required String newPassword}) async {
-    bool success = false;
-    await _firebaseAuth.currentUser
-        ?.updatePassword(newPassword)
-        .then((_) => {success = true});
-    return success;
+  Future<bool> changePassword({required String newPassword, required String oldPassword}) async {
+    try {
+      bool success = false;
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: _firebaseAuth.currentUser!.email!,
+        password: oldPassword,
+      );
+      UserCredential? authResult = await _firebaseAuth.currentUser
+          ?.reauthenticateWithCredential(credential);
+      // Thực hiện xác thực lại người dùng
+      await _firebaseAuth.currentUser
+          ?.updatePassword(newPassword)
+          .then((_) => {success = true});
+      return success;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   @override
@@ -104,6 +115,17 @@ class AuthRepository extends BaseAuthRepository {
     }
   }
 
-
-
+  @override
+  Future<bool> forgotPassword(String email) async {
+    try {
+      bool status = false;
+      await _firebaseAuth
+          .sendPasswordResetEmail(email: email)
+          .then((value) => status = true)
+          .catchError((e) => status = false);
+      return status;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }
