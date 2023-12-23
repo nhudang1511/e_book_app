@@ -1,15 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_dialogs/dialogs.dart';
-
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 
 class TextNoteCard extends StatefulWidget {
   final Note note;
-
-  // final double height;
-
   const TextNoteCard({super.key, required this.note});
 
   @override
@@ -19,6 +15,7 @@ class TextNoteCard extends StatefulWidget {
 class _TextNoteCardState extends State<TextNoteCard> {
   TextEditingController titleContentController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+  late Timer _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +51,22 @@ class _TextNoteCardState extends State<TextNoteCard> {
                                 title: widget.note.title,
                                 userId: widget.note.uId,
                                 noteId: widget.note.noteId));
-                        setState(() {
-                          BlocProvider.of<NoteBloc>(context)
-                              .add(LoadedNote());
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            _timer = Timer(
+                                const Duration(seconds: 1),
+                                    () {
+                                      BlocProvider.of<NoteBloc>(context)
+                                          .add(LoadedNote());
+                                  Navigator.of(context).pop();
+                                });
+                            return const Center(child: CircularProgressIndicator());
+                          },
+                        ).then((value) {
+                          if (_timer.isActive) {
+                            _timer.cancel();
+                          }
                         });
                       }, icon: const Icon(Icons.delete, color: Colors.white,)),
                       IconButton(onPressed: (){
@@ -207,10 +217,13 @@ class _TextNoteCardState extends State<TextNoteCard> {
                         : note.title,
                     userId: note.uId,
                     noteId: note.noteId));
-                setState(() {
-                  BlocProvider.of<NoteBloc>(context).add(LoadedNote());
-                });
-                Navigator.of(context).pop();
+                _timer = Timer(
+                    const Duration(seconds: 1),
+                        () {
+                      BlocProvider.of<NoteBloc>(context)
+                          .add(LoadedNote());
+                      Navigator.of(context).pop();
+                    });
               },
               child: const Text(
                 'Save',

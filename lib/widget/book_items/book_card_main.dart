@@ -134,12 +134,7 @@ class BookCardMain extends StatelessWidget {
                                                     .add(LoadLibrary());
                                                 Navigator.of(context).pop();
                                               });
-                                              return CustomDialogNotice(
-                                                title: Icons.downloading,
-                                                content: inLibrary
-                                                    ? 'Wait to Add '
-                                                    : 'Wait to Removing',
-                                              );
+                                              return const Center(child: CircularProgressIndicator(),);
                                             },
                                           ).then((value) {
                                             if (_timer.isActive) {

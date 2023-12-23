@@ -38,12 +38,13 @@ class FavouritesTab extends StatelessWidget {
                       return const Text('No matching books found');
                     }
                   } else {
-                    return const CircularProgressIndicator();
+                    return const SizedBox();
                   }
                 },
               );
-            } else {
-              return const CircularProgressIndicator();
+            }
+            else {
+              return const SizedBox();
             }
           },
         )),

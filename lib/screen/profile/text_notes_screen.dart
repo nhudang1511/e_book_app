@@ -40,12 +40,10 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
         children: [
           BlocBuilder<NoteBloc, NoteState>(
             builder: (context, state) {
-              print(state);
               if (state is NoteLoaded) {
                 var listNotes = state.notes
                     .where((element) => element.uId == widget.user.id)
                     .toList();
-                // print(listNotes);
                 return Expanded(
                   child: ListView.builder(
                     // physics: const NeverScrollableScrollPhysics(),
@@ -57,7 +55,7 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
                   ),
                 );
               } else {
-                return const Center(child: CircularProgressIndicator());
+                return const SizedBox();
               }
             },
           ),
