@@ -163,19 +163,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             ),
             IconButton(
                 onPressed: () {
-                  Share.share(
-                      'https://web.facebook.com/profile.php?id=100017418181405');
+                  // Share.share(
+                  //     'https://web.facebook.com/profile.php?id=100017418181405');
+                  Share.share(widget.book.imageUrl);
                 },
                 icon: const Icon(
                   Icons.share,
                   color: Color(0xFFDFE2E0),
                 )),
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.download,
-                  color: Color(0xFFDFE2E0),
-                ))
+            // IconButton(
+            //     onPressed: () {},
+            //     icon: const Icon(
+            //       Icons.download,
+            //       color: Color(0xFFDFE2E0),
+            //     ))
           ]),
       body: SingleChildScrollView(
         child: Column(

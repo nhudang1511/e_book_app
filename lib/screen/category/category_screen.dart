@@ -37,33 +37,34 @@ class CategoryScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: BlocBuilder<BookBloc, BookState>(builder: (context, state) {
-          if(state is BookLoading){
-            return const Center(child: CircularProgressIndicator());
-          }
-          if(state is BookLoaded){
-            final listBookInCategory = state.books.where((e) => e.categoryId.contains(category.id)).toList();
-            if(listBookInCategory.isNotEmpty){
-              return SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
-                child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: listBookInCategory.length,
-                    itemBuilder: (context,index){
-                      return BookCardMain(book: listBookInCategory[index], inLibrary: false,);
-                    }),
-              );
+      body: Column(
+        children: [
+          BlocBuilder<BookBloc, BookState>(builder: (context, state) {
+            if(state is BookLoading){
+              return const Center(child: CircularProgressIndicator());
+            }
+            if(state is BookLoaded){
+              final listBookInCategory = state.books.where((e) => e.categoryId.contains(category.id)).toList();
+              if(listBookInCategory.isNotEmpty){
+                return Expanded(
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: listBookInCategory.length,
+                      itemBuilder: (context,index){
+                        return BookCardMain(book: listBookInCategory[index], inLibrary: false,);
+                      }),
+                );
+              }
+              else{
+                return const Center(child: Text('No data'),);
+              }
             }
             else{
-              return const Center(child: Text('No data'),);
+              return const Text('Something went wrong');
             }
-          }
-          else{
-            return const Text('Something went wrong');
-          }
   },
 ),
+        ],
       )
     );
   }

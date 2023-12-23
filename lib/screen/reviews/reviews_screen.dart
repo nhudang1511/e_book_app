@@ -78,6 +78,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             barrierDismissible: true, // set to false if you want to force a rating
             builder: (context) {
               return RatingDialog(
+                starSize: 30,
                 initialRating: 1.0,
                 // your app's name?
                 title: const Text(
@@ -95,7 +96,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   style: TextStyle(fontSize: 15),
                 ),
                 // your app's logo?
-                image: Image.asset('assets/logo/logo.png', height: 100),
+                image: Image.asset('assets/logo/logo.png',),
                 submitButtonText: 'Submit',
                 commentHint: 'Add your reviews',
                 onCancelled: () => print('cancelled'),
@@ -114,7 +115,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             }
           );
         },
-        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF8C2EEE),
+        child: const Icon(Icons.edit, color: Colors.white,),
       ),
     );
   }

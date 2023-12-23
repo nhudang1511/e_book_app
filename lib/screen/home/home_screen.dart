@@ -136,29 +136,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, state) {
                       if (state is AuthenticateState) {
                         final uId = state.authUser?.uid;
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const SectionTitle(title: 'Continue Reading'),
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/library',
-                                      );
-                                    },
-                                    icon: const Icon(Icons.more_horiz_outlined))
-                              ],
-                            ),
-                            DisplayHistories(
-                              uId: uId,
-                              scrollDirection: Axis.horizontal,
-                              height: 180,
-                              scroll: true,
-                            )
-                          ],
+                        return DisplayHistories(
+                          uId: uId,
+                          scrollDirection: Axis.horizontal,
+                          height: 180,
+                          scroll: true, inHistory: true,
                         );
                       } else {
                         return const SizedBox();
@@ -167,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SectionTitle(title: 'Recommendation'),
                   ListBookMain(
-                    books: book,
+                    books: book.take(4).toList(),
                     scrollDirection: Axis.vertical,
                     height: MediaQuery.of(context).size.height,
                     inLibrary: false,

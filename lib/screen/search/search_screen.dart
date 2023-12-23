@@ -50,11 +50,11 @@ class _SearchScreenState extends State<SearchScreen> {
       })
           .toList();
     }
-    else if (_selectedSearchOption == "Tags") {
-      results = books
-          .where((book) => book.categoryId.contains(_searchText.toLowerCase()))
-          .toList();
-    }
+    // else if (_selectedSearchOption == "Tags") {
+    //   results = books
+    //       .where((book) => book.categoryId.contains(_searchText.toLowerCase()))
+    //       .toList();
+    // }
     _hasSearched = true;
     return results;
   }
@@ -88,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-                    const Icon(Icons.mic)
+                   // const Icon(Icons.mic)
                   ],
                 ),
               ),
@@ -100,7 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: <Widget>[
                 _buildSearchOptionButton("Name of book"),
                 _buildSearchOptionButton("Author"),
-                _buildSearchOptionButton("Tags"),
+                // _buildSearchOptionButton("Tags"),
               ],
             ),
           ),

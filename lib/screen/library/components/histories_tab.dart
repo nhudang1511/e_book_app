@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 import '../../../widget/book_items/list_book_history.dart';
+import '../../../widget/widget.dart';
 
 class HistoriesTab extends StatelessWidget {
   const HistoriesTab({super.key, required this.uId});
@@ -20,7 +21,7 @@ class HistoriesTab extends StatelessWidget {
         uId: uId,
         scrollDirection: Axis.vertical,
         height: MediaQuery.of(context).size.height,
-        scroll: false,
+        scroll: false,inHistory: false,
       ))),
     );
   }
@@ -32,13 +33,14 @@ class DisplayHistories extends StatelessWidget {
     required this.uId,
     required this.scrollDirection,
     required this.height,
-    required this.scroll,
+    required this.scroll, required this.inHistory,
   });
 
   final String? uId;
   final Axis scrollDirection;
   final double height;
   final bool scroll;
+  final bool inHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +73,34 @@ class DisplayHistories extends StatelessWidget {
                       percent.add(history.percent);
                     }
                   }
-                  return ListBookHistory(
-                    books: matchingBooks,
-                    scrollDirection: scrollDirection,
-                    height: height,
-                    scroll: scroll,
-                    inLibrary: true,
-                    percent: percent,
+                  return Column(
+                    children: [
+                      inHistory ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const SectionTitle(title: 'Continue Reading'),
+                          IconButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/library',
+                                );
+                              },
+                              icon: const Icon(Icons.more_horiz_outlined))
+                        ],
+                      ) : const SizedBox(),
+                      ListBookHistory(
+                        books: matchingBooks,
+                        scrollDirection: scrollDirection,
+                        height: height,
+                        scroll: scroll,
+                        inLibrary: true,
+                        percent: percent,
+                      ),
+                    ],
                   );
                 } else {
-                  return const Text('No matching books found');
+                  return const SizedBox();
                 }
               } else {
                 return const CircularProgressIndicator();

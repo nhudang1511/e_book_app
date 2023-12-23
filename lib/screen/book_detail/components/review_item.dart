@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:readmore/readmore.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 
@@ -26,56 +27,56 @@ class _ReviewItemState extends State<ReviewItem> {
                 .orderBy("time", descending: false)
                 .snapshots(),
             builder: (context, snapshot) {
-             if(snapshot.hasData){
-               return Column(
-                 children: [
-                   Expanded(
-                     child: ListView.builder(
-                         scrollDirection: Axis.horizontal,
-                         itemCount: snapshot.data!.docs.length,
-                         itemBuilder: (context, index) {
-                           final reviews = snapshot.data!.docs[index];
-                           if (reviews['bookId'] == widget.book.id) {
-                             return Column(
-                               children: [
-                                 ReviewItemCard(
-                                   content: reviews['content'],
-                                   userId: reviews['userId'],
-                                   time: reviews['time'],
-                                   rating: reviews['rating'],
-                                 ),
-                               ],
-                             );
-                           }
-                         }),
-                   ),
-                   SizedBox(
-                       width: MediaQuery.of(context).size.width - 20,
-                       child: ElevatedButton(
-                           onPressed: () {
-                             Navigator.pushNamed(context, '/reviews',
-                                 arguments: widget.book);
-                           },
-                           style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                               RoundedRectangleBorder(
-                                 borderRadius: BorderRadius.circular(
-                                     100), // Adjust the radius as needed
-                               ),
-                             ),
-                           ),
-                           child: const Text(
-                             'ADD REVIEWS',
-                             style: TextStyle(color: Colors.white),
-                           )
-                       )
-                   )
-                 ],
-               );
-             }
-             else{
-               return const CircularProgressIndicator();
-             }
+              if (snapshot.hasData) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            final reviews = snapshot.data!.docs[index];
+                            if (reviews['bookId'] == widget.book.id) {
+                              return ReviewItemCard(
+                                content: reviews['content'],
+                                userId: reviews['userId'],
+                                time: reviews['time'],
+                                rating: reviews['rating'],
+                              );
+                            } else {
+                              // Nếu không phù hợp, trả về một widget rỗng hoặc null
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                    ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width - 20,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/reviews',
+                                  arguments: widget.book);
+                            },
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      100), // Adjust the radius as needed
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'ADD REVIEWS',
+                              style: TextStyle(color: Colors.white),
+                            )
+                        )
+                    )
+                  ],
+                );
+              }
+              else {
+                return const Text('something went wrong');
+              }
             },
           );
         }
@@ -151,31 +152,35 @@ class ReviewItemCard extends StatelessWidget {
             User? user = state.users.firstWhere(
               (u) => u.id == userId,
             );
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.fullName,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: List.generate(
-                    rating.round(),
-                    (index) => const Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                      size: 30,
+            //need fix
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: List.generate(
+                      rating.round(),
+                      (index) => const Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                        size: 30,
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  content,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.normal),
-                ),
-              ],
+                  ReadMoreText(
+                    content,
+                    trimLength: 50,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
             );
           } else {
             return const CircularProgressIndicator();
