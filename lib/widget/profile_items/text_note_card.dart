@@ -19,140 +19,89 @@ class TextNoteCard extends StatefulWidget {
 class _TextNoteCardState extends State<TextNoteCard> {
   TextEditingController titleContentController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final currentWidth = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      onTap: () {
-        Dialogs.bottomMaterialDialog(
-            context: context,
-            color: const Color(0xFF8C2EEE),
-            actions: [
-              Column(
+    return  Padding(
+      padding: const EdgeInsets.only(right: 32, left: 32, bottom: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        width: currentWidth,
+        // height: height,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                         _showClipboardDialog(context, widget.note);
-                        },
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.edit, color: Colors.white),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Edit',
-                              style:
-                                  TextStyle(fontSize: 17, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          BlocProvider.of<NoteBloc>(context).add(
-                              RemoveNoteEvent(
-                                  bookId: widget.note.bookId,
-                                  content: widget.note.content,
-                                  title: widget.note.title,
-                                  userId: widget.note.uId,
-                                  noteId: widget.note.noteId));
-                          setState(() {
-                            BlocProvider.of<NoteBloc>(context).add(LoadedNote());
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.delete, color: Colors.white),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Delete',
-                              style:
-                                  TextStyle(fontSize: 17, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text(
+                    widget.note.title,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Close',
-                        style: TextStyle(color: Colors.white),
-                      ))
+                  Row(
+                    children: [
+                      IconButton(onPressed: (){
+                        BlocProvider.of<NoteBloc>(context).add(
+                            RemoveNoteEvent(
+                                bookId: widget.note.bookId,
+                                content: widget.note.content,
+                                title: widget.note.title,
+                                userId: widget.note.uId,
+                                noteId: widget.note.noteId));
+                        setState(() {
+                          BlocProvider.of<NoteBloc>(context)
+                              .add(LoadedNote());
+                        });
+                      }, icon: const Icon(Icons.delete, color: Colors.white,)),
+                      IconButton(onPressed: (){
+                        _showClipboardDialog(context, widget.note);
+                      }, icon: const Icon(Icons.edit, color: Colors.white,)),
+                    ],
+                  )
                 ],
               ),
-            ]);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 32, left: 32, bottom: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onBackground,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          width: currentWidth,
-          // height: height,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.note.title,
-                      style: Theme.of(context).textTheme.headlineSmall,
+              Text(
+                widget.note.content,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: BlocBuilder<BookBloc, BookState>(
+                      builder: (context, state) {
+                        String bookName = widget.note.bookId;
+                        if (state is BookLoaded) {
+                          Book book = state.books
+                              .where((element) =>
+                          element.id == widget.note.bookId)
+                              .first;
+                          bookName = book.title;
+                        }
+                        return Text(
+                          bookName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          textAlign: TextAlign.end,
+                        );
+                      },
                     ),
-                  ],
-                ),
-                Text(
-                  widget.note.content,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: BlocBuilder<BookBloc, BookState>(
-                        builder: (context, state) {
-                          String bookName = widget.note.bookId;
-                          if (state is BookLoaded) {
-                            Book book = state.books
-                                .where((element) => element.id == widget.note.bookId)
-                                .first;
-                            bookName = book.title;
-                          }
-                          return Text(
-                            bookName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.labelSmall,
-                            textAlign: TextAlign.end,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+
   void _showClipboardDialog(BuildContext context, Note note) {
     contentController.text = note.content;
     titleContentController.text = note.title;
@@ -199,11 +148,11 @@ class _TextNoteCardState extends State<TextNoteCard> {
                                 borderSide: BorderSide(
                                     color: Colors.white,
                                     width:
-                                    2), // Màu gạch dưới khi TextFormField được focus
+                                        2), // Màu gạch dưới khi TextFormField được focus
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                BorderSide(color: Colors.grey, width: 2),
+                                    BorderSide(color: Colors.grey, width: 2),
                               ),
                             ))),
                   ),
@@ -225,7 +174,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
                         child: TextFormField(
-                          controller: contentController,
+                            controller: contentController,
                             style: const TextStyle(color: Colors.white),
                             cursorColor: Colors.white,
                             decoration: const InputDecoration(
@@ -233,15 +182,13 @@ class _TextNoteCardState extends State<TextNoteCard> {
                                 borderSide: BorderSide(
                                     color: Colors.white,
                                     width:
-                                    2), // Màu gạch dưới khi TextFormField được focus
+                                        2), // Màu gạch dưới khi TextFormField được focus
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey, width: 2),
+                                borderSide:
+                                    BorderSide(color: Colors.grey, width: 2),
                               ),
-                            ))
-                    )
-                    ,
+                            ))),
                   ),
                 ],
               ),
@@ -250,13 +197,16 @@ class _TextNoteCardState extends State<TextNoteCard> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                BlocProvider.of<NoteBloc>(context).add(
-                    EditNoteEvent(
-                        bookId: widget.note.bookId,
-                        content: widget.note.content,
-                        title: widget.note.title,
-                        userId: widget.note.uId,
-                        noteId: widget.note.noteId));
+                BlocProvider.of<NoteBloc>(context).add(EditNoteEvent(
+                    bookId: note.bookId,
+                    content: contentController.text.isNotEmpty
+                        ? contentController.text
+                        : note.content,
+                    title: titleContentController.text.isNotEmpty
+                        ? titleContentController.text
+                        : note.title,
+                    userId: note.uId,
+                    noteId: note.noteId));
                 setState(() {
                   BlocProvider.of<NoteBloc>(context).add(LoadedNote());
                 });
