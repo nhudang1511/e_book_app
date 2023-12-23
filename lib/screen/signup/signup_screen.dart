@@ -39,7 +39,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   bool validatePassword(String value) {
-    String pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$";
+    String pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()\-_+=<>?/{}[\]]{8,}$";
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(value);
   }

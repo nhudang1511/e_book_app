@@ -1,5 +1,6 @@
 import 'package:e_book_app/config/theme/theme_provider.dart';
 import 'package:e_book_app/cubits/cubits.dart';
+import 'package:e_book_app/cubits/forgotPassword/forgotPassword_cubit.dart';
 
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,12 @@ class _MyAppState extends State<MyApp> {
             userRepository: UserRepository(),
           ),
           child: const EditProfileScreen(),
+        ),
+        BlocProvider(
+          create: (_) => ForgotPasswordCubit(
+            authRepository: AuthRepository(),
+          ),
+          child: const EnterEmailScreen(),
         ),
         BlocProvider(
           create: (_) => SignupCubit(

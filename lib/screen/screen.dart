@@ -8,7 +8,6 @@ export 'book_detail/book_detail_screen.dart';
 export 'category/category_screen.dart';
 export 'login/login_screen.dart';
 export 'signup/signup_screen.dart';
-export 'forgot_password/choose_recovery_method_screen.dart';
 export 'forgot_password/enter_email_screen.dart';
 export 'forgot_password/enter_OTP_screen.dart';
 export 'forgot_password/enter_new_password_screen.dart';
