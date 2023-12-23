@@ -4,76 +4,108 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 
-class ReviewItem extends StatelessWidget {
+class ReviewItem extends StatefulWidget {
   final Book book;
 
   const ReviewItem({super.key, required this.book});
 
   @override
+  State<ReviewItem> createState() => _ReviewItemState();
+}
+
+class _ReviewItemState extends State<ReviewItem> {
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('review')
-              .orderBy("time", descending: false)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Expanded(
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      final reviews = snapshot.data!.docs[index];
-                      if (reviews['bookId'] == book.id) {
-                        return ReviewItemCard(
-                          content: reviews['content'],
-                          userId: reviews['userId'],
-                          time: reviews['time'],
-                          rating: reviews['rating'],
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
-              );
-            } else {
-              return const Center(child: Text('something went wrong'));
-            }
-          },
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width - 20,
-          child: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              if (state is AuthenticateState) {
-                return ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/reviews',
-                          arguments: book);
-                    },
-                    child: const Text(
-                      'ADD REVIEWS',
-                      style: TextStyle(color: Colors.white),
-                    ));
-              } else {
-                return ElevatedButton(
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthenticateState) {
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('review')
+                .orderBy("time", descending: false)
+                .snapshots(),
+            builder: (context, snapshot) {
+             if(snapshot.hasData){
+               return Column(
+                 children: [
+                   Expanded(
+                     child: ListView.builder(
+                         scrollDirection: Axis.horizontal,
+                         itemCount: snapshot.data!.docs.length,
+                         itemBuilder: (context, index) {
+                           final reviews = snapshot.data!.docs[index];
+                           if (reviews['bookId'] == widget.book.id) {
+                             return Column(
+                               children: [
+                                 ReviewItemCard(
+                                   content: reviews['content'],
+                                   userId: reviews['userId'],
+                                   time: reviews['time'],
+                                   rating: reviews['rating'],
+                                 ),
+                               ],
+                             );
+                           }
+                         }),
+                   ),
+                   SizedBox(
+                       width: MediaQuery.of(context).size.width - 20,
+                       child: ElevatedButton(
+                           onPressed: () {
+                             Navigator.pushNamed(context, '/reviews',
+                                 arguments: widget.book);
+                           },
+                           style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                               RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(
+                                     100), // Adjust the radius as needed
+                               ),
+                             ),
+                           ),
+                           child: const Text(
+                             'ADD REVIEWS',
+                             style: TextStyle(color: Colors.white),
+                           )
+                       )
+                   )
+                 ],
+               );
+             }
+             else{
+               return const CircularProgressIndicator();
+             }
+            },
+          );
+        }
+        else {
+          return Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 20,
+                height: 40,
+                child: ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              100), // Adjust the radius as needed
+                        ),
+                      ),
+                    ),
                     child: const Text(
-                      'ADD REVIEWS',
+                      'REVIEWS',
                       style: TextStyle(color: Colors.white),
-                    ));
-              }
-            },
-          ),
-        )
-      ],
+                    )),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 }
@@ -113,9 +145,11 @@ class ReviewItemCard extends StatelessWidget {
           ]),
       child: BlocBuilder<ListUserBloc, ListUserState>(
         builder: (context, state) {
-          if (state is ListUserLoaded) {
+          if (state is ListUserLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ListUserLoaded) {
             User? user = state.users.firstWhere(
-                  (u) => u.id == userId,
+              (u) => u.id == userId,
             );
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +163,7 @@ class ReviewItemCard extends StatelessWidget {
                 Row(
                   children: List.generate(
                     rating.round(),
-                        (index) => const Icon(
+                    (index) => const Icon(
                       Icons.star,
                       color: Colors.yellow,
                       size: 30,
@@ -143,13 +177,11 @@ class ReviewItemCard extends StatelessWidget {
                 ),
               ],
             );
-          }
-          else {
+          } else {
             return const CircularProgressIndicator();
           }
         },
       ),
     );
   }
-
 }

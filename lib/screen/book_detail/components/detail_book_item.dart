@@ -1,11 +1,9 @@
-import 'package:e_book_app/screen/book/book_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 
 import '../../../blocs/blocs.dart';
 import '../../../model/book_model.dart';
-import '../../../repository/chapters/chapters_repository.dart';
 
 class DetailBookItem extends StatefulWidget {
   final Book book;
@@ -101,6 +99,15 @@ class _DetailBookItemState extends State<DetailBookItem> {
                           'chapterScrollPercentages': tempPercent,
                         });
                       },
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                100), // Adjust the radius as needed
+                          ),
+                        ),
+                      ),
                       child: const Text('READ',
                           style: TextStyle(color: Colors.white)),
                     ));
@@ -111,6 +118,15 @@ class _DetailBookItemState extends State<DetailBookItem> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/login');
                       },
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                100), // Adjust the radius as needed
+                          ),
+                        ),
+                      ),
                       child: const Text('READ',
                           style: TextStyle(color: Colors.white)),
                     ));
