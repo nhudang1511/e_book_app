@@ -54,6 +54,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
           backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           elevation: 0,

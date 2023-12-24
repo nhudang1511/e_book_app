@@ -131,7 +131,7 @@ class ReviewItemCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.background,
           borderRadius: const BorderRadius.all(Radius.circular(5)),
           boxShadow: [
             BoxShadow(

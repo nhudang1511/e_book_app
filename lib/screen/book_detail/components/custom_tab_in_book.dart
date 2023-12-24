@@ -20,11 +20,11 @@ class CustomTabInBook extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width / 2 ,
             child: TabBar(
-              labelColor: Colors.black,
+              labelColor: Theme.of(context).colorScheme.secondaryContainer,
               indicator: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   border: Border.all(color: Theme.of(context).colorScheme.primary),
-                  color: Colors.white
+                  color: Theme.of(context).colorScheme.background
               ),
               tabs: const [
                 Tab(

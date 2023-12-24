@@ -102,6 +102,7 @@ class _CustomTabState extends State<CustomTab> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: null,
         body: Padding(
           padding: const EdgeInsets.all(20),

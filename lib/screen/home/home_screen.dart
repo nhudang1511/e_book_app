@@ -79,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final now = TimeOfDay.now();
     String period = getDayPeriod(now);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: CustomAppBarHome(title: period),
       body: SingleChildScrollView(
         child: BlocBuilder<BookBloc, BookState>(
