@@ -14,15 +14,11 @@ class HistoriesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: SingleChildScrollView(
-              child: DisplayHistories(
-        uId: uId,
-        scrollDirection: Axis.vertical,
-        height: MediaQuery.of(context).size.height,
-        scroll: false,inHistory: false,
-      ))),
+    return DisplayHistories(
+      uId: uId,
+      scrollDirection: Axis.vertical,
+      height: MediaQuery.of(context).size.height,
+      inHistory: false,
     );
   }
 }
@@ -33,13 +29,12 @@ class DisplayHistories extends StatelessWidget {
     required this.uId,
     required this.scrollDirection,
     required this.height,
-    required this.scroll, required this.inHistory,
+    required this.inHistory,
   });
 
   final String? uId;
   final Axis scrollDirection;
   final double height;
-  final bool scroll;
   final bool inHistory;
 
   @override
@@ -93,9 +88,8 @@ class DisplayHistories extends StatelessWidget {
                         books: matchingBooks,
                         scrollDirection: scrollDirection,
                         height: height,
-                        scroll: scroll,
                         inLibrary: true,
-                        percent: percent,
+                        percent: percent, inHistory: inHistory,
                       ),
                     ],
                   );
@@ -103,7 +97,7 @@ class DisplayHistories extends StatelessWidget {
                   return const SizedBox();
                 }
               } else {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
             },
           );

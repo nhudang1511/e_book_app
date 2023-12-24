@@ -140,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           uId: uId,
                           scrollDirection: Axis.horizontal,
                           height: 180,
-                          scroll: true, inHistory: true,
+                          inHistory: true,
                         );
                       } else {
                         return const SizedBox();
