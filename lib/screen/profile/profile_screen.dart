@@ -171,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               //name
                               Text(
-                                state.user.fullName,
+                                state.user.fullName, textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.displayLarge,
                               ),
                               //mail

@@ -141,8 +141,8 @@ class BookCardMain extends StatelessWidget {
                                               _timer.cancel();
                                             }
                                           });
-                                        }, icon: BlocBuilder<LibraryBloc,
-                                            LibraryState>(
+                                        }, icon:
+                                        BlocBuilder<LibraryBloc, LibraryState>(
                                           builder: (context, state) {
                                             if (state is LibraryLoaded) {
                                               bool isBookInLibrary =
