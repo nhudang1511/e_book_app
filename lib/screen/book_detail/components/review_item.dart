@@ -66,7 +66,7 @@ class _ReviewItemState extends State<ReviewItem> {
                               ),
                             ),
                             child: const Text(
-                              'ADD REVIEWS',
+                              'REVIEWS',
                               style: TextStyle(color: Colors.white),
                             )
                         )

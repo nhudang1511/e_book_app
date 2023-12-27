@@ -126,7 +126,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                 )),
                             Expanded(
                               flex: 3,
-                              child: widget.percent.isNaN
+                              child: (widget.percent.isNaN || widget.percent.isInfinite)
                                   ? LinearPercentIndicator(
                                       animation: true,
                                       lineHeight: 10.0,

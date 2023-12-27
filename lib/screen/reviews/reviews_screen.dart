@@ -32,6 +32,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   final current = FirebaseAuth.instance.currentUser;
 
   @override
+  void initState(){
+    super.initState();
+    BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -64,62 +70,88 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         }
                       }),
                 );
-              }
-              else {
-                return const Text('something went wrong');
+              } else {
+                return const Center(child: Text('something went wrong'));
               }
             },
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           showDialog(
-            context: context,
-            barrierDismissible: true, // set to false if you want to force a rating
-            builder: (context) {
-              return RatingDialog(
-                starSize: 30,
-                initialRating: 1.0,
-                // your app's name?
-                title: const Text(
-                  'Rating Dialog',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // encourage your user to leave a high rating?
-                message: const Text(
-                  'Tap to rate the book',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15),
-                ),
-                // your app's logo?
-                image: Image.asset('assets/logo/logo.png',),
-                submitButtonText: 'Submit',
-                commentHint: 'Add your reviews',
-                onCancelled: () => print('cancelled'),
-                onSubmitted: (response) {
-                  //print('rating: ${response.rating}, comment: ${response.comment}');
-                  BlocProvider.of<ReviewBloc>(context).add(
-                      AddNewReviewEvent(
-                          bookId: widget.book.id,
-                          content: response.comment,
-                          status: true,
-                          userId: current!.uid,
-                          rating: response.rating.round(),
-                          time: Timestamp.now()));
-                },
-              );
-            }
-          );
+              context: context,
+              barrierDismissible: true,
+              // set to false if you want to force a rating
+              builder: (context) {
+                return BlocBuilder<HistoryBloc, HistoryState>(
+                  builder: (context, state) {
+                    if (state is HistoryLoaded) {
+                      final historyFull = state.histories.where((element) =>
+                      element.percent == 100 &&
+                          element.uId == current!.uid &&
+                          element.chapters == widget.book.id);
+                      if(historyFull.isNotEmpty){
+                        return RatingDialog(
+                          starSize: 30,
+                          initialRating: 1.0,
+                          // your app's name?
+                          title: const Text(
+                            'Rating Dialog',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          // encourage your user to leave a high rating?
+                          message: const Text(
+                            'Tap to rate the book',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          // your app's logo?
+                          image: Image.asset(
+                            'assets/logo/logo.png',
+                          ),
+                          submitButtonText: 'Submit',
+                          commentHint: 'Add your reviews',
+                          onCancelled: () => print('cancelled'),
+                          onSubmitted: (response) {
+                            //print('rating: ${response.rating}, comment: ${response.comment}');
+                            BlocProvider.of<ReviewBloc>(context).add(
+                                AddNewReviewEvent(
+                                    bookId: widget.book.id,
+                                    content: response.comment,
+                                    status: true,
+                                    userId: current!.uid,
+                                    rating: response.rating.round(),
+                                    time: Timestamp.now()));
+                          },
+                        );
+                      }
+                      else{
+                        return const CustomDialogNotice(
+                          title: Icons.warning,
+                          content:
+                          'Please read full books to add review',
+                        );
+                      }
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                );
+              });
         },
         backgroundColor: const Color(0xFF8C2EEE),
-        child: const Icon(Icons.edit, color: Colors.white,),
+        child: const Icon(
+          Icons.edit,
+          color: Colors.white,
+        ),
       ),
     );
   }
 }
-
