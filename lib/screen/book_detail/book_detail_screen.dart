@@ -195,7 +195,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                   color: Colors.grey.withAlpha(90)),
                               padding: const EdgeInsets.only(right: 10),
                               child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
                                     Icons.remove_red_eye_rounded,

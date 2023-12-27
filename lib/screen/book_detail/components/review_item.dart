@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rating_summary/rating_summary.dart';
 import 'package:readmore/readmore.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
@@ -15,7 +16,6 @@ class ReviewItem extends StatefulWidget {
 }
 
 class _ReviewItemState extends State<ReviewItem> {
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -28,27 +28,57 @@ class _ReviewItemState extends State<ReviewItem> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                List<Review> reviews = snapshot.data!.docs.map((doc) {
+                  return Review(
+                    bookId: doc['bookId'],
+                    content: doc['content'],
+                    status: doc['status'],
+                    userId: doc['userId'],
+                    time: doc['time'],
+                    rating: doc['rating'],
+                  );
+                }).toList();
+                reviews = reviews
+                    .where((element) => element.bookId == widget.book.id)
+                    .toList();
+                // Đếm số lượng của từng rating
+                int ratingOneCount = 0;
+                int ratingTwoCount = 0;
+                int ratingThreeCount = 0;
+                int ratingFourCount = 0;
+                int ratingFiveCount = 0;
+                double average = 0;
+                if (reviews.isNotEmpty) {
+                  Map<int, int> ratingCounts = countRatings(reviews);
+                  ratingOneCount = ratingCounts[1] ?? 0;
+                  ratingTwoCount = ratingCounts[2] ?? 0;
+                  ratingThreeCount = ratingCounts[3] ?? 0;
+                  ratingFourCount = ratingCounts[4] ?? 0;
+                  ratingFiveCount = ratingCounts[5] ?? 0;
+
+                  average = (ratingOneCount +
+                          ratingTwoCount*2 +
+                          ratingThreeCount*3 +
+                          ratingFourCount*4 +
+                          ratingFiveCount*5) /
+                      reviews.length;
+                }
                 return Column(
                   children: [
                     SizedBox(
                       height: 150,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            final reviews = snapshot.data!.docs[index];
-                            if (reviews['bookId'] == widget.book.id) {
-                              return ReviewItemCard(
-                                content: reviews['content'],
-                                userId: reviews['userId'],
-                                time: reviews['time'],
-                                rating: reviews['rating'],
-                              );
-                            } else {
-                              // Nếu không phù hợp, trả về một widget rỗng hoặc null
-                              return const SizedBox.shrink();
-                            }
-                          }),
+                      child: reviews.isEmpty
+                          ? const SizedBox()
+                          : RatingSummary(
+                              counter: reviews.length,
+                              average: average,
+                              showAverage: true,
+                              counterFiveStars: ratingFiveCount,
+                              counterFourStars: ratingFourCount,
+                              counterThreeStars: ratingThreeCount,
+                              counterTwoStars: ratingTwoCount,
+                              counterOneStars: ratingOneCount,
+                            ),
                     ),
                     SizedBox(
                         width: MediaQuery.of(context).size.width - 20,
@@ -58,7 +88,8 @@ class _ReviewItemState extends State<ReviewItem> {
                                   arguments: widget.book);
                             },
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       100), // Adjust the radius as needed
@@ -66,21 +97,17 @@ class _ReviewItemState extends State<ReviewItem> {
                               ),
                             ),
                             child: const Text(
-                              'REVIEWS',
+                              'ADD REVIEWS',
                               style: TextStyle(color: Colors.white),
-                            )
-                        )
-                    )
+                            )))
                   ],
                 );
-              }
-              else {
+              } else {
                 return const Text('something went wrong');
               }
             },
           );
-        }
-        else {
+        } else {
           return Column(
             children: [
               SizedBox(
@@ -189,4 +216,23 @@ class ReviewItemCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Map<int, int> countRatings(List<Review> reviews) {
+  // Khởi tạo map để lưu trữ số lượng của từng rating
+  Map<int, int> ratingCounts = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+
+  // Đếm số lượng của từng rating trong danh sách đánh giá
+  for (var review in reviews) {
+    // Kiểm tra rating và tăng số lượng tương ứng
+    ratingCounts[review.rating] = ratingCounts[review.rating]! + 1;
+  }
+
+  return ratingCounts;
 }
