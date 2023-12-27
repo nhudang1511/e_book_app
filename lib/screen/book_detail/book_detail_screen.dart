@@ -82,17 +82,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           context: context,
                           builder: (BuildContext context) {
                             widget._timer =
-                                Timer(const Duration(seconds: 5), () {
+                                Timer(const Duration(seconds: 1), () {
                               BlocProvider.of<LibraryBloc>(context)
                                   .add(LoadLibrary());
                               Navigator.of(context).pop();
                             });
-                            return CustomDialogNotice(
-                              title: Icons.downloading,
-                              content: widget.inLibrary
-                                  ? 'Wait to Add '
-                                  : 'Wait to Removing',
-                            );
+                            return const Center(child: CircularProgressIndicator(),);
                           },
                         ).then((value) {
                           if (widget._timer.isActive) {

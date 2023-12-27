@@ -24,16 +24,22 @@ class ListCategoryInSearch extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is CategoryLoaded) {
-              final List<Category> allCategories  = state.categories;
+              final List<Category> allCategories = state.categories
+                  .where((element) => element.status == true)
+                  .toList();
               return BlocBuilder<BookBloc, BookState>(
                 builder: (context, state) {
-                  if(state is BookLoaded){
-                    final List<Book> books = state.books;
-                    final List<Category> filteredCategories = allCategories.where((category) {
+                  if (state is BookLoaded) {
+                    final List<Book> books = state.books
+                        .where((element) => element.status == true)
+                        .toList();
+                    final List<Category> filteredCategories =
+                        allCategories.where((category) {
                       // Check if any book has this category id
-                      return books.any((book) => book.categoryId.contains(category.id));
+                      return books
+                          .any((book) => book.categoryId.contains(category.id));
                     }).toList();
-                    if(filteredCategories.isNotEmpty){
+                    if (filteredCategories.isNotEmpty) {
                       return Expanded(
                         child: GridView.count(
                           crossAxisSpacing: 10,
@@ -44,23 +50,22 @@ class ListCategoryInSearch extends StatelessWidget {
                           // horizontal, this produces 2 rows.
                           crossAxisCount: 2,
                           // Generate 100 widgets that display their index in the List.
-                          children: List.generate(filteredCategories.length, (index) {
-                            return CategoryCard(category: filteredCategories[index]);
+                          children:
+                              List.generate(filteredCategories.length, (index) {
+                            return CategoryCard(
+                                category: filteredCategories[index]);
                           }),
                         ),
                       );
-                    }
-                    else{
+                    } else {
                       return const SizedBox();
                     }
-                  }
-                  else{
+                  } else {
                     return const CircularProgressIndicator();
                   }
                 },
               );
-            }
-            else {
+            } else {
               return const Text('Something went wrong');
             }
           },

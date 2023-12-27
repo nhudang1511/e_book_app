@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
+import '../../model/models.dart';
 import '../../widget/widget.dart';
 import '../library/components/histories_tab.dart';
 import 'components/custom_appbar_home.dart';
@@ -88,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is BookLoaded) {
-              var book = state.books;
+              List<Book> book = state.books.where((element) => element.status == true).toList();
               return Column(
                 children: [
                   Padding(
