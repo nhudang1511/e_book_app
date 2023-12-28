@@ -18,120 +18,89 @@ class ReviewItem extends StatefulWidget {
 class _ReviewItemState extends State<ReviewItem> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        if (state is AuthenticateState) {
-          return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('review')
-                .orderBy("time", descending: false)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Review> reviews = snapshot.data!.docs.map((doc) {
-                  return Review(
-                    bookId: doc['bookId'],
-                    content: doc['content'],
-                    status: doc['status'],
-                    userId: doc['userId'],
-                    time: doc['time'],
-                    rating: doc['rating'],
-                  );
-                }).toList();
-                reviews = reviews
-                    .where((element) => element.bookId == widget.book.id)
-                    .toList();
-                // Đếm số lượng của từng rating
-                int ratingOneCount = 0;
-                int ratingTwoCount = 0;
-                int ratingThreeCount = 0;
-                int ratingFourCount = 0;
-                int ratingFiveCount = 0;
-                double average = 0;
-                if (reviews.isNotEmpty) {
-                  Map<int, int> ratingCounts = countRatings(reviews);
-                  ratingOneCount = ratingCounts[1] ?? 0;
-                  ratingTwoCount = ratingCounts[2] ?? 0;
-                  ratingThreeCount = ratingCounts[3] ?? 0;
-                  ratingFourCount = ratingCounts[4] ?? 0;
-                  ratingFiveCount = ratingCounts[5] ?? 0;
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('review')
+          .orderBy("time", descending: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<Review> reviews = snapshot.data!.docs.map((doc) {
+            return Review(
+              bookId: doc['bookId'],
+              content: doc['content'],
+              status: doc['status'],
+              userId: doc['userId'],
+              time: doc['time'],
+              rating: doc['rating'],
+            );
+          }).toList();
+          reviews = reviews
+              .where((element) => element.bookId == widget.book.id)
+              .toList();
+          // Đếm số lượng của từng rating
+          int ratingOneCount = 0;
+          int ratingTwoCount = 0;
+          int ratingThreeCount = 0;
+          int ratingFourCount = 0;
+          int ratingFiveCount = 0;
+          double average = 0;
+          if (reviews.isNotEmpty) {
+            Map<int, int> ratingCounts = countRatings(reviews);
+            ratingOneCount = ratingCounts[1] ?? 0;
+            ratingTwoCount = ratingCounts[2] ?? 0;
+            ratingThreeCount = ratingCounts[3] ?? 0;
+            ratingFourCount = ratingCounts[4] ?? 0;
+            ratingFiveCount = ratingCounts[5] ?? 0;
 
-                  average = (ratingOneCount +
-                          ratingTwoCount*2 +
-                          ratingThreeCount*3 +
-                          ratingFourCount*4 +
-                          ratingFiveCount*5) /
-                      reviews.length;
-                }
-                return Column(
-                  children: [
-                    SizedBox(
-                      height: 150,
-                      child: reviews.isEmpty
-                          ? const SizedBox()
-                          : RatingSummary(
-                              counter: reviews.length,
-                              average: average,
-                              showAverage: true,
-                              counterFiveStars: ratingFiveCount,
-                              counterFourStars: ratingFourCount,
-                              counterThreeStars: ratingThreeCount,
-                              counterTwoStars: ratingTwoCount,
-                              counterOneStars: ratingOneCount,
-                            ),
-                    ),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width - 20,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/reviews',
-                                  arguments: widget.book);
-                            },
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      100), // Adjust the radius as needed
-                                ),
-                              ),
-                            ),
-                            child: const Text(
-                              'ADD REVIEWS',
-                              style: TextStyle(color: Colors.white),
-                            )))
-                  ],
-                );
-              } else {
-                return const Text('something went wrong');
-              }
-            },
-          );
-        } else {
+            average = (ratingOneCount +
+                ratingTwoCount*2 +
+                ratingThreeCount*3 +
+                ratingFourCount*4 +
+                ratingFiveCount*5) /
+                reviews.length;
+          }
           return Column(
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width - 20,
-                height: 40,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              100), // Adjust the radius as needed
+                height: 150,
+                child: reviews.isEmpty
+                    ? const SizedBox()
+                    : RatingSummary(
+                  counter: reviews.length,
+                  average: average,
+                  showAverage: true,
+                  counterFiveStars: ratingFiveCount,
+                  counterFourStars: ratingFourCount,
+                  counterThreeStars: ratingThreeCount,
+                  counterTwoStars: ratingTwoCount,
+                  counterOneStars: ratingOneCount,
+                ),
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/reviews',
+                            arguments: widget.book);
+                      },
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<
+                            RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                100), // Adjust the radius as needed
+                          ),
                         ),
                       ),
-                    ),
-                    child: const Text(
-                      'REVIEWS',
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ),
+                      child: const Text(
+                        'REVIEWS',
+                        style: TextStyle(color: Colors.white),
+                      )))
             ],
           );
+        } else {
+          return const Text('something went wrong');
         }
       },
     );
