@@ -36,7 +36,7 @@ class FavouritesTab extends StatelessWidget {
                     ],
                   );
                 } else {
-                  return const Text('No matching books found');
+                  return const SizedBox();
                 }
               } else {
                 return const SizedBox();

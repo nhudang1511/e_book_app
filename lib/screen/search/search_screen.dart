@@ -24,12 +24,14 @@ class _SearchScreenState extends State<SearchScreen> {
   String _searchText = "";
   String _selectedSearchOption = "Name of book"; // Default search option
   bool _hasSearched = false;
+
   void _onSearchTextChanged(String newText) {
     setState(() {
       _searchText = newText;
       _hasSearched = false;
     });
   }
+
   List<Book> _performSearch(List<Book> books, List<Author> authors) {
     List<Book> results = [];
     if (_searchText.isEmpty) {
@@ -37,18 +39,19 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     if (_selectedSearchOption == "Name of book") {
       results = books
-          .where((book) => book.title.toLowerCase().contains(_searchText.toLowerCase()))
+          .where((book) =>
+              book.title.toLowerCase().contains(_searchText.toLowerCase()) &&
+              book.status == true)
           .toList();
-    }
-    else if (_selectedSearchOption == "Author") {
-      results = books
-          .where((book) {
+    } else if (_selectedSearchOption == "Author") {
+      results = books.where((book) {
         // Tìm tác giả dựa trên fullName
         Author? author = authors.firstWhere(
-                (author) => author.id.toLowerCase() == book.authodId.toLowerCase());
-        return author.fullName.toLowerCase().contains(_searchText.toLowerCase());
-      })
-          .toList();
+            (author) => author.id.toLowerCase() == book.authodId.toLowerCase());
+        return author.fullName
+            .toLowerCase()
+            .contains(_searchText.toLowerCase());
+      }).toList();
     }
     // else if (_selectedSearchOption == "Tags") {
     //   results = books
@@ -71,8 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: const Color(0xFFC7C7C7)
-              ),
+                  color: const Color(0xFFC7C7C7)),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
@@ -85,11 +87,14 @@ class _SearchScreenState extends State<SearchScreen> {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Search for book',
-                          hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: const Color(0xFFC9C9C9)),
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(color: const Color(0xFFC9C9C9)),
                         ),
                       ),
                     ),
-                   // const Icon(Icons.mic)
+                    // const Icon(Icons.mic)
                   ],
                 ),
               ),
@@ -107,36 +112,43 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
-              if (state is BookLoading){
+              if (state is BookLoading) {
                 return const CircularProgressIndicator();
               }
-              if(state is BookLoaded){
-                List<Book> book = state.books;
+              if (state is BookLoaded) {
+                List<Book> book = state.books
+                    .where((element) => element.status == true)
+                    .toList();
                 return BlocBuilder<AuthorBloc, AuthorState>(
                   builder: (context, state) {
-                   if(state is AuthorLoaded){
-                     List<Book> searchResults = _performSearch(book, state.authors);
-                     return Expanded(
-                       child: _hasSearched == true ? SizedBox(
-                         height: 180,
-                         child: ListView.builder(
-                             scrollDirection: Axis.vertical,
-                             itemCount: searchResults.length,
-                             itemBuilder: (context,index){
-                               return BookCardMain(book: searchResults[index], inLibrary: false,);
-                             }),
-                       ) :  const ListCategoryInSearch(),
-                     );
-                   }
-                   else{
-                     return const Text('Something went wrong');
-                   }
-                    },
+                    if (state is AuthorLoaded) {
+                      List<Book> searchResults =
+                          _performSearch(book, state.authors);
+                      return Expanded(
+                        child: _hasSearched == true
+                            ? SizedBox(
+                                height: 180,
+                                child: ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: searchResults.length,
+                                    itemBuilder: (context, index) {
+                                      return BookCardMain(
+                                        book: searchResults[index],
+                                        inLibrary: false,
+                                      );
+                                    }),
+                              )
+                            : const ListCategoryInSearch(),
+                      );
+                    } else {
+                      return const Text('Something went wrong');
+                    }
+                  },
                 );
-              }
-              else{
+              } else {
                 return const Text('Something went wrong');
-              }},
+              }
+            },
           ),
         ],
       ),
@@ -153,13 +165,17 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         },
         style: ElevatedButton.styleFrom(
-          primary: _selectedSearchOption == option ? Colors.white : Colors.grey,
-          side: _selectedSearchOption == option ? BorderSide(
-              width: 1,
-              color: Theme.of(context).colorScheme.primary) : null),
-        child: Text(option, style: const TextStyle(color: Colors.black),),
+            primary:
+                _selectedSearchOption == option ? Colors.white : Colors.grey,
+            side: _selectedSearchOption == option
+                ? BorderSide(
+                    width: 1, color: Theme.of(context).colorScheme.primary)
+                : null),
+        child: Text(
+          option,
+          style: const TextStyle(color: Colors.black),
+        ),
       ),
     );
   }
 }
-

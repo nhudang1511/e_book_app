@@ -70,25 +70,17 @@ class DisplayHistories extends StatelessWidget {
                   }
                   return Column(
                     children: [
-                      inHistory ? Row(
+                      inHistory ? const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const SectionTitle(title: 'Continue Reading'),
-                          IconButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/library',
-                                );
-                              },
-                              icon: const Icon(Icons.more_horiz_outlined))
+                          SectionTitle(title: 'Continue Reading'),
                         ],
                       ) : const SizedBox(),
                       ListBookHistory(
                         books: matchingBooks,
                         scrollDirection: scrollDirection,
                         height: height,
-                        inLibrary: true,
+                        inLibrary: false,
                         percent: percent, inHistory: inHistory,
                       ),
                     ],
