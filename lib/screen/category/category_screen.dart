@@ -31,7 +31,7 @@ class CategoryScreen extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(category.name,
+              Text(category.name ?? '',
                   style: Theme.of(context).textTheme.displayMedium),
               const SizedBox(
                 width: 10,
@@ -41,7 +41,7 @@ class CategoryScreen extends StatelessWidget {
                 width: 50,
                 child: ClipOval(
                     child: Image.network(
-                  category.imageUrl,
+                  category.imageUrl ?? '',
                   fit: BoxFit.cover,
                 )),
               ),
@@ -58,7 +58,7 @@ class CategoryScreen extends StatelessWidget {
                 if (state is BookLoaded) {
                   final listBookInCategory = state.books
                       .where((e) =>
-                          e.categoryId.contains(category.id) &&
+                          e.categoryId!.contains(category.id) &&
                           e.status == true)
                       .toList();
                   if (listBookInCategory.isNotEmpty) {

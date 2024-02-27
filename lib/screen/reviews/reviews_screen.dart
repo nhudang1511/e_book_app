@@ -121,10 +121,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         itemBuilder: (context, index) {
                           if (reviews[index].bookId == widget.book.id) {
                             return ReviewItemCard(
-                              content: reviews[index].content,
-                              userId: reviews[index].userId,
-                              time: reviews[index].time,
-                              rating: reviews[index].rating,
+                              content: reviews[index].content ?? '',
+                              userId: reviews[index].userId ?? '',
+                              time: reviews[index].time!,
+                              rating: reviews[index].rating ?? 0,
                             );
                           } else {
                             // Nếu không phù hợp, trả về một widget rỗng hoặc null
@@ -185,7 +185,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                              onSubmitted: (response) {
                                BlocProvider.of<ReviewBloc>(context).add(
                                    AddNewReviewEvent(
-                                       bookId: widget.book.id,
+                                       bookId: widget.book.id ?? '',
                                        content: response.comment,
                                        status: true,
                                        userId: current!.uid,

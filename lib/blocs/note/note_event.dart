@@ -1,24 +1,10 @@
 part of 'note_bloc.dart';
 
-abstract class NoteEvent extends Equatable {
+abstract class NoteEvent{
   const NoteEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class LoadedNote extends NoteEvent {
-  @override
-  List<Object?> get props => [];
-}
-
-class UpdateNote extends NoteEvent {
-  final List<Note> notes;
-
-  const UpdateNote(this.notes);
-
-  @override
-  List<Object?> get props => [notes];
 }
 
 class AddNewNoteEvent extends NoteEvent {
@@ -33,9 +19,6 @@ class AddNewNoteEvent extends NoteEvent {
     required this.title,
     required this.userId,
   });
-
-  @override
-  List<Object?> get props => [bookId, content, title, userId];
 }
 class RemoveNoteEvent extends NoteEvent {
   final String content;
@@ -51,8 +34,6 @@ class RemoveNoteEvent extends NoteEvent {
     required this.userId,
     required this.noteId
   });
-  @override
-  List<Object?> get props => [bookId, content, title, userId, noteId];
 }
 class EditNoteEvent extends NoteEvent {
   final String content;
@@ -68,6 +49,4 @@ class EditNoteEvent extends NoteEvent {
     required this.userId,
     required this.noteId
   });
-  @override
-  List<Object?> get props => [bookId, content, title, userId, noteId];
 }

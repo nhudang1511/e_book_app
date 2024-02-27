@@ -1,24 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
+import 'package:e_book_app/model/custom_model.dart';
 
-class Library extends Equatable {
-  final String bookId;
-  final String userId;
+class Library extends CustomModel {
+  final String? bookId;
+  final String? userId;
 
-  const Library({required this.bookId, required this.userId});
+  Library({this.bookId, this.userId});
+
   @override
-  List<Object?> get props => [bookId,userId];
-
-  Map<String, Object> toDocument(){
+  Map<String, Object> toJson(){
     return {
-      'bookId': bookId,
-      'userId': userId
+      'bookId': bookId!,
+      'userId': userId!
     };
   }
-  static Library fromSnapshot(DocumentSnapshot snap) {
+  @override
+  Library fromJson(Map<String, dynamic> json) {
     Library library = Library(
-        bookId: snap['bookId'],
-        userId: snap['userId']
+        bookId: json['bookId'],
+        userId: json['userId']
     );
     return library;
   }

@@ -1,35 +1,31 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/models.dart';
 import 'base_chapters_repository.dart';
 
-class ChaptersRepository extends BaseChaptersRepository{
-  final FirebaseFirestore _firebaseFirestore;
+class ChaptersRepository extends BaseChaptersRepository {
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  ChaptersRepository({FirebaseFirestore? firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
-  @override
-  Stream<Chapters> getChapter(String bookId) {
-    if (bookId.isEmpty) {
-      // Throw an error if the bookId parameter is empty.
-      throw Exception("The bookId parameter cannot be empty.");
-    }
-    return _firebaseFirestore
-        .collection('chapters')
-        .where('bookId', isEqualTo: bookId)
-        .snapshots()
-        .map((snapshot) => Chapters.fromSnapshot(snapshot.docs.first));
-  }
+  ChaptersRepository();
+
   @override
   Future<Chapters> getChapters(String bookId) async {
-    if (bookId.isEmpty) {
-      throw Exception("The bookId parameter cannot be empty.");
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('chapters')
+          .where('bookId', isEqualTo: bookId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var data = querySnapshot.docs.first.data();
+        return Chapters().fromJson(data);
+      } else {
+        // Trả về một giá trị mặc định nào đó hoặc null
+        return Chapters(); // Hoặc trả về một đối tượng Chapters mặc định
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
     }
-
-    final snapshot = await _firebaseFirestore
-        .collection('chapters')
-        .where('bookId', isEqualTo: bookId)
-        .get();
-
-    return Chapters.fromSnapshot(snapshot.docs.first);
   }
 }

@@ -1,19 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
-
-class Chapters extends Equatable{
-  final String id;
-  final String bookId;
-  final Map<String,dynamic> chapterList;
-  const Chapters({required this.id, required this.bookId, required this.chapterList});
+import 'package:e_book_app/model/custom_model.dart';
+class Chapters extends CustomModel{
+  final String? id;
+  final String? bookId;
+  final Map<String,dynamic>? chapterList;
+  Chapters({this.id,this.bookId,this.chapterList});
+  
   @override
-  List<Object?> get props => [id, bookId, chapterList];
-
-  static Chapters fromSnapshot(DocumentSnapshot snap) {
+  Chapters fromJson(Map<String, dynamic> json) {
     Chapters chapters = Chapters(
-        id: snap.id,
-        bookId: snap['bookId'],
-        chapterList: snap['chapterList']);
+        id: json['id'],
+        bookId: json['bookId'],
+        chapterList: json['chapterList']);
     return chapters;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    // TODO: implement toJson
+    throw UnimplementedError();
   }
 }

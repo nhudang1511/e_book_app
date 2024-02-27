@@ -85,12 +85,11 @@ class _MyAppState extends State<MyApp> {
           )..add(LoadBooks()),
         ),
         BlocProvider(
-          create: (_) => CategoryBloc(categoryRepository: CategoryRepository())
+          create: (_) => CategoryBloc(CategoryRepository())
             ..add(LoadCategory()),
         ),
         BlocProvider(
-            create: (_) => AuthorBloc(
-                  authorRepository: AuthorRepository(),
+            create: (_) => AuthorBloc(AuthorRepository(),
                 )..add(LoadedAuthor())),
         BlocProvider(
           create: (_) => ReviewBloc(
@@ -111,19 +110,19 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LibraryBloc(
-            libraryRepository: LibraryRepository(),
+            LibraryRepository(),
           )..add(LoadLibrary()),
         ),
         BlocProvider(
             create: (_) =>
-                ChaptersBloc(chaptersRepository: ChaptersRepository(),)),
+                ChaptersBloc(ChaptersRepository(),)),
         BlocProvider(
           create: (_) => HistoryBloc(
             historyRepository: HistoryRepository())..add(LoadHistory()),
         ),
         BlocProvider(
           create: (_) => NoteBloc(
-            noteRepository: NoteRepository(),
+           NoteRepository(),
           )..add(LoadedNote()),
         ),
       ],

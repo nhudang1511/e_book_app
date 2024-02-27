@@ -41,7 +41,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       dotsColorInactive: Colors.grey.withOpacity(0.5),
       autoSlide: false,
       useDots: false,
-      onClick: (int) {},
+      onClick: (e) {},
     ).show();
   }
 
@@ -73,11 +73,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             ? BlocProvider.of<LibraryBloc>(context).add(
                                 RemoveFromLibraryEvent(
                                     userId: state.user.id,
-                                    bookId: widget.book.id))
+                                    bookId: widget.book.id ?? ''))
                             : BlocProvider.of<LibraryBloc>(context).add(
                                 AddToLibraryEvent(
                                     userId: state.user.id,
-                                    bookId: widget.book.id));
+                                    bookId: widget.book.id ?? ''));
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -161,7 +161,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 onPressed: () {
                   // Share.share(
                   //     'https://web.facebook.com/profile.php?id=100017418181405');
-                  Share.share(widget.book.imageUrl);
+                  Share.share(widget.book.imageUrl ?? '');
                 },
                 icon: const Icon(
                   Icons.share,
@@ -182,14 +182,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 child: Column(
                   children: [
                     Stack(children: [
-                      Image.network(widget.book.imageUrl),
+                      Image.network(widget.book.imageUrl ?? ''),
                       Positioned(
                           bottom: 0,
                           height: 30,
                           width: MediaQuery.of(context).size.width / 1.5,
                           child: InkWell(
                             onTap: () =>
-                                showHideDotsPopup(widget.book.bookPreview),
+                                showHideDotsPopup(widget.book.bookPreview ?? []),
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Colors.grey.withAlpha(90)),
@@ -217,7 +217,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       height: 10,
                     ),
                     Text(
-                      widget.book.title,
+                      widget.book.title ?? '',
                       style: Theme.of(context).textTheme.displayMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -232,7 +232,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             (author) => author.id == widget.book.authodId,
                           );
                           return Text(
-                            author.fullName,
+                            author.fullName ?? '',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineSmall!

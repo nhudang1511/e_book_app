@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../blocs/blocs.dart';
-import '../../../blocs/category/category_bloc.dart';
 import '../../../model/models.dart';
 import '../../../widget/category_items/category_card.dart';
 import '../../../widget/widget.dart';
@@ -37,7 +35,7 @@ class ListCategoryInSearch extends StatelessWidget {
                         allCategories.where((category) {
                       // Check if any book has this category id
                       return books
-                          .any((book) => book.categoryId.contains(category.id));
+                          .any((book) => book.categoryId!.contains(category.id));
                     }).toList();
                     if (filteredCategories.isNotEmpty) {
                       return Expanded(

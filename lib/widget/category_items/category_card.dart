@@ -24,7 +24,7 @@ class CategoryCard extends StatelessWidget {
             Expanded(
                 flex:1,
                 child: Text(
-                    category.name,
+                    category.name ?? '',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white) )),
             Container(
               decoration: BoxDecoration(
@@ -35,7 +35,7 @@ class CategoryCard extends StatelessWidget {
                 height: 80,
                 width: 80,
                 child: ClipOval(
-                    child: Image.network(category.imageUrl, fit: BoxFit.cover,)),
+                    child: Image.network(category.imageUrl ?? '', fit: BoxFit.cover,)),
               ),
             )
           ],

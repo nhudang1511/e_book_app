@@ -1,18 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
+import 'package:e_book_app/model/custom_model.dart';
 
-class Author extends Equatable{
+class Author extends CustomModel{
 
-  final String id;
-  final String fullName;
+  final String? id;
+  final String? fullName;
 
-  const Author({required this.id, required this.fullName});
+  Author({this.id, this.fullName});
 
-  static Author fromSnapshot(DocumentSnapshot snap) {
-    Author author = Author(id: snap.id, fullName: snap['fullName']);
+  @override
+  Author fromJson(Map<String, dynamic> json) {
+    Author author = Author(id: json['id'], fullName: json['fullName']);
     return author;
   }
+
   @override
-  List<Object?> get props => [id, fullName];
+  Map<String, dynamic> toJson() {
+    // TODO: implement toJson
+    throw UnimplementedError();
+  }
 
 }

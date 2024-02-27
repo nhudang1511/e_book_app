@@ -38,7 +38,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.note.title,
+                    widget.note.title ?? '',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Row(
@@ -46,11 +46,11 @@ class _TextNoteCardState extends State<TextNoteCard> {
                       IconButton(onPressed: (){
                         BlocProvider.of<NoteBloc>(context).add(
                             RemoveNoteEvent(
-                                bookId: widget.note.bookId,
-                                content: widget.note.content,
-                                title: widget.note.title,
-                                userId: widget.note.uId,
-                                noteId: widget.note.noteId));
+                                bookId: widget.note.bookId ?? '',
+                                content: widget.note.content ?? '',
+                                title: widget.note.title ?? '',
+                                userId: widget.note.uId ?? '',
+                                noteId: widget.note.noteId ?? ''));
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -77,7 +77,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                 ],
               ),
               Text(
-                widget.note.content,
+                widget.note.content ?? '',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Row(
@@ -85,13 +85,13 @@ class _TextNoteCardState extends State<TextNoteCard> {
                   Expanded(
                     child: BlocBuilder<BookBloc, BookState>(
                       builder: (context, state) {
-                        String bookName = widget.note.bookId;
+                        String bookName = widget.note.bookId ?? '';
                         if (state is BookLoaded) {
                           Book book = state.books
                               .where((element) =>
                           element.id == widget.note.bookId)
                               .first;
-                          bookName = book.title;
+                          bookName = book.title ?? '';
                         }
                         return Text(
                           bookName,
@@ -113,8 +113,8 @@ class _TextNoteCardState extends State<TextNoteCard> {
   }
 
   void _showClipboardDialog(BuildContext context, Note note) {
-    contentController.text = note.content;
-    titleContentController.text = note.title;
+    contentController.text = note.content ?? '';
+    titleContentController.text = note.title ?? '';
     showDialog(
       context: context,
       builder: (context) {
@@ -208,15 +208,15 @@ class _TextNoteCardState extends State<TextNoteCard> {
             TextButton(
               onPressed: () {
                 BlocProvider.of<NoteBloc>(context).add(EditNoteEvent(
-                    bookId: note.bookId,
+                    bookId: note.bookId ?? '',
                     content: contentController.text.isNotEmpty
                         ? contentController.text
-                        : note.content,
+                        : note.content ?? '',
                     title: titleContentController.text.isNotEmpty
                         ? titleContentController.text
-                        : note.title,
-                    userId: note.uId,
-                    noteId: note.noteId));
+                        : note.title ?? '',
+                    userId: note.uId ?? '',
+                    noteId: note.noteId ?? ''));
                 _timer = Timer(
                     const Duration(seconds: 1),
                         () {

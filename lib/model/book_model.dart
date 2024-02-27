@@ -1,42 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
 
-class Book extends Equatable{
-  final String id;
-  final String authodId;
-  final List<String> categoryId;
-  final String description;
-  final String imageUrl;
-  final String language;
-  final int price;
-  final DateTime publishDate;
-  final bool status;
-  final String title;
-  final List<String> bookPreview;
-  final int chapters;
-  final String country;
+import 'custom_model.dart';
+class Book extends CustomModel{
+  final String? id;
+  final String? authodId;
+  final List<String>? categoryId;
+  final String? description;
+  final String? imageUrl;
+  final String? language;
+  final int? price;
+  final DateTime? publishDate;
+  final bool? status;
+  final String? title;
+  final List<String>? bookPreview;
+  final int? chapters;
+  final String? country;
 
-  const Book({
-    required this.id,
-    required this.authodId,
-    required this.categoryId,
-    required this.description,
-    required this.imageUrl,
-    required this.language,
-    required this.price,
-    required this.publishDate,
-    required this.status,
-    required this.title,
-    required this.bookPreview,
-    required this.chapters,
-    required this.country
+  Book({
+    this.id,
+    this.authodId,
+    this.categoryId,
+    this.description,
+    this.imageUrl,
+    this.language,
+    this.price,
+    this.publishDate,
+    this.status,
+    this.title,
+    this.bookPreview,
+    this.chapters,
+    this.country
   });
 
   @override
-  List<Object?> get props =>[authodId, categoryId, description, imageUrl,
-    language, price, publishDate, status, title, bookPreview, chapters, country];
-
-  static Book fromJson(Map<String, dynamic> json) {
+  Book fromJson(Map<String, dynamic> json) {
     Book book = Book(
         id: json['id'],
         authodId: json['authodId'],
@@ -53,5 +50,11 @@ class Book extends Equatable{
         chapters: json['chapters']
     );
     return book;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    // TODO: implement toJson
+    throw UnimplementedError();
   }
 }

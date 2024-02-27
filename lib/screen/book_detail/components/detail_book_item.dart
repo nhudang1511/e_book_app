@@ -43,7 +43,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
               ),
               Column(
                 children: [
-                  Text(widget.book.country,
+                  Text(widget.book.country ?? '',
                       style: Theme.of(context)
                           .textTheme
                           .displayMedium!
@@ -72,7 +72,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
             height: 10,
           ),
           ReadMoreText(
-            widget.book.description,
+            widget.book.description ?? '',
             trimLength: 300,
           ),
           const SizedBox(
@@ -89,7 +89,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                         final Map<String, dynamic> tempPosition = {};
                         final Map<String, dynamic> tempPercent = {};
                         BlocProvider.of<ChaptersBloc>(context)
-                            .add(LoadChapters(widget.book.id));
+                            .add(LoadChapters(widget.book.id ?? ''));
                         BlocProvider.of<HistoryBloc>(context)
                             .add(LoadHistory());
                         Navigator.pushNamed(context, '/book', arguments: {

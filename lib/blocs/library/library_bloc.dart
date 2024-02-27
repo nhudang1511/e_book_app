@@ -1,26 +1,21 @@
-import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:e_book_app/model/library_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/repository.dart';
 part 'library_event.dart';
 part 'library_state.dart';
 
 class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   final LibraryRepository _libraryRepository;
-  StreamSubscription? _librarySubscription;
 
-  LibraryBloc({required LibraryRepository libraryRepository})
-      : _libraryRepository = libraryRepository,
-        super(LibraryInitial()){
+  LibraryBloc(this._libraryRepository)
+      :super(LibraryInitial()){
     on<AddToLibraryEvent>(_onAddToLibrary);
     on<RemoveFromLibraryEvent>(_onRemoveFromLibrary);
     on<LoadLibrary>(_onLoadLibrary);
-    on<UpdateLibrary>(_onUpdateLibrary);
   }
   void _onAddToLibrary(event, Emitter<LibraryState> emit) async{
     final library = Library(bookId: event.bookId, userId: event.userId);
-    _librarySubscription?.cancel();
     emit(LibraryLoading());
     try {
       // Thêm sách vào thư viện
@@ -32,7 +27,6 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   }
   void _onRemoveFromLibrary(event, Emitter<LibraryState> emit) async{
     final library = Library(bookId: event.bookId, userId: event.userId);
-    _librarySubscription?.cancel();
     emit(LibraryLoading());
     try {
       // Thêm sách vào thư viện
@@ -43,14 +37,11 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     }
   }
   void _onLoadLibrary(event, Emitter<LibraryState> emit) async{
-    emit(LibraryLoading());
-    _librarySubscription?.cancel();
-    _librarySubscription =
-        _libraryRepository
-            .getAllLibraries()
-            .listen((event) => add(UpdateLibrary(event)));
-  }
-  void _onUpdateLibrary(event, Emitter<LibraryState> emit) async{
-    emit(LibraryLoaded(libraries: event.libraries));
+    try {
+      List<Library> library = await _libraryRepository.getAllLibraries();
+      emit(LibraryLoaded(libraries: library));
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
   }
 }

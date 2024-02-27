@@ -40,16 +40,16 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_selectedSearchOption == "Name of book") {
       results = books
           .where((book) =>
-              book.title.toLowerCase().contains(_searchText.toLowerCase()) &&
+              book.title!.toLowerCase().contains(_searchText.toLowerCase()) &&
               book.status == true)
           .toList();
     } else if (_selectedSearchOption == "Author") {
       results = books.where((book) {
         // Tìm tác giả dựa trên fullName
         Author? author = authors.firstWhere(
-            (author) => author.id.toLowerCase() == book.authodId.toLowerCase());
+            (author) => author.id?.toLowerCase() == book.authodId?.toLowerCase());
         return author.fullName
-            .toLowerCase()
+            !.toLowerCase()
             .contains(_searchText.toLowerCase());
       }).toList();
     }
@@ -165,8 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         },
         style: ElevatedButton.styleFrom(
-            primary:
-                _selectedSearchOption == option ? Colors.white : Colors.grey,
+            backgroundColor: _selectedSearchOption == option ? Colors.white : Colors.grey,
             side: _selectedSearchOption == option
                 ? BorderSide(
                     width: 1, color: Theme.of(context).colorScheme.primary)

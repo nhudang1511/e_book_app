@@ -1,26 +1,32 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/models.dart';
 import 'base_note_repository.dart';
 
 class NoteRepository extends BaseNoteRepository{
 
-  final FirebaseFirestore _firebaseFirestore;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  NoteRepository({FirebaseFirestore? firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
+  NoteRepository();
   @override
-  Stream<List<Note>> getAllNote() {
-    return _firebaseFirestore
-        .collection('notes')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => Note.fromSnapshot(doc)).toList();
-    });
+  Future<List<Note>> getAllNote() async{
+    try {
+      var querySnapshot = await _firebaseFirestore.collection('notes').get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Note().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   @override
   Future<void> addNote(Note note) {
-    return _firebaseFirestore.collection('notes').add(note.toDocument());
+    return _firebaseFirestore.collection('notes').add(note.toJson());
   }
   @override
   Future<void> removeNote(Note note) {
@@ -33,6 +39,6 @@ class NoteRepository extends BaseNoteRepository{
     return _firebaseFirestore
         .collection('notes')
         .doc(note.noteId)
-        .update(note.toDocument());
+        .update(note.toJson());
   }
 }

@@ -120,7 +120,7 @@ class _BookScreenState extends State<BookScreen> {
         }
         BlocProvider.of<HistoryBloc>(context).add(AddToHistoryEvent(
             uId: widget.uId,
-            chapters: widget.book.id,
+            chapters: widget.book.id ?? '',
             percent: overallPercentage,
             times: times,
             chapterScrollPositions: widget.chapterScrollPositions,
@@ -152,7 +152,7 @@ class _BookScreenState extends State<BookScreen> {
                       final chapter;
                       final chapterList = state.chapters.chapterList;
                       // Convert the chapterList to a list of Map<String, dynamic>.
-                      chapterListMap = chapterList.entries.map((entry) {
+                      chapterListMap = chapterList?.entries.map((entry) {
                         return {
                           'id': entry.key,
                           'title': entry.value,
@@ -168,7 +168,7 @@ class _BookScreenState extends State<BookScreen> {
                         return aNumber.compareTo(bNumber);
                       });
                       chapter = chapterListMap[0];
-                      totalChapters = state.chapters.chapterList.length * 100;
+                      totalChapters = state.chapters.chapterList?.length ?? 1 * 100;
                       localSelectedTableText = chapter['title'];
                       localSelectedChapterId = chapter['id'];
                       return BlocBuilder<HistoryBloc, HistoryState>(
@@ -183,7 +183,7 @@ class _BookScreenState extends State<BookScreen> {
                               final historyListMap = histories
                                   .map((histories) {
                                     return histories
-                                        .chapterScrollPositions.entries
+                                        .chapterScrollPositions!.entries
                                         .map((entry) {
                                       return {
                                         'id': entry.key,
@@ -217,7 +217,7 @@ class _BookScreenState extends State<BookScreen> {
                                     .map((e) => e.chapterScrollPercentages)
                                     .fold<Map<String, dynamic>>({},
                                         (prev, element) {
-                                  prev.addAll(element);
+                                  prev.addAll(element!);
                                   return prev;
                                 });
                                 // print('histories: $percentListMap');
@@ -524,14 +524,14 @@ class _BookScreenState extends State<BookScreen> {
                       if (state is ChaptersLoaded) {
                         final chapterList = state.chapters.chapterList;
                         // Convert the chapterList to a list of Map<String, dynamic>.
-                        final chapterListMap = chapterList.entries.map((entry) {
+                        final chapterListMap = chapterList?.entries.map((entry) {
                           return {
                             'id': entry.key,
                             'title': entry.value,
                           };
                         }).toList();
                         // Sắp xếp danh sách theo key (chapter['id'])
-                        chapterListMap.sort((a, b) {
+                        chapterListMap?.sort((a, b) {
                           // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
                           int aNumber = int.parse(
                               a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
@@ -543,9 +543,9 @@ class _BookScreenState extends State<BookScreen> {
                           height: MediaQuery.of(context).size.height / 3,
                           child: ListView.builder(
                             scrollDirection: Axis.vertical,
-                            itemCount: chapterListMap.length,
+                            itemCount: chapterListMap?.length,
                             itemBuilder: (context, index) {
-                              final chapter = chapterListMap[index];
+                              final chapter = chapterListMap![index];
                               // Display the chapter.
                               return ListTile(
                                   title: TextButton(
@@ -708,7 +708,7 @@ class _BookScreenState extends State<BookScreen> {
             TextButton(
               onPressed: () {
                 BlocProvider.of<NoteBloc>(context).add(AddNewNoteEvent(
-                    bookId: widget.book.id,
+                    bookId: widget.book.id ?? '',
                     content: selectedText,
                     title: noteContentController.text,
                     userId: widget.uId));

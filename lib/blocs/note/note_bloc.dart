@@ -11,27 +11,22 @@ part 'note_state.dart';
 
 class NoteBloc extends Bloc<NoteEvent, NoteState> {
   final NoteRepository _noteRepository;
-  StreamSubscription? _noteSubscription;
 
-  NoteBloc({required NoteRepository noteRepository})
-      : _noteRepository = noteRepository,
-        super(NoteInitial()) {
+  NoteBloc(this._noteRepository)
+      : super(NoteInitial()) {
     on<LoadedNote>(_onLoadNote);
-    on<UpdateNote>(_onUpdateNote);
     on<AddNewNoteEvent>(_onAddNewNote);
     on<RemoveNoteEvent>(_onRemoveNote);
     on<EditNoteEvent>(_onEditNote);
   }
 
   void _onLoadNote(event, Emitter<NoteState> emit) async {
-    emit(NoteLoading());
-    _noteSubscription?.cancel();
-    _noteSubscription =
-        _noteRepository.getAllNote().listen((event) => add(UpdateNote(event)));
-  }
-
-  void _onUpdateNote(event, Emitter<NoteState> emit) async {
-    emit(NoteLoaded(notes: event.notes));
+    try {
+      List<Note> note = await _noteRepository.getAllNote();
+      emit(NoteLoaded(notes: note));
+    } catch (e) {
+      emit(NoteError(e.toString()));
+    }
   }
 
   void _onAddNewNote(event, Emitter<NoteState> emit) async {
@@ -42,7 +37,6 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
         uId: event.userId,
       noteId: ''
     );
-    _noteSubscription?.cancel();
     emit(NoteLoading());
     try {
       await _noteRepository.addNote(note);
@@ -57,7 +51,6 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
         content: event.content,
         title: event.title,
         uId: event.userId, noteId: event.noteId);
-    _noteSubscription?.cancel();
     emit(NoteLoading());
     try {
       await _noteRepository.removeNote(note);
@@ -72,7 +65,6 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
         content: event.content,
         title: event.title,
         uId: event.userId, noteId: event.noteId);
-    _noteSubscription?.cancel();
     emit(NoteLoading());
     try {
       await _noteRepository.editNote(note);

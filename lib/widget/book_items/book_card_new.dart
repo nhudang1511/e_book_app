@@ -25,7 +25,7 @@ class BookCard extends StatelessWidget {
           color: const Color(0xFFF2A5B5),),
         child: Row(
           children: [
-            Expanded(flex:2, child: Text(book.title, style: Theme.of(context).textTheme.headlineSmall )),
+            Expanded(flex:2, child: Text(book.title ?? '', style: Theme.of(context).textTheme.headlineSmall )),
             Expanded(
                 flex:1,
                 child: BlocBuilder<AuthorBloc, AuthorState>(
@@ -37,7 +37,7 @@ class BookCard extends StatelessWidget {
                       Author? author = state.authors.firstWhere(
                             (author) => author.id == book.authodId,
                       );
-                      return Text(author.fullName);
+                      return Text(author.fullName ?? '');
                     }
                     else{
                       return const Text('Somthing went wrong');
@@ -45,7 +45,7 @@ class BookCard extends StatelessWidget {
                     },
                 )
             ),
-            Expanded(flex:3,child: Image.network(book.imageUrl))
+            Expanded(flex:3,child: Image.network(book.imageUrl ?? ''))
           ],
         ),
       ),

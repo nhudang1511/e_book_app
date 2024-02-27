@@ -39,17 +39,17 @@ class BookCardMain extends StatelessWidget {
             if (state is CategoryLoaded) {
               // Tạo danh sách tên danh mục từ categoryId trong book
               List<String> categoryNames = [];
-              for (String categoryId in book.categoryId) {
-                Category? category = state.categories.firstWhere(
-                  (cat) => cat.id == categoryId,
-                );
-                if (category != null) {
-                  categoryNames.add(category.name);
+              if (book.categoryId != null) {
+                for (String categoryId in book.categoryId!) {
+                  Category? category = state.categories.firstWhere(
+                        (cat) => cat.id == categoryId,
+                  );
+                  categoryNames.add(category.name ?? '');
                 }
-              }
+                            }
               return Row(
                 children: [
-                  Expanded(flex: 1, child: Image.network(book.imageUrl)),
+                  Expanded(flex: 1, child: Image.network(book.imageUrl ?? '')),
                   const SizedBox(width: 5),
                   Expanded(
                       flex: 2,
@@ -65,7 +65,7 @@ class BookCardMain extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      book.title,
+                                      book.title ?? '',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineSmall,
@@ -84,7 +84,7 @@ class BookCardMain extends StatelessWidget {
                                                 author.id == book.authodId,
                                           );
                                           return Text(
-                                            author.fullName,
+                                            author.fullName ?? '',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headlineSmall!
@@ -117,12 +117,12 @@ class BookCardMain extends StatelessWidget {
                                                       context)
                                                   .add(RemoveFromLibraryEvent(
                                                       userId: state.user.id,
-                                                      bookId: book.id))
+                                                      bookId: book.id ?? ''))
                                               : BlocProvider.of<LibraryBloc>(
                                                       context)
                                                   .add(AddToLibraryEvent(
                                                       userId: state.user.id,
-                                                      bookId: book.id));
+                                                      bookId: book.id ?? ''));
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
@@ -222,7 +222,7 @@ class BookCardMain extends StatelessWidget {
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    Text(book.language)
+                                    Text(book.language ?? '')
                                   ],
                                 ),
                                 SizedBox(

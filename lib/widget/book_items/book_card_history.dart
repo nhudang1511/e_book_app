@@ -33,22 +33,18 @@ class _BookCardHistoryState extends State<BookCardHistory> {
       },
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
-          if(state is UserLoaded){
+          if (state is UserLoaded) {
             String uId = state.user.id;
-            BlocListener<LibraryBloc, LibraryState>(
-                listener: (context, state) {
+            BlocListener<LibraryBloc, LibraryState>(listener: (context, state) {
               if (state is LibraryLoaded) {
-                bool isBookInLibrary =
-                state.libraries.any((b) =>
-                b.userId == uId &&
-                    b.bookId == widget.book.id);
+                bool isBookInLibrary = state.libraries
+                    .any((b) => b.userId == uId && b.bookId == widget.book.id);
                 if (isBookInLibrary) {
                   widget.inLibrary =
-                  true; // Nếu sách có trong Library, đặt inLibrary thành true
+                      true; // Nếu sách có trong Library, đặt inLibrary thành true
                 }
               }
-            }
-            );
+            });
           }
         },
         child: Container(
@@ -62,19 +58,20 @@ class _BookCardHistoryState extends State<BookCardHistory> {
               }
               if (state is CategoryLoaded) {
                 // Tạo danh sách tên danh mục từ categoryId trong book
-                List<String> categoryNames = [];
-                for (String categoryId in widget.book.categoryId) {
-                  Category? category = state.categories.firstWhere(
-                    (cat) => cat.id == categoryId,
-                  );
-                  if (category != null) {
-                    categoryNames.add(category.name);
+                if (widget.book.categoryId != null) {
+                  List<String> categoryNames = [];
+                  for (String categoryId in widget.book.categoryId!) {
+                    Category? category = state.categories.firstWhere(
+                      (cat) => cat.id == categoryId,
+                    );
+                    categoryNames.add(category.name ?? '');
                   }
                 }
                 return Row(
                   children: [
                     Expanded(
-                        flex: 1, child: Image.network(widget.book.imageUrl)),
+                        flex: 1,
+                        child: Image.network(widget.book.imageUrl ?? '')),
                     const SizedBox(width: 5),
                     Expanded(
                         flex: 2,
@@ -86,7 +83,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      widget.book.title,
+                                      widget.book.title ?? '',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineSmall,
@@ -106,7 +103,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                                 widget.book.authodId,
                                           );
                                           return Text(
-                                            author.fullName,
+                                            author.fullName ?? '',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headlineSmall!
@@ -126,7 +123,8 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                 )),
                             Expanded(
                               flex: 3,
-                              child: (widget.percent.isNaN || widget.percent.isInfinite)
+                              child: (widget.percent.isNaN ||
+                                      widget.percent.isInfinite)
                                   ? LinearPercentIndicator(
                                       animation: true,
                                       lineHeight: 10.0,
@@ -142,7 +140,11 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                       animation: true,
                                       lineHeight: 10.0,
                                       animationDuration: 2500,
-                                      percent: widget.percent / 100,
+                                      percent: (widget.percent / 100) < 0
+                                          ? 0
+                                          : (widget.percent / 100) > 1.0
+                                              ? 1
+                                              : widget.percent / 100,
                                       center: const Text(
                                         "",
                                         style: TextStyle(color: Colors.white),
