@@ -9,22 +9,17 @@ part 'book_state.dart';
 
 class BookBloc extends Bloc<BookEvent, BookState> {
   final BookRepository _bookRepository;
-  StreamSubscription? _bookSubscription;
 
-  BookBloc({required BookRepository bookRepository})
-      : _bookRepository = bookRepository,
-        super(BookLoading()){
+  BookBloc(this._bookRepository)
+      :super(BookLoading()){
           on<LoadBooks>(_onLoadBook);
-          on<UpdateBook>(_onUpdateBook);
   }
   void _onLoadBook(event, Emitter<BookState> emit) async{
-    _bookSubscription?.cancel();
-    _bookSubscription =
-        _bookRepository
-            .getAllBooks()
-            .listen((event) => add(UpdateBook(event)));
-  }
-  void _onUpdateBook(event, Emitter<BookState> emit) async{
-    emit(BookLoaded(books: event.books));
+    try {
+      List<Book> books = await _bookRepository.getAllBooks();
+      emit(BookLoaded(books: books));
+    } catch (e) {
+      emit(BookFailure());
+    }
   }
 }

@@ -1,12 +1,8 @@
 import 'package:e_book_app/config/theme/theme_provider.dart';
 import 'package:e_book_app/cubits/cubits.dart';
-import 'package:e_book_app/cubits/forgotPassword/forgotPassword_cubit.dart';
-
-//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'bloc_observer.dart';
 import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
@@ -85,8 +81,7 @@ class _MyAppState extends State<MyApp> {
           )..add(AuthEventStarted()),
         ),
         BlocProvider(
-          create: (_) => BookBloc(
-            bookRepository: BookRepository(),
+          create: (_) => BookBloc(BookRepository(),
           )..add(LoadBooks()),
         ),
         BlocProvider(

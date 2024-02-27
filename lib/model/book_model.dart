@@ -36,20 +36,21 @@ class Book extends Equatable{
   List<Object?> get props =>[authodId, categoryId, description, imageUrl,
     language, price, publishDate, status, title, bookPreview, chapters, country];
 
-  static Book fromSnapshot(DocumentSnapshot snap) {
+  static Book fromJson(Map<String, dynamic> json) {
     Book book = Book(
-        id: snap.id, authodId: snap['authodId'],
-        categoryId: List<String>.from(snap['categoryId']),
-        description: snap['description'],
-        imageUrl: snap['imageUrl'],
-        language: snap['language'],
-        price: snap['price'],
-        publishDate: (snap['publishDate'] as Timestamp).toDate(),
-        status: snap['status'],
-        title: snap['title'],
-        bookPreview: List<String>.from(snap['bookPreview']),
-        country: snap['country'],
-        chapters: snap['chapters']
+        id: json['id'],
+        authodId: json['authodId'],
+        categoryId: List<String>.from(json['categoryId']),
+        description: json['description'],
+        imageUrl: json['imageUrl'],
+        language: json['language'],
+        price: json['price'],
+        publishDate: (json['publishDate'] as Timestamp).toDate(),
+        status: json['status'],
+        title: json['title'],
+        bookPreview: List<String>.from(json['bookPreview']),
+        country: json['country'],
+        chapters: json['chapters']
     );
     return book;
   }

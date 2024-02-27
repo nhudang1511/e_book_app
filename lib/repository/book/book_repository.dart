@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../model/book_model.dart';
@@ -5,18 +7,22 @@ import 'base_book_repository.dart';
 
 class BookRepository extends BaseBookRepository{
 
-  final FirebaseFirestore _firebaseFirestore;
-
-  BookRepository({FirebaseFirestore? firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  //final BookRepository _bookRepository;
+  BookRepository();
   @override
-  Stream<List<Book>> getAllBooks() {
-    return _firebaseFirestore
-        .collection('book')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => Book.fromSnapshot(doc)).toList();
-    });
+  Future<List<Book>> getAllBooks() async {
+    try {
+      var querySnapshot = await _firebaseFirestore.collection('book').get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Book.fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
 }

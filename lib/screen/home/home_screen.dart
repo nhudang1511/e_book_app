@@ -89,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is BookLoaded) {
+              //print(state.books.length);
               List<Book> book = state.books.where((element) => element.status == true).toList();
               return Column(
                 children: [
