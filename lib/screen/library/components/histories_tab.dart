@@ -39,63 +39,59 @@ class DisplayHistories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('histories')
-          .where('uId', isEqualTo: uId)
-          .snapshots(),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.hasData) {
-          List<History> histories = snapshot.data!.docs.map((doc) {
-            return History.fromSnapshot(doc);
-          }).toList();
-          return BlocBuilder<BookBloc, BookState>(
-            builder: (context, state) {
-              if (state is BookLoaded) {
-                List<Book> matchingBooks = state.books
-                    .where((book) =>
-                        histories.any((item) => item.chapters == book.id))
-                    .toList();
-                if (matchingBooks.isNotEmpty) {
-                  List<num> percent = [];
-                  for (var book in matchingBooks) {
-                    List<History> matchedHistories = histories
-                        .where((item) => item.chapters == book.id)
-                        .toList();
-                    for (var history in matchedHistories) {
-                      //print('Book ID: ${book.id}, Percent: ${history.percent}');
-                      // Do something with history.percent here
-                      percent.add(history.percent);
-                    }
-                  }
-                  return Column(
-                    children: [
-                      inHistory ? const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SectionTitle(title: 'Continue Reading'),
-                        ],
-                      ) : const SizedBox(),
-                      ListBookHistory(
-                        books: matchingBooks,
-                        scrollDirection: scrollDirection,
-                        height: height,
-                        inLibrary: false,
-                        percent: percent, inHistory: inHistory,
-                      ),
-                    ],
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          );
-        } else {
-          return const CircularProgressIndicator();
+    return BlocBuilder<HistoryBloc, HistoryState>(
+      builder: (context, state) {
+        List<History> histories = [];
+        if(state is HistoryLoaded){
+          histories = state.histories.where((element) => element.uId == uId).toList();
         }
+        return BlocBuilder<BookBloc, BookState>(
+          builder: (context, state) {
+            if (state is BookLoaded) {
+              List<Book> matchingBooks = state.books
+                  .where((book) =>
+                      histories.any((item) => item.chapters == book.id))
+                  .toList();
+              if (matchingBooks.isNotEmpty) {
+                List<num> percent = [];
+                for (var book in matchingBooks) {
+                  List<History> matchedHistories = histories
+                      .where((item) => item.chapters == book.id)
+                      .toList();
+                  for (var history in matchedHistories) {
+                    //print('Book ID: ${book.id}, Percent: ${history.percent}');
+                    // Do something with history.percent here
+                    percent.add(history.percent ?? 0);
+                  }
+                }
+                return Column(
+                  children: [
+                    inHistory
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SectionTitle(title: 'Continue Reading'),
+                            ],
+                          )
+                        : const SizedBox(),
+                    ListBookHistory(
+                      books: matchingBooks,
+                      scrollDirection: scrollDirection,
+                      height: height,
+                      inLibrary: false,
+                      percent: percent,
+                      inHistory: inHistory,
+                    ),
+                  ],
+                );
+              } else {
+                return const SizedBox();
+              }
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        );
       },
     );
   }

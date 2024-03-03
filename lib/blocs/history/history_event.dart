@@ -1,26 +1,11 @@
 part of 'history_bloc.dart';
 
-abstract class HistoryEvent extends Equatable {
+abstract class HistoryEvent{
   const HistoryEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class LoadHistory extends HistoryEvent {
-  @override
-  List<Object?> get props => [];
 }
-
-class UpdateHistory extends HistoryEvent {
-  final List<History> histories;
-
-  const UpdateHistory(this.histories);
-
-  @override
-  List<Object?> get props => [histories];
-}
-
 class AddToHistoryEvent extends HistoryEvent {
   final String uId;
   final String chapters;
@@ -36,7 +21,4 @@ class AddToHistoryEvent extends HistoryEvent {
       required this.times,
       required this.chapterScrollPositions,
       required this.chapterScrollPercentages});
-
-  @override
-  List<Object?> get props => [uId, chapters, percent, times];
 }

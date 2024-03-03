@@ -1,51 +1,42 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
+import 'package:e_book_app/model/custom_model.dart';
 
-class History extends Equatable {
-  final String uId;
-  final String chapters;
-  final num percent;
-  final int times;
-  final Map<String, dynamic> chapterScrollPositions;
-  final Map<String, dynamic> chapterScrollPercentages;
+class History extends CustomModel {
+  final String? uId;
+  final String? chapters;
+  final num? percent;
+  final int? times;
+  final Map<String, dynamic>? chapterScrollPositions;
+  final Map<String, dynamic>? chapterScrollPercentages;
 
-  const History(
-      {required this.uId,
-      required this.chapters,
-      required this.percent,
-      required this.times,
-      required this.chapterScrollPositions,
-      required this.chapterScrollPercentages});
+  History(
+      {this.uId,
+      this.chapters,
+      this.percent,
+      this.times,
+      this.chapterScrollPositions,
+      this.chapterScrollPercentages});
 
   @override
-  List<Object?> get props => [
-        uId,
-        chapters,
-        percent,
-        times,
-        chapterScrollPositions,
-        chapterScrollPercentages
-      ];
-
-  Map<String, Object> toDocument() {
+  Map<String, Object> toJson() {
     return {
-      'uId': uId,
-      'chapters': chapters,
-      'percent': percent,
-      'times': times,
-      'chapterScrollPositions': chapterScrollPositions,
-      'chapterScrollPercentages': chapterScrollPercentages
+      'uId': uId!,
+      'chapters': chapters!,
+      'percent': percent!,
+      'times': times!,
+      'chapterScrollPositions': chapterScrollPositions!,
+      'chapterScrollPercentages': chapterScrollPercentages!
     };
   }
 
-  static History fromSnapshot(DocumentSnapshot snap) {
+  @override
+  History fromJson(Map<String, dynamic> json) {
     History history = History(
-        uId: snap['uId'],
-        chapters: snap['chapters'],
-        percent: snap['percent'],
-        times: snap['times'],
-        chapterScrollPositions: snap['chapterScrollPositions'],
-        chapterScrollPercentages: snap['chapterScrollPercentages']);
+        uId: json['uId'],
+        chapters: json['chapters'],
+        percent: json['percent'],
+        times: json['times'],
+        chapterScrollPositions: json['chapterScrollPositions'],
+        chapterScrollPercentages: json['chapterScrollPercentages']);
     return history;
   }
 }

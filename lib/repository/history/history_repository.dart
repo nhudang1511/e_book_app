@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../model/models.dart';
@@ -38,11 +40,11 @@ class HistoryRepository extends BaseHistoryRepository {
           'times': FieldValue.increment(1),
           'chapterScrollPositions': {
             ...existingChapterScrollPositions,
-            ...history.chapterScrollPositions,
+            ...?history.chapterScrollPositions,
           },
           'chapterScrollPercentages': {
             ...existingChapterScrollPercentages,
-            ...history.chapterScrollPercentages
+            ...?history.chapterScrollPercentages
           }
         };
 
@@ -50,7 +52,7 @@ class HistoryRepository extends BaseHistoryRepository {
       } else {
         // Nếu không tồn tại, thêm một tài liệu mới với chapterScrollPositions mới
         await _firebaseFirestore.collection('histories').add({
-          ...history.toDocument(),
+          ...history.toJson(),
           'chapterScrollPositions': history.chapterScrollPositions,
           'chapterScrollPercentages': history.chapterScrollPercentages
         });
@@ -61,39 +63,41 @@ class HistoryRepository extends BaseHistoryRepository {
   }
 
   @override
-  Stream<List<History>> getAllHistories() {
-    return _firebaseFirestore
-        .collection('histories')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
-    });
+  Future<List<History>> getAllHistories() async {
+    try {
+      var querySnapshot = await _firebaseFirestore.collection('histories').get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return History().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   @override
-  Stream<History> getHistories(String bookId) {
+  Future<History> getHistories(String bookId) async {
     if (bookId.isEmpty) {
       // Throw an error if the bookId parameter is empty.
       throw Exception("The bookId parameter cannot be empty.");
     }
-    return _firebaseFirestore
-        .collection('histories')
-        .where('chapters', isEqualTo: bookId)
-        .snapshots()
-        .map((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        return History.fromSnapshot(snapshot.docs.first);
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('histories')
+          .where('chapters', isEqualTo: bookId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var data = querySnapshot.docs.first.data();
+        return History().fromJson(data);
       } else {
-        // If no documents are found, return a default or handle it as needed.
-        // Here, returning an empty History object for illustration.
-        return const History(
-            uId: '',
-            chapters: '',
-            percent: 0.0,
-            times: 0,
-            chapterScrollPositions: {},
-            chapterScrollPercentages: {}); // Replace with appropriate handling.
+        // Trả về một giá trị mặc định nào đó hoặc null
+        return History(); // Hoặc trả về một đối tượng Chapters mặc định
       }
-    });
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 }
