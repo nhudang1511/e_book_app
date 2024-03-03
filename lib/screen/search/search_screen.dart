@@ -153,7 +153,7 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         },
         style: ElevatedButton.styleFrom(
-          // primary: _selectedSearchOption == option ? Colors.white : Colors.grey,
+          primary: _selectedSearchOption == option ? Colors.white : Colors.grey,
           side: _selectedSearchOption == option ? BorderSide(
               width: 1,
               color: Theme.of(context).colorScheme.primary) : null),
