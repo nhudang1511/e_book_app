@@ -1,5 +1,4 @@
 import 'package:e_book_app/config/theme/theme_provider.dart';
-import 'package:e_book_app/cubits/cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -42,40 +41,6 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => LoginCubit(
-            authRepository: AuthRepository(),
-            userRepository: UserRepository(),
-          ),
-          child: const LoginScreen(),
-        ),
-        BlocProvider(
-          create: (_) => ChangePasswordCubit(
-            authRepository: AuthRepository(),
-            userRepository: UserRepository(),
-          ),
-          child: const ChangePasswordScreen(),
-        ),
-        BlocProvider(
-          create: (_) => EditProfileCubit(
-            authRepository: AuthRepository(),
-            userRepository: UserRepository(),
-          ),
-          child: const EditProfileScreen(),
-        ),
-        BlocProvider(
-          create: (_) => ForgotPasswordCubit(
-            authRepository: AuthRepository(),
-          ),
-          child: const EnterEmailScreen(),
-        ),
-        BlocProvider(
-          create: (_) => SignupCubit(
-            authRepository: AuthRepository(),
-            userRepository: UserRepository(),
-          ),
-          child: const SignupScreen(),
-        ),
-        BlocProvider(
           create: (_) => AuthBloc(
             authRepository: AuthRepository(),
           )..add(AuthEventStarted()),
@@ -83,18 +48,6 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (_) => BookBloc(BookRepository(),
           )..add(LoadBooks()),
-        ),
-        BlocProvider(
-          create: (_) => CategoryBloc(CategoryRepository())
-            ..add(LoadCategory()),
-        ),
-        BlocProvider(
-            create: (_) => AuthorBloc(AuthorRepository(),
-                )..add(LoadedAuthor())),
-        BlocProvider(
-          create: (_) => ReviewBloc(
-            reviewRepository: ReviewRepository(),
-          )..add(LoadedReview()),
         ),
         BlocProvider(
           create: (_) => UserBloc(

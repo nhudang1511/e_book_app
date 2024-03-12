@@ -2,6 +2,7 @@ import 'package:e_book_app/model/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
+import '../../repository/repository.dart';
 import '../../widget/widget.dart';
 import 'components/list_category_in_search.dart';
 
@@ -64,93 +65,100 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: const CustomAppBar(title: 'Search'),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: const Color(0xFFC7C7C7)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: TextField(
-                        onChanged: _onSearchTextChanged,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Search for book',
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: const Color(0xFFC9C9C9)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (_) => AuthorBloc(AuthorRepository(),
+            )..add(LoadedAuthor())),
+      ],
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        appBar: const CustomAppBar(title: 'Search'),
+        body: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: const Color(0xFFC7C7C7)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: TextField(
+                          onChanged: _onSearchTextChanged,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Search for book',
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(color: const Color(0xFFC9C9C9)),
+                          ),
                         ),
                       ),
-                    ),
-                    // const Icon(Icons.mic)
-                  ],
+                      // const Icon(Icons.mic)
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                _buildSearchOptionButton("Name of book"),
-                _buildSearchOptionButton("Author"),
-                // _buildSearchOptionButton("Tags"),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  _buildSearchOptionButton("Name of book"),
+                  _buildSearchOptionButton("Author"),
+                  // _buildSearchOptionButton("Tags"),
+                ],
+              ),
             ),
-          ),
-          BlocBuilder<BookBloc, BookState>(
-            builder: (context, state) {
-              if (state is BookLoading) {
-                return const CircularProgressIndicator();
-              }
-              if (state is BookLoaded) {
-                List<Book> book = state.books
-                    .where((element) => element.status == true)
-                    .toList();
-                return BlocBuilder<AuthorBloc, AuthorState>(
-                  builder: (context, state) {
-                    if (state is AuthorLoaded) {
-                      List<Book> searchResults =
-                          _performSearch(book, state.authors);
-                      return Expanded(
-                        child: _hasSearched == true
-                            ? SizedBox(
-                                height: 180,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: searchResults.length,
-                                    itemBuilder: (context, index) {
-                                      return BookCardMain(
-                                        book: searchResults[index],
-                                        inLibrary: false,
-                                      );
-                                    }),
-                              )
-                            : const ListCategoryInSearch(),
-                      );
-                    } else {
-                      return const Text('Something went wrong');
-                    }
-                  },
-                );
-              } else {
-                return const Text('Something went wrong');
-              }
-            },
-          ),
-        ],
+            BlocBuilder<BookBloc, BookState>(
+              builder: (context, state) {
+                if (state is BookLoading) {
+                  return const CircularProgressIndicator();
+                }
+                if (state is BookLoaded) {
+                  List<Book> book = state.books
+                      .where((element) => element.status == true)
+                      .toList();
+                  return BlocBuilder<AuthorBloc, AuthorState>(
+                    builder: (context, state) {
+                      if (state is AuthorLoaded) {
+                        List<Book> searchResults =
+                            _performSearch(book, state.authors);
+                        return Expanded(
+                          child: _hasSearched == true
+                              ? SizedBox(
+                                  height: 180,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: searchResults.length,
+                                      itemBuilder: (context, index) {
+                                        return BookCardMain(
+                                          book: searchResults[index],
+                                          inLibrary: false,
+                                        );
+                                      }),
+                                )
+                              : const ListCategoryInSearch(),
+                        );
+                      } else {
+                        return const Text('Something went wrong');
+                      }
+                    },
+                  );
+                } else {
+                  return const Text('Something went wrong');
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

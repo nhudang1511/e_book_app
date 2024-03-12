@@ -16,7 +16,7 @@ class ListBook extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: books.length,
           itemBuilder: (context,index){
-            return Padding(padding: EdgeInsets.all(8),
+            return Padding(padding: const EdgeInsets.all(8),
                 child: BookCard(book: books[index], inLibrary: inLibrary,));
           }),
     );

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/model/custom_model.dart';
 
 class History extends CustomModel {
@@ -37,6 +38,17 @@ class History extends CustomModel {
         times: json['times'],
         chapterScrollPositions: json['chapterScrollPositions'],
         chapterScrollPercentages: json['chapterScrollPercentages']);
+    return history;
+  }
+
+  static History fromSnapshot(DocumentSnapshot snap) {
+    History history = History(
+        uId: snap['uId'],
+        chapters: snap['chapters'],
+        percent: snap['percent'],
+        times: snap['times'],
+        chapterScrollPositions: snap['chapterScrollPositions'],
+        chapterScrollPercentages: snap['chapterScrollPercentages']);
     return history;
   }
 }
