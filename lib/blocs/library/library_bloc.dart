@@ -38,7 +38,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   }
   void _onLoadLibrary(event, Emitter<LibraryState> emit) async{
     try {
-      List<Library> library = await _libraryRepository.getAllLibraries();
+      List<Library> library = await _libraryRepository.getAllLibraries(event.userId);
       emit(LibraryLoaded(libraries: library));
     } catch (e) {
       emit(LibraryError(e.toString()));

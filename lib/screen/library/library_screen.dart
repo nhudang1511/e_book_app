@@ -1,6 +1,8 @@
+import 'package:e_book_app/repository/library/library_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
+import '../../model/models.dart';
 import '../../widget/widget.dart';
 import '../screen.dart';
 import 'components/favourites_tab.dart';
@@ -139,7 +141,7 @@ class _CustomTabState extends State<CustomTab> {
                     HistoriesTab(
                       uId: widget.uId,
                     ),
-                    FavouritesTab(uId: widget.uId),
+                  FavouritesTab(uId: widget.uId),
                   ],
                 ),
               )
@@ -150,4 +152,3 @@ class _CustomTabState extends State<CustomTab> {
     );
   }
 }
-

@@ -13,10 +13,28 @@ class BookBloc extends Bloc<BookEvent, BookState> {
   BookBloc(this._bookRepository)
       :super(BookLoading()){
           on<LoadBooks>(_onLoadBook);
+          on<LoadBooksByCateId>(_onLoadBookByCateId);
+          on<LoadBooksByLibrary>(_onLoadBookByLibrary);
   }
   void _onLoadBook(event, Emitter<BookState> emit) async{
     try {
       List<Book> books = await _bookRepository.getAllBooks();
+      emit(BookLoaded(books: books));
+    } catch (e) {
+      emit(BookFailure());
+    }
+  }
+  void _onLoadBookByCateId(event, Emitter<BookState> emit) async{
+    try {
+      List<Book> books = await _bookRepository.getBookByCategory(event.cateId);
+      emit(BookLoaded(books: books));
+    } catch (e) {
+      emit(BookFailure());
+    }
+  }
+  void _onLoadBookByLibrary(event, Emitter<BookState> emit) async{
+    try {
+      List<Book> books = await _bookRepository.getBookByLibrary(event.libraries);
       emit(BookLoaded(books: books));
     } catch (e) {
       emit(BookFailure());

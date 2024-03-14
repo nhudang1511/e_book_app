@@ -4,8 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/model/library_model.dart';
 import 'package:e_book_app/repository/library/base_library_repository.dart';
 
-class LibraryRepository extends BaseLibraryRepository{
-
+class LibraryRepository extends BaseLibraryRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   LibraryRepository();
@@ -16,11 +15,18 @@ class LibraryRepository extends BaseLibraryRepository{
   }
 
   @override
-  Future<List<Library>> getAllLibraries() async {
+  Future<List<Library>> getAllLibraries(String? userId) async {
     try {
-      var querySnapshot = await _firebaseFirestore.collection('libraries').get();
+      Query query = _firebaseFirestore.collection('libraries');
+
+      if (userId != null) {
+        query = query.where('userId', isEqualTo: userId);
+      }
+
+      var querySnapshot = await query.get();
+
       return querySnapshot.docs.map((doc) {
-        var data = doc.data();
+        var data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
         return Library().fromJson(data);
       }).toList();
@@ -29,6 +35,7 @@ class LibraryRepository extends BaseLibraryRepository{
       rethrow;
     }
   }
+
 
   @override
   Future<void> removeBookInLibrary(Library library) {
@@ -43,5 +50,4 @@ class LibraryRepository extends BaseLibraryRepository{
       }
     });
   }
-
 }

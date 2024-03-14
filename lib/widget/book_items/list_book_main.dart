@@ -7,13 +7,14 @@ class ListBookMain extends StatelessWidget {
   final Axis scrollDirection;
   final double height;
   final bool inLibrary;
+  final String? uId;
 
   const ListBookMain(
       {super.key,
       required this.books,
       required this.scrollDirection,
       required this.height,
-      required this.inLibrary});
+      required this.inLibrary, this.uId});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class ListBookMain extends StatelessWidget {
                 scrollDirection: scrollDirection,
                 itemCount: books.length,
                 itemBuilder: (context, index) {
-                  return BookCardMain(book: books[index], inLibrary: inLibrary);
+                  return BookCardMain(book: books[index], uId: uId, inLibrary: true,);
                 }),
           )
         : SizedBox(
@@ -33,7 +34,7 @@ class ListBookMain extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: books.length,
                 itemBuilder: (context, index) {
-                  return BookCardMain(book: books[index], inLibrary: inLibrary);
+                  return BookCardMain(book: books[index], uId: uId, inLibrary: false,);
                 }),
           );
   }

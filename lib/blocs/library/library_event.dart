@@ -3,6 +3,9 @@ abstract class LibraryEvent{
   const LibraryEvent();
 }
 class LoadLibrary extends LibraryEvent{
+  final String userId;
+
+  LoadLibrary(this.userId);
 }
 class AddToLibraryEvent extends LibraryEvent {
   final String userId;

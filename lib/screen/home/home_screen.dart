@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_book_app/widget/book_items/list_book.dart';
-import 'package:e_book_app/widget/book_items/list_book_history.dart';
 import 'package:e_book_app/widget/book_items/list_book_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
+  List<Book> books = [];
   final List<Widget> imageSliders = listQuote
       .map((item) => Container(
             margin: const EdgeInsets.all(5.0),
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             }
             if (state is BookLoaded) {
               //print(state.books.length);
-              List<Book> book = state.books.where((element) => element.status == true).toList();
+              books = state.books;
               return Column(
                 children: [
                   Padding(
@@ -132,30 +132,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SectionTitle(title: 'New reals'),
                   ListBook(
-                    books: book,
+                    books: books,
                     inLibrary: false,
                   ),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
                       if (state is AuthenticateState) {
                         final uId = state.authUser?.uid;
-                        return DisplayHistories(
-                          uId: uId,
-                          scrollDirection: Axis.horizontal,
-                          height: 180,
-                          inHistory: true,
+                        return Column(
+                          children: [
+                            DisplayHistories(
+                              uId: uId,
+                              scrollDirection: Axis.horizontal,
+                              height: 180,
+                              inHistory: true,
+                            ),
+                            const SectionTitle(title: 'Recommendation'),
+                            ListBookMain(
+                              books: books.take(4).toList(),
+                              scrollDirection: Axis.vertical,
+                              height: MediaQuery.of(context).size.height,
+                              inLibrary: false,
+                              uId: uId,
+                            ),
+                          ],
                         );
                       } else {
-                        return const SizedBox();
+                        return Column(
+                          children: [
+                            const SectionTitle(title: 'Recommendation'),
+                            ListBookMain(
+                              books: books.take(4).toList(),
+                              scrollDirection: Axis.vertical,
+                              height: MediaQuery.of(context).size.height,
+                              inLibrary: false,
+                            ),
+                          ],
+                        );
                       }
                     },
-                  ),
-                  const SectionTitle(title: 'Recommendation'),
-                  ListBookMain(
-                    books: book.take(4).toList(),
-                    scrollDirection: Axis.vertical,
-                    height: MediaQuery.of(context).size.height,
-                    inLibrary: false,
                   ),
                 ],
               );

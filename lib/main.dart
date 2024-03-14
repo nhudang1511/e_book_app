@@ -63,8 +63,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LibraryBloc(
-            LibraryRepository(),
-          )..add(LoadLibrary()),
+            LibraryRepository()),
         ),
         BlocProvider(
             create: (_) =>

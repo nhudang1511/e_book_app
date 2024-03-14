@@ -49,7 +49,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<LibraryBloc>(context).add(LoadLibrary());
   }
 
   @override
@@ -92,7 +91,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               widget._timer =
                                   Timer(const Duration(seconds: 1), () {
                                 BlocProvider.of<LibraryBloc>(context)
-                                    .add(LoadLibrary());
+                                    .add(LoadLibrary(uId));
                                 Navigator.of(context).pop();
                               });
                               return const Center(
