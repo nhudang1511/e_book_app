@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/config/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await SharedService.init();
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),
@@ -63,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LibraryBloc(
-            LibraryRepository()),
+            LibraryRepository())..add(LoadLibraryByUid(SharedService.getUserId() ?? '')),
         ),
         BlocProvider(
             create: (_) =>

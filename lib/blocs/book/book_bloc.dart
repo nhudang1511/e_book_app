@@ -1,8 +1,5 @@
-import 'dart:async';
-
-import 'package:bloc/bloc.dart';
 import 'package:e_book_app/repository/book/book_repository.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../model/models.dart';
 part 'book_event.dart';
 part 'book_state.dart';

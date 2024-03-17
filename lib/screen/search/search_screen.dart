@@ -69,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
       providers: [
         BlocProvider(
             create: (_) => AuthorBloc(AuthorRepository(),
-            )..add(LoadedAuthor())),
+            )..add(LoadedAllAuthor())),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -123,12 +123,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const CircularProgressIndicator();
                 }
                 if (state is BookLoaded) {
-                  List<Book> book = state.books
-                      .where((element) => element.status == true)
-                      .toList();
+                  List<Book> book = state.books;
                   return BlocBuilder<AuthorBloc, AuthorState>(
                     builder: (context, state) {
-                      if (state is AuthorLoaded) {
+                      if (state is AuthorAllLoaded) {
                         List<Book> searchResults =
                             _performSearch(book, state.authors);
                         return Expanded(

@@ -14,4 +14,8 @@ class SharedService {
   static void setUserId(String userId) {
     _pref.setString("userId", userId);
   }
+  static void clear(){
+    _pref.clear();
+  }
 }
+

@@ -15,18 +15,12 @@ class LibraryRepository extends BaseLibraryRepository {
   }
 
   @override
-  Future<List<Library>> getAllLibraries(String? userId) async {
+  Future<List<Library>> getAllLibraries() async {
     try {
-      Query query = _firebaseFirestore.collection('libraries');
-
-      if (userId != null) {
-        query = query.where('userId', isEqualTo: userId);
-      }
-
-      var querySnapshot = await query.get();
-
+      var querySnapshot =
+          await _firebaseFirestore.collection('libraries').get();
       return querySnapshot.docs.map((doc) {
-        var data = doc.data() as Map<String, dynamic>;
+        var data = doc.data();
         data['id'] = doc.id;
         return Library().fromJson(data);
       }).toList();
@@ -35,7 +29,6 @@ class LibraryRepository extends BaseLibraryRepository {
       rethrow;
     }
   }
-
 
   @override
   Future<void> removeBookInLibrary(Library library) {
@@ -49,5 +42,23 @@ class LibraryRepository extends BaseLibraryRepository {
         doc.reference.delete();
       }
     });
+  }
+
+  @override
+  Future<List<Library>> getAllLibrariesByUid(String uId) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('libraries')
+          .where('userId', isEqualTo: uId)
+          .get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Library().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 }

@@ -13,6 +13,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<AddToLibraryEvent>(_onAddToLibrary);
     on<RemoveFromLibraryEvent>(_onRemoveFromLibrary);
     on<LoadLibrary>(_onLoadLibrary);
+    on<LoadLibraryByUid>(_onLoadLibraryByUid);
   }
   void _onAddToLibrary(event, Emitter<LibraryState> emit) async{
     final library = Library(bookId: event.bookId, userId: event.userId);
@@ -38,7 +39,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   }
   void _onLoadLibrary(event, Emitter<LibraryState> emit) async{
     try {
-      List<Library> library = await _libraryRepository.getAllLibraries(event.userId);
+      List<Library> library = await _libraryRepository.getAllLibraries();
+      emit(LibraryLoaded(libraries: library));
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
+  }
+
+  void _onLoadLibraryByUid(event, Emitter<LibraryState> emit) async{
+    try {
+      List<Library> library = await _libraryRepository.getAllLibrariesByUid(event.userId);
       emit(LibraryLoaded(libraries: library));
     } catch (e) {
       emit(LibraryError(e.toString()));

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
+import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 import '../../widget/widget.dart';
 import '../library/components/histories_tab.dart';
@@ -85,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: BlocBuilder<BookBloc, BookState>(
           builder: (context, state) {
+            //print(SharedService.getUserId());
             if (state is BookLoading) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -147,30 +149,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 180,
                               inHistory: true,
                             ),
-                            const SectionTitle(title: 'Recommendation'),
-                            ListBookMain(
-                              books: books.take(4).toList(),
-                              scrollDirection: Axis.vertical,
-                              height: MediaQuery.of(context).size.height,
-                              inLibrary: false,
-                              uId: uId,
-                            ),
                           ],
                         );
                       } else {
-                        return Column(
-                          children: [
-                            const SectionTitle(title: 'Recommendation'),
-                            ListBookMain(
-                              books: books.take(4).toList(),
-                              scrollDirection: Axis.vertical,
-                              height: MediaQuery.of(context).size.height,
-                              inLibrary: false,
-                            ),
-                          ],
-                        );
+                        return const SizedBox();
                       }
+
                     },
+                  ),
+                  const SectionTitle(title: 'Recommendation'),
+                  ListBookMain(
+                    books: books.take(4).toList(),
+                    scrollDirection: Axis.vertical,
+                    height: MediaQuery.of(context).size.height,
+                    inLibrary: false,
                   ),
                 ],
               );

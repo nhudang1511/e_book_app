@@ -22,7 +22,7 @@ class _BookCardState extends State<BookCard> {
   @override
   void initState() {
     super.initState();
-    authorBloc.add(LoadedAuthor());
+    authorBloc.add(LoadedAuthor(widget.book.authodId ?? ''));
   }
 
   @override
@@ -59,9 +59,7 @@ class _BookCardState extends State<BookCard> {
                         return const CircularProgressIndicator();
                       }
                       if (state is AuthorLoaded) {
-                        Author? author = state.authors.firstWhere(
-                          (author) => author.id == widget.book.authodId,
-                        );
+                        Author? author = state.author;
                         return Text(author.fullName ?? '');
                       } else {
                         return const Text('Somthing went wrong');

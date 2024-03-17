@@ -141,7 +141,7 @@ class _CustomTabState extends State<CustomTab> {
                     HistoriesTab(
                       uId: widget.uId,
                     ),
-                  FavouritesTab(uId: widget.uId),
+                  FavouritesTab(),
                   ],
                 ),
               )

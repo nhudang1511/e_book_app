@@ -22,3 +22,8 @@ class AddToHistoryEvent extends HistoryEvent {
       required this.chapterScrollPositions,
       required this.chapterScrollPercentages});
 }
+
+class LoadHistoryByBookId extends HistoryEvent {
+  final String bookId;
+  LoadHistoryByBookId(this.bookId);
+}

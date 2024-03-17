@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/model/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -62,6 +63,7 @@ class LoginCubit extends Cubit<LoginState> {
       final credential = await _authRepository.logInWithGoogle();
       if (credential != null) {
         final user = await _userRepository.getUserByEmail(credential.email);
+        SharedService.setUserId(credential.uid);
         if (user == false) {
           await _userRepository.addUser(User(
               id: credential.uid,
@@ -89,6 +91,7 @@ class LoginCubit extends Cubit<LoginState> {
       final credential = await _authRepository.logInWithFacebook();
       if (credential != null) {
         final user = await _userRepository.getUserByEmail(credential.email);
+
         if (user == false) {
           await _userRepository.addUser(
             User(

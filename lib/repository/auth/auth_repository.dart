@@ -1,6 +1,7 @@
 import 'dart:async';
 
 
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -20,6 +21,9 @@ class AuthRepository extends BaseAuthRepository {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       final user = credential.user;
+      if(user != null){
+        SharedService.setUserId(user.uid);
+      }
       return user;
     } catch (_) {}
     return null;
@@ -31,6 +35,7 @@ class AuthRepository extends BaseAuthRepository {
       await Future.wait([
         _firebaseAuth.signOut(),
       ]);
+      SharedService.clear();
     } catch (_) {}
   }
 
@@ -89,7 +94,9 @@ class AuthRepository extends BaseAuthRepository {
       );
       final userCredential =
           await _firebaseAuth.signInWithCredential(credential);
-
+      if(userCredential.user != null){
+        SharedService.setUserId(userCredential.user!.uid);
+      }
       return userCredential.user;
     } catch (e) {
       throw Exception(e);
@@ -109,6 +116,9 @@ class AuthRepository extends BaseAuthRepository {
       // Once signed in, return the UserCredential
       final credential =
           await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+      if(credential.user != null){
+        SharedService.setUserId(credential.user!.uid);
+      }
       return credential.user;
     } catch (e) {
       throw Exception(e);

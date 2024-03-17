@@ -1,3 +1,4 @@
+import 'package:e_book_app/screen/category/category_screen.dart';
 import 'package:flutter/material.dart';
 import '../../model/category_model.dart';
 
@@ -9,7 +10,7 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.pushNamed(context, '/category', arguments: category);
+        Navigator.pushNamed(context, CategoryScreen.routeName, arguments: category);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
