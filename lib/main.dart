@@ -37,6 +37,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  String uId = SharedService.getUserId() ?? '';
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LibraryBloc(
-            LibraryRepository())..add(LoadLibraryByUid(SharedService.getUserId() ?? '')),
+            LibraryRepository())..add(LoadLibraryByUid(uId)),
         ),
         BlocProvider(
             create: (_) =>
@@ -77,7 +78,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (_) => NoteBloc(
            NoteRepository(),
-          )..add(LoadedNote()),
+          )..add(LoadedNote(uId: uId)),
         ),
       ],
       child: MaterialApp(

@@ -55,7 +55,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         BlocProvider(
             create: (_) => AuthorBloc(
               AuthorRepository(),
-            )..add(LoadedAuthor(widget.book.id ?? ''))),
+            )..add(LoadedAuthor(widget.book.authodId ?? ''))),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -64,7 +64,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             elevation: 0,
             iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
             actions: [
-              if (SharedService.getUserId()!.isNotEmpty)
+              if (uId != '')
                 IconButton(onPressed: () {
                   widget.inLibrary = !widget.inLibrary;
                   !widget.inLibrary

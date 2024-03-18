@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ))
       .toList();
+  String uId = SharedService.getUserId() ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -137,25 +138,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     books: books,
                     inLibrary: false,
                   ),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is AuthenticateState) {
-                        final uId = state.authUser?.uid;
-                        return Column(
-                          children: [
-                            DisplayHistories(
-                              uId: uId,
-                              scrollDirection: Axis.horizontal,
-                              height: 180,
-                              inHistory: true,
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
-
-                    },
+                  if(uId != '')
+                   Column(
+                    children: [
+                      DisplayHistories(
+                        uId: uId,
+                        scrollDirection: Axis.horizontal,
+                        height: 180,
+                        inHistory: true,
+                      ),
+                    ],
                   ),
                   const SectionTitle(title: 'Recommendation'),
                   ListBookMain(

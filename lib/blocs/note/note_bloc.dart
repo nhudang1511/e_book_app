@@ -22,7 +22,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
 
   void _onLoadNote(event, Emitter<NoteState> emit) async {
     try {
-      List<Note> note = await _noteRepository.getAllNote();
+      List<Note> note = await _noteRepository.getAllNoteById(event.uId);
       emit(NoteLoaded(notes: note));
     } catch (e) {
       emit(NoteError(e.toString()));

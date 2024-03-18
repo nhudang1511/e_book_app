@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
+import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 
 class TextNoteCard extends StatefulWidget {
@@ -16,6 +17,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
   TextEditingController titleContentController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   late Timer _timer;
+  String uId = SharedService.getUserId() ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                                 const Duration(seconds: 1),
                                     () {
                                       BlocProvider.of<NoteBloc>(context)
-                                          .add(LoadedNote());
+                                          .add(LoadedNote(uId: uId));
                                   Navigator.of(context).pop();
                                 });
                             return const Center(child: CircularProgressIndicator());
@@ -221,7 +223,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                     const Duration(seconds: 1),
                         () {
                       BlocProvider.of<NoteBloc>(context)
-                          .add(LoadedNote());
+                          .add(LoadedNote(uId: uId));
                       Navigator.of(context).pop();
                     });
               },

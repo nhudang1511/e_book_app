@@ -1,3 +1,5 @@
+import 'package:e_book_app/config/shared_preferences.dart';
+import 'package:e_book_app/screen/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
@@ -15,9 +17,11 @@ class DetailBookItem extends StatefulWidget {
 }
 
 class _DetailBookItemState extends State<DetailBookItem> {
+  String uId = '';
   @override
   void initState() {
     super.initState();
+    uId = SharedService.getUserId() ?? '';
   }
 
   @override
@@ -78,61 +82,55 @@ class _DetailBookItemState extends State<DetailBookItem> {
           const SizedBox(
             height: 10,
           ),
-          BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              if (state is AuthenticateState) {
-                final uId = state.authUser?.uid;
-                return SizedBox(
-                    width: MediaQuery.of(context).size.width - 20,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final Map<String, dynamic> tempPosition = {};
-                        final Map<String, dynamic> tempPercent = {};
-                        BlocProvider.of<ChaptersBloc>(context)
-                            .add(LoadChapters(widget.book.id ?? ''));
-                        BlocProvider.of<HistoryBloc>(context)
-                            .add(LoadHistory());
-                        Navigator.pushNamed(context, '/book', arguments: {
-                          'book': widget.book,
-                          'uId': uId,
-                          'chapterScrollPositions': tempPosition,
-                          'chapterScrollPercentages': tempPercent,
-                        });
-                      },
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                100), // Adjust the radius as needed
-                          ),
-                        ),
+          if (uId != '')
+            SizedBox(
+                width: MediaQuery.of(context).size.width - 20,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final Map<String, dynamic> tempPosition = {};
+                    final Map<String, dynamic> tempPercent = {};
+                    BlocProvider.of<ChaptersBloc>(context)
+                        .add(LoadChapters(widget.book.id ?? ''));
+                    BlocProvider.of<HistoryBloc>(context)
+                        .add(LoadHistory());
+                    Navigator.pushNamed(context, '/book', arguments: {
+                      'book': widget.book,
+                      'uId': uId,
+                      'chapterScrollPositions': tempPosition,
+                      'chapterScrollPercentages': tempPercent,
+                    });
+                  },
+                  style: ButtonStyle(
+                    shape:
+                    MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            100), // Adjust the radius as needed
                       ),
-                      child: const Text('READ',
-                          style: TextStyle(color: Colors.white)),
-                    ));
-              } else {
-                return SizedBox(
-                    width: MediaQuery.of(context).size.width - 20,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                100), // Adjust the radius as needed
-                          ),
-                        ),
+                    ),
+                  ),
+                  child: const Text('READ',
+                      style: TextStyle(color: Colors.white)),
+                ))
+          else
+            SizedBox(
+                width: MediaQuery.of(context).size.width - 20,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, LoginScreen.routeName);
+                  },
+                  style: ButtonStyle(
+                    shape:
+                    MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            100), // Adjust the radius as needed
                       ),
-                      child: const Text('READ',
-                          style: TextStyle(color: Colors.white)),
-                    ));
-              }
-            },
-          )
+                    ),
+                  ),
+                  child: const Text('READ',
+                      style: TextStyle(color: Colors.white)),
+                ))
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,10 +25,11 @@ class TextNotesScreen extends StatefulWidget {
 }
 
 class _TextNotesScreenState extends State<TextNotesScreen> {
+  String uId = SharedService.getUserId() ?? '';
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<NoteBloc>(context).add(LoadedNote());
+    BlocProvider.of<NoteBloc>(context).add(LoadedNote(uId: uId ));
   }
   @override
   Widget build(BuildContext context) {
@@ -41,9 +43,7 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
           BlocBuilder<NoteBloc, NoteState>(
             builder: (context, state) {
               if (state is NoteLoaded) {
-                var listNotes = state.notes
-                    .where((element) => element.uId == widget.user.id)
-                    .toList();
+                var listNotes = state.notes;
                 return Expanded(
                   child: ListView.builder(
                     // physics: const NeverScrollableScrollPhysics(),

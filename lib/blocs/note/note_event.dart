@@ -5,6 +5,8 @@ abstract class NoteEvent{
 }
 
 class LoadedNote extends NoteEvent {
+  final String uId;
+  LoadedNote({required this.uId});
 }
 
 class AddNewNoteEvent extends NoteEvent {
