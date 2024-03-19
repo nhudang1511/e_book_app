@@ -13,12 +13,6 @@ class AdminPanel extends StatefulWidget {
   const AdminPanel({super.key});
 
   static const String routeName = '/admin_panel';
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const AdminPanel());
-  }
-
   @override
   State<AdminPanel> createState() => _AdminPanelState();
 }

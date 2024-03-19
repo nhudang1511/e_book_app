@@ -18,12 +18,6 @@ class HomeScreen extends StatefulWidget {
 
   static const String routeName = '/home';
 
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const HomeScreen());
-  }
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }

@@ -4,15 +4,7 @@ import '../../../widget/widget.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
-
   static const String routeName = '/';
-
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const MainScreen());
-  }
-
   @override
   Widget build(BuildContext context) {
     return const Scaffold(

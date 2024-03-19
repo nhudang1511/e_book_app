@@ -14,13 +14,6 @@ class TextNotesScreen extends StatefulWidget {
 
   static const String routeName = '/text_notes';
 
-  static Route route({required User user}) {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => TextNotesScreen(user: user),
-    );
-  }
-
   @override
   State<TextNotesScreen> createState() => _TextNotesScreenState();
 }

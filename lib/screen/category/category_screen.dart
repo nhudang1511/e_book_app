@@ -8,15 +8,6 @@ import '../../widget/widget.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = '/category';
-
-  static Route route({required Category category}) {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => CategoryScreen(
-              category: category,
-            ));
-  }
-
   final Category category;
 
   const CategoryScreen({super.key, required this.category});

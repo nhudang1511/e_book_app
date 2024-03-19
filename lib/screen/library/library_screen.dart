@@ -11,12 +11,6 @@ class LibraryScreen extends StatefulWidget {
 
   static const String routeName = '/library';
 
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const LibraryScreen());
-  }
-
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
 }

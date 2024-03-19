@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e_book_app/cubits/cubits.dart';
+import 'package:e_book_app/screen/forgot_password/enter_email_screen.dart';
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,13 +12,6 @@ class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
 
   static const String routeName = '/change_password';
-
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const ChangePasswordScreen(),
-    );
-  }
 
   @override
   State<StatefulWidget> createState() => _ChangePasswordScreenState();
@@ -119,7 +113,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           children: [
                             InkWell(
                               onTap: () {
-                                Navigator.pushNamed(context, "/enter_email");
+                                Navigator.pushNamed(context, EnterEmailScreen.routeName);
                               },
                               child: Text(
                                 "Forgot Password?",

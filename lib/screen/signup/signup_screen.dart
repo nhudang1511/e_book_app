@@ -12,13 +12,6 @@ class SignupScreen extends StatefulWidget {
 
   const SignupScreen({super.key});
 
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const SignupScreen(),
-    );
-  }
-
   @override
   State<StatefulWidget> createState() => _SignupScreenState();
 }

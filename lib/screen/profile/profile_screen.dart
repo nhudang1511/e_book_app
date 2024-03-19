@@ -107,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           //settings
                           CustomInkwell(
                               onTap: () {
-                                Navigator.pushNamed(context, '/settings');
+                                Navigator.pushNamed(context, SettingsScreen.routeName);
                               },
                               mainIcon: Icon(
                                 Icons.settings,
@@ -190,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: CustomButton(
                               title: "Edit profile",
                               onPressed: () {
-                                Navigator.pushNamed(context, "/edit_profile");
+                                Navigator.pushNamed(context, EditProfileScreen.routeName);
                               },
                             ),
                           ),
@@ -214,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 //settings
                                 CustomInkwell(
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/settings');
+                                      Navigator.pushNamed(context, SettingsScreen.routeName);
                                     },
                                     mainIcon: Icon(
                                       Icons.settings,
@@ -242,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       CustomInkwell(
                                           onTap: () {
                                             Navigator.pushNamed(
-                                                context, '/change_password');
+                                                context, ChangePasswordScreen.routeName);
                                           },
                                           mainIcon: Icon(
                                             Icons.lock,
@@ -270,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 CustomInkwell(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/text_notes', arguments: state.user);
+                                          context, TextNotesScreen.routeName, arguments: state.user);
                                     },
                                     mainIcon: Icon(
                                       Icons.edit_note,

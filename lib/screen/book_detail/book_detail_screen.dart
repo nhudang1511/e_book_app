@@ -14,13 +14,6 @@ import 'components/custom_tab_in_book.dart';
 
 class BookDetailScreen extends StatefulWidget {
   static const String routeName = '/book_detail';
-
-  static Route route({required Book book, required bool inLibrary}) {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => BookDetailScreen(book: book, inLibrary: inLibrary));
-  }
-
   final Book book;
   late bool inLibrary;
   late Timer _timer;

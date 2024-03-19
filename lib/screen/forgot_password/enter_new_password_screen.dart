@@ -6,13 +6,6 @@ class EnterNewPasswordScreen extends StatefulWidget {
 
   const EnterNewPasswordScreen({super.key});
 
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const EnterNewPasswordScreen(),
-    );
-  }
-
   @override
   State<StatefulWidget> createState() => _EnterNewPasswordScreenState();
 }

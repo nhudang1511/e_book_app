@@ -15,12 +15,6 @@ class EditProfileScreen extends StatefulWidget {
 
   const EditProfileScreen({super.key});
 
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const EditProfileScreen());
-  }
-
   @override
   State<StatefulWidget> createState() => _EditProfileScreenState();
 }

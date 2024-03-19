@@ -24,6 +24,13 @@ class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
     categoryBloc.add(LoadCategory());
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    categoryBloc.close();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

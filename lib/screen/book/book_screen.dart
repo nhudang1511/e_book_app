@@ -11,21 +11,6 @@ import 'components/normal_void.dart';
 class BookScreen extends StatefulWidget {
   static const String routeName = '/book';
 
-  static Route route(
-      {required Book book,
-      required String uId,
-      required Map<String, dynamic> chapterScrollPositions,
-      required Map<String, dynamic> chapterScrollPercentages}) {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => BookScreen(
-              book: book,
-              uId: uId,
-              chapterScrollPositions: chapterScrollPositions,
-              chapterScrollPercentages: chapterScrollPercentages,
-            ));
-  }
-
   final Book book;
   final String uId;
   final Map<String, dynamic> chapterScrollPositions;

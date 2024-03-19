@@ -11,13 +11,6 @@ class EnterEmailScreen extends StatefulWidget {
 
   const EnterEmailScreen({super.key});
 
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const EnterEmailScreen(),
-    );
-  }
-
   @override
   State<StatefulWidget> createState() => _EnterEmailScreenState();
 }

@@ -20,13 +20,6 @@ class ReviewsScreen extends StatefulWidget {
 
   static const String routeName = '/reviews';
 
-  static Route route({required Book book}) {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => ReviewsScreen(book: book),
-    );
-  }
-
   @override
   State<ReviewsScreen> createState() => _ReviewsScreenState();
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book_app/screen/reviews/reviews_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rating_summary/rating_summary.dart';
@@ -81,7 +82,7 @@ class _ReviewItemState extends State<ReviewItem> {
                   width: MediaQuery.of(context).size.width - 20,
                   child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/reviews',
+                        Navigator.pushNamed(context, ReviewsScreen.routeName,
                             arguments: widget.book);
                       },
                       style: ButtonStyle(

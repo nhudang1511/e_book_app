@@ -11,13 +11,6 @@ class SettingsScreen extends StatefulWidget {
 
   const SettingsScreen({super.key});
 
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const SettingsScreen(),
-    );
-  }
-
   @override
   State<StatefulWidget> createState() => _SettingsScreenState();
 }

@@ -5,87 +5,64 @@ import '../screen/screen.dart';
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
-        return MainScreen.route();
+      case MainScreen.routeName:
+        return _route(const MainScreen());
       case ChangePasswordScreen.routeName:
-        return ChangePasswordScreen.route();
+        return _route(const ChangePasswordScreen());
       case EnterEmailScreen.routeName:
-        return EnterEmailScreen.route();
+        return _route(const EnterEmailScreen());
       case EnterNewPasswordScreen.routeName:
-        return EnterNewPasswordScreen.route();
+        return _route(const EnterNewPasswordScreen());
       case EnterOTPScreen.routeName:
-        return EnterOTPScreen.route();
+        return _route(const EnterOTPScreen());
       case EditProfileScreen.routeName:
-        return EditProfileScreen.route();
+        return _route(const EditProfileScreen());
       case HomeScreen.routeName:
-        return HomeScreen.route();
+        return _route(const HomeScreen());
       case SplashScreen.routeName:
-        return SplashScreen.route();
+        return _route(const SplashScreen());
       case SearchScreen.routeName:
-        return SearchScreen.route();
+        return _route(const SearchScreen());
       case SettingsScreen.routeName:
-        return SettingsScreen.route();
+        return _route(const SettingsScreen());
       case LibraryScreen.routeName:
-        return LibraryScreen.route();
+        return _route(const LibraryScreen());
       case LoginScreen.routeName:
-        return LoginScreen.route();
+        return _route(const LoginScreen());
       case ProfileScreen.routeName:
-        return ProfileScreen.route();
+        return _route(const ProfileScreen());
       case SignupScreen.routeName:
-        return SignupScreen.route();
+        return _route(const SignupScreen());
       case TextNotesScreen.routeName:
-        if (settings.arguments is User) {
-          return TextNotesScreen.route(user: settings.arguments as User);
-        } else {
-          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return MainScreen.route();
-        }
+        final User user = settings.arguments as User;
+        return _route(TextNotesScreen(user: user));
       case BookDetailScreen.routeName:
-        if (settings.arguments is Map<String, dynamic>) {
-          final Map<String, dynamic> arguments =
-              settings.arguments as Map<String, dynamic>;
-          final Book book = arguments['book'] as Book;
-          final bool inLibrary = arguments['inLibrary'] as bool;
-          return BookDetailScreen.route(book: book, inLibrary: inLibrary);
-        } else {
-          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return MainScreen.route();
-        }
+        final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+        final Book book = arguments['book'] as Book;
+        final bool inLibrary = arguments['inLibrary'] as bool;
+        return _route(BookDetailScreen(book: book, inLibrary: inLibrary));
       case CategoryScreen.routeName:
-        if (settings.arguments is Category) {
-          return CategoryScreen.route(category: settings.arguments as Category);
-        } else {
-          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return MainScreen.route();
-        }
+        final Category category = settings.arguments as Category;
+        return _route(CategoryScreen(category: category));
       case BookScreen.routeName:
-        if (settings.arguments is Map<String, dynamic>) {
-          final Map<String, dynamic> arguments =
-              settings.arguments as Map<String, dynamic>;
-          final Book book = arguments['book'] as Book;
-          final String uId = arguments['uId'] as String;
-          final Map<String, dynamic> chapterScrollPositions =
-              arguments['chapterScrollPositions'];
-          final Map<String, dynamic> chapterScrollPercentages =
-          arguments['chapterScrollPercentages'];
-          return BookScreen.route(
-              book: book,
-              uId: uId,
-              chapterScrollPositions: chapterScrollPositions,
-              chapterScrollPercentages: chapterScrollPercentages);
-        } else {
-          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return MainScreen.route();
-        }
+        final Map<String, dynamic> arguments =
+        settings.arguments as Map<String, dynamic>;
+        final Book book = arguments['book'] as Book;
+        final String uId = arguments['uId'] as String;
+        final Map<String, dynamic> chapterScrollPositions =
+        arguments['chapterScrollPositions'];
+        final Map<String, dynamic> chapterScrollPercentages =
+        arguments['chapterScrollPercentages'];
+        return _route(BookScreen(
+            book: book,
+            uId: uId,
+            chapterScrollPositions: chapterScrollPositions,
+            chapterScrollPercentages: chapterScrollPercentages));
       case AdminPanel.routeName:
-        return AdminPanel.route();
+        return _route(const AdminPanel());
       case ReviewsScreen.routeName:
-        if (settings.arguments is Book) {
-          return ReviewsScreen.route(book: settings.arguments as Book);
-        } else {
-          // Trả về một Route mặc định hoặc thông báo lỗi tùy thuộc vào yêu cầu của bạn.
-          return MainScreen.route();
-        }
+        Book book = settings.arguments as Book;
+        return _route(ReviewsScreen(book: book));
       default:
         return _errorRoute();
     }
@@ -99,5 +76,8 @@ class AppRouter {
                 title: const Text('Error'),
               ),
             ));
+  }
+  static Route _route(screen) {
+    return MaterialPageRoute(builder: (context) => screen);
   }
 }

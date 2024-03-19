@@ -4,15 +4,7 @@ import 'package:pinput/pinput.dart';
 
 class EnterOTPScreen extends StatelessWidget {
   static const String routeName = "/enter_otp";
-
   const EnterOTPScreen({super.key});
-
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const EnterOTPScreen(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
