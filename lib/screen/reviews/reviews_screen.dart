@@ -37,12 +37,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   bool isReviewed = false;
   late Timer _timer;
   ReviewBloc reviewBloc = ReviewBloc( reviewRepository: ReviewRepository());
-
+  HistoryBloc historyBloc = HistoryBloc(HistoryRepository());
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
+    historyBloc.add(LoadHistory());
     reviewBloc.add(LoadedReview());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    reviewBloc.close();
+    historyBloc.close();
   }
 
   @override
@@ -50,7 +57,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => reviewBloc)
+          create: (_) => reviewBloc),
+        BlocProvider(create: (_) => historyBloc)
       ],
       child: Scaffold(
         backgroundColor: Theme

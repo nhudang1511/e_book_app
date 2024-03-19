@@ -27,11 +27,18 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   BookBloc bookBloc = BookBloc(BookRepository());
+  List<Book> listBookInCategory = [];
 
   @override
   void initState() {
     super.initState();
     bookBloc.add(LoadBooksByCateId(widget.category.id ?? ''));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    bookBloc.close();
   }
 
   @override
@@ -72,26 +79,23 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (state is BookLoaded) {
-                    final listBookInCategory = state.books;
-                    if (listBookInCategory.isNotEmpty) {
-                      return Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: listBookInCategory.length,
-                            itemBuilder: (context, index) {
-                              return BookCardMain(
-                                book: listBookInCategory[index],inLibrary: false,
-                              );
-                            }),
-                      );
-                    } else {
-                      return const Center(
-                        child: Text('No data'),
-                      );
-                    }
-                  } else {
-                    return const Text('Something went wrong');
+                    listBookInCategory = state.books;
                   }
+                  return listBookInCategory.isNotEmpty
+                      ? Expanded(
+                          child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: listBookInCategory.length,
+                              itemBuilder: (context, index) {
+                                return BookCardMain(
+                                  book: listBookInCategory[index],
+                                  inLibrary: false,
+                                );
+                              }),
+                        )
+                      : const Center(
+                          child: Text('No data'),
+                        );
                 },
               ),
             ],

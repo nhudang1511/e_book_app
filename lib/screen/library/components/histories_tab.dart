@@ -23,7 +23,7 @@ class HistoriesTab extends StatelessWidget {
   }
 }
 
-class DisplayHistories extends StatelessWidget {
+class DisplayHistories extends StatefulWidget {
   const DisplayHistories({
     super.key,
     required this.uId,
@@ -38,11 +38,18 @@ class DisplayHistories extends StatelessWidget {
   final bool inHistory;
 
   @override
+  State<DisplayHistories> createState() => _DisplayHistoriesState();
+}
+
+class _DisplayHistoriesState extends State<DisplayHistories> {
+  List<Book> matchingBooks = [];
+  List<num> percent = [];
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('histories')
-          .where('uId', isEqualTo: uId)
+          .where('uId', isEqualTo: widget.uId)
           .snapshots(),
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
@@ -52,12 +59,12 @@ class DisplayHistories extends StatelessWidget {
           return BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
               if (state is BookLoaded) {
-                List<Book> matchingBooks = state.books
+                matchingBooks = state.books
                     .where((book) =>
                     histories.any((item) => item.chapters == book.id))
                     .toList();
                 if (matchingBooks.isNotEmpty) {
-                  List<num> percent = [];
+                  percent = [];
                   for (var book in matchingBooks) {
                     List<History> matchedHistories = histories
                         .where((item) => item.chapters == book.id)
@@ -68,29 +75,25 @@ class DisplayHistories extends StatelessWidget {
                       percent.add(history.percent!);
                     }
                   }
-                  return Column(
-                    children: [
-                      inHistory ? const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SectionTitle(title: 'Continue Reading'),
-                        ],
-                      ) : const SizedBox(),
-                      ListBookHistory(
-                        books: matchingBooks,
-                        scrollDirection: scrollDirection,
-                        height: height,
-                        inLibrary: false,
-                        percent: percent, inHistory: inHistory,
-                      ),
-                    ],
-                  );
-                } else {
-                  return const SizedBox();
                 }
-              } else {
-                return const Center(child: CircularProgressIndicator());
               }
+              return matchingBooks.isNotEmpty ? Column(
+                children: [
+                  widget.inHistory ? const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SectionTitle(title: 'Continue Reading'),
+                    ],
+                  ) : const SizedBox(),
+                  ListBookHistory(
+                    books: matchingBooks,
+                    scrollDirection: widget.scrollDirection,
+                    height: widget.height,
+                    inLibrary: false,
+                    percent: percent, inHistory: widget.inHistory,
+                  ),
+                ],
+              ) : const SizedBox();
             },
           );
         } else {

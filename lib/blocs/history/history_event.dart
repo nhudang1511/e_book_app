@@ -25,5 +25,7 @@ class AddToHistoryEvent extends HistoryEvent {
 
 class LoadHistoryByBookId extends HistoryEvent {
   final String bookId;
-  LoadHistoryByBookId(this.bookId);
+  final String uId;
+  LoadHistoryByBookId(this.bookId, this.uId);
 }
+

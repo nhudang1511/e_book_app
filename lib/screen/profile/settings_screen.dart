@@ -30,6 +30,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       super.initState();
       _authBloc = BlocProvider.of<AuthBloc>(context);
     }
+    @override
+    void dispose() {
+      super.dispose();
+      _authBloc.close();
+    }
 
   @override
   Widget build(BuildContext context) {

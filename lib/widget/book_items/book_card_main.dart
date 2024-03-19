@@ -103,30 +103,22 @@ class _BookCardMainState extends State<BookCardMain> {
                                         ),
                                         BlocBuilder<AuthorBloc, AuthorState>(
                                           builder: (context, state) {
-                                            if (state is AuthorLoading) {
-                                              return const Expanded(
-                                                  child:
-                                                      CircularProgressIndicator());
-                                            }
+                                            Author author = Author();
                                             if (state is AuthorLoaded) {
-                                              Author? author =
-                                                  state.author;
-                                              return Text(
-                                                maxLines: 2,
-                                                author.fullName ?? '',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineSmall!
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xFFC7C7C7),
-                                                        fontWeight:
-                                                            FontWeight.normal),
-                                              );
-                                            } else {
-                                              return const Text(
-                                                  "Something went wrong");
+                                              author = state.author;
                                             }
+                                            return Text(
+                                              maxLines: 2,
+                                              author.fullName ?? '',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall!
+                                                  .copyWith(
+                                                  color: const Color(
+                                                      0xFFC7C7C7),
+                                                  fontWeight:
+                                                  FontWeight.normal),
+                                            );
                                           },
                                         ),
                                       ],

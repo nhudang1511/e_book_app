@@ -25,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String _searchText = "";
   String _selectedSearchOption = "Name of book"; // Default search option
   bool _hasSearched = false;
+  List<Book> searchResults = [];
 
   void _onSearchTextChanged(String newText) {
     setState(() {
@@ -127,27 +128,25 @@ class _SearchScreenState extends State<SearchScreen> {
                   return BlocBuilder<AuthorBloc, AuthorState>(
                     builder: (context, state) {
                       if (state is AuthorAllLoaded) {
-                        List<Book> searchResults =
+                        searchResults =
                             _performSearch(book, state.authors);
-                        return Expanded(
-                          child: _hasSearched == true
-                              ? SizedBox(
-                                  height: 180,
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: searchResults.length,
-                                      itemBuilder: (context, index) {
-                                        return BookCardMain(
-                                          book: searchResults[index],
-                                          inLibrary: false,
-                                        );
-                                      }),
-                                )
-                              : const ListCategoryInSearch(),
-                        );
-                      } else {
-                        return const Text('Something went wrong');
                       }
+                      return Expanded(
+                        child: _hasSearched == true
+                            ? SizedBox(
+                          height: 180,
+                          child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: searchResults.length,
+                              itemBuilder: (context, index) {
+                                return BookCardMain(
+                                  book: searchResults[index],
+                                  inLibrary: false,
+                                );
+                              }),
+                        )
+                            : const ListCategoryInSearch(),
+                      );
                     },
                   );
                 } else {

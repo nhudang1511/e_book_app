@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:e_book_app/repository/book/book_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
@@ -18,6 +19,21 @@ class _TextNoteCardState extends State<TextNoteCard> {
   TextEditingController contentController = TextEditingController();
   late Timer _timer;
   String uId = SharedService.getUserId() ?? '';
+  BookBloc bookBloc = BookBloc(BookRepository());
+
+
+  @override
+  void initState() {
+    super.initState();
+    bookBloc.add(LoadBooksById(widget.note.bookId ?? ''));
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    bookBloc.close();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +105,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
                       builder: (context, state) {
                         String bookName = widget.note.bookId ?? '';
                         if (state is BookLoaded) {
-                          Book book = state.books
-                              .where((element) =>
-                          element.id == widget.note.bookId)
-                              .first;
+                          Book book = state.books.first;
                           bookName = book.title ?? '';
                         }
                         return Text(

@@ -12,6 +12,7 @@ class BookBloc extends Bloc<BookEvent, BookState> {
           on<LoadBooks>(_onLoadBook);
           on<LoadBooksByCateId>(_onLoadBookByCateId);
           on<LoadBooksByLibrary>(_onLoadBookByLibrary);
+          on<LoadBooksById>(_onLoadBookById);
   }
   void _onLoadBook(event, Emitter<BookState> emit) async{
     try {
@@ -32,6 +33,14 @@ class BookBloc extends Bloc<BookEvent, BookState> {
   void _onLoadBookByLibrary(event, Emitter<BookState> emit) async{
     try {
       List<Book> books = await _bookRepository.getBookByLibrary(event.libraries);
+      emit(BookLoaded(books: books));
+    } catch (e) {
+      emit(BookFailure());
+    }
+  }
+  void _onLoadBookById(event, Emitter<BookState> emit) async{
+    try {
+      List<Book> books = await _bookRepository.getBookById(event.id);
       emit(BookLoaded(books: books));
     } catch (e) {
       emit(BookFailure());

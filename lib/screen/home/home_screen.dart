@@ -7,6 +7,7 @@ import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
+import '../../repository/repository.dart';
 import '../../widget/widget.dart';
 import '../library/components/histories_tab.dart';
 import 'components/custom_appbar_home.dart';
@@ -75,7 +76,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ))
       .toList();
-  String uId = SharedService.getUserId() ?? '';
+  BookBloc bookBloc = BookBloc(BookRepository());
+
+
+  @override
+  void initState() {
+    super.initState();
+    bookBloc.add(LoadBooks());
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    bookBloc.close();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,73 +107,71 @@ class _HomeScreenState extends State<HomeScreen> {
             if (state is BookLoaded) {
               //print(state.books.length);
               books = state.books;
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CarouselSlider(
-                      items: imageSliders,
-                      carouselController: _controller,
-                      options: CarouselOptions(
-                          viewportFraction: 1,
-                          autoPlay: true,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          }),
-                    ),
+            }
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CarouselSlider(
+                    items: imageSliders,
+                    carouselController: _controller,
+                    options: CarouselOptions(
+                        viewportFraction: 1,
+                        autoPlay: true,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _current = index;
+                          });
+                        }),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: listQuote.asMap().entries.map((entry) {
-                      return GestureDetector(
-                        onTap: () => _controller.animateToPage(entry.key),
-                        child: Container(
-                          width: 12.0,
-                          height: 12.0,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 4.0),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: (Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black)
-                                  .withOpacity(
-                                      _current == entry.key ? 0.9 : 0.4)),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SectionTitle(title: 'New reals'),
-                  ListBook(
-                    books: books,
-                    inLibrary: false,
-                  ),
-                  if(uId != '')
-                   Column(
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: listQuote.asMap().entries.map((entry) {
+                    return GestureDetector(
+                      onTap: () => _controller.animateToPage(entry.key),
+                      child: Container(
+                        width: 12.0,
+                        height: 12.0,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 4.0),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: (Theme.of(context).brightness ==
+                                Brightness.dark
+                                ? Colors.white
+                                : Colors.black)
+                                .withOpacity(
+                                _current == entry.key ? 0.9 : 0.4)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SectionTitle(title: 'New reals'),
+                ListBook(
+                  books: books,
+                  inLibrary: false,
+                ),
+                if(SharedService.getUserId() != '')
+                  Column(
                     children: [
                       DisplayHistories(
-                        uId: uId,
+                        uId: SharedService.getUserId(),
                         scrollDirection: Axis.horizontal,
                         height: 180,
                         inHistory: true,
                       ),
                     ],
                   ),
-                  const SectionTitle(title: 'Recommendation'),
-                  ListBookMain(
-                    books: books.take(4).toList(),
-                    scrollDirection: Axis.vertical,
-                    height: MediaQuery.of(context).size.height,
-                    inLibrary: false,
-                  ),
-                ],
-              );
-            } else {
-              return const Text('Something went wrong');
-            }
+                const SectionTitle(title: 'Recommendation'),
+                ListBookMain(
+                  books: books.take(4).toList(),
+                  scrollDirection: Axis.vertical,
+                  height: MediaQuery.of(context).size.height,
+                  inLibrary: false,
+                ),
+              ],
+            );
           },
         ),
       ),

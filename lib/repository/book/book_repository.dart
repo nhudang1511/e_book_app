@@ -71,4 +71,23 @@ class BookRepository extends BaseBookRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List<Book>> getBookById(String id) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('book').where(FieldPath.documentId, isEqualTo: id)
+          .where('status', isEqualTo: true)
+          .get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Book().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
 }

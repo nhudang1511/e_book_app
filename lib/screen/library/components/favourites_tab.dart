@@ -5,39 +5,40 @@ import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 import '../../../widget/book_items/list_book_main.dart';
 
-class FavouritesTab extends StatelessWidget {
+class FavouritesTab extends StatefulWidget {
   const FavouritesTab({super.key});
 
+  @override
+  State<FavouritesTab> createState() => _FavouritesTabState();
+}
+
+class _FavouritesTabState extends State<FavouritesTab> {
+  List<Library> libraries = [];
+  List<Book> matchingBooks = [];
 
   @override
   Widget build(BuildContext context) {
     return  BlocBuilder<LibraryBloc, LibraryState>(
       builder: (context, state) {
         if (state is LibraryLoaded) {
-          List<Library> libraries = state.libraries;
+          libraries = state.libraries;
           return BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
               if (state is BookLoaded) {
-                List<Book> matchingBooks = state.books
+                matchingBooks = state.books
                     .where((book) => libraries
                     .any((library) => library.bookId == book.id))
                     .toList();
-                if (matchingBooks.isNotEmpty) {
-                  return Column(
-                    children: [
-                      ListBookMain(
-                          books: matchingBooks,
-                          scrollDirection: Axis.vertical,
-                          height: MediaQuery.of(context).size.height - 50,
-                          inLibrary: true),
-                    ],
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              } else {
-                return const SizedBox();
               }
+              return matchingBooks.isNotEmpty ? Column(
+                children: [
+                  ListBookMain(
+                      books: matchingBooks,
+                      scrollDirection: Axis.vertical,
+                      height: MediaQuery.of(context).size.height - 50,
+                      inLibrary: true),
+                ],
+              ) : const SizedBox();
             },
           );
         }

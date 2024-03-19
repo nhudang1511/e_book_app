@@ -25,6 +25,14 @@ class _BookCardState extends State<BookCard> {
     authorBloc.add(LoadedAuthor(widget.book.authodId ?? ''));
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    authorBloc.close();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

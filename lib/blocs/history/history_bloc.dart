@@ -15,6 +15,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       : super(HistoryInitial()) {
     on<AddToHistoryEvent>(_onAddToHistory);
     on<LoadHistory>(_onLoadHistory);
+    on<LoadHistoryByBookId>(_onLoadHistoryByBookId);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -39,6 +40,15 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     try {
       List<History> history = await _historyRepository.getAllHistories();
       emit(HistoryLoaded(histories: history));
+    } catch (e) {
+      emit(HistoryError(e.toString()));
+    }
+  }
+
+  void _onLoadHistoryByBookId(event, Emitter<HistoryState> emit) async {
+    try {
+      History history = await _historyRepository.getHistories(event.bookId, event.uId);
+      emit(HistoryLoadedById(history: history));
     } catch (e) {
       emit(HistoryError(e.toString()));
     }

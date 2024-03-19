@@ -17,3 +17,8 @@ class HistoryError extends HistoryState {
   final String error;
   HistoryError(this.error);
 }
+
+class HistoryLoadedById extends HistoryState {
+  final History history;
+  const HistoryLoadedById({required this.history});
+}

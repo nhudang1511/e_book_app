@@ -78,7 +78,7 @@ class HistoryRepository extends BaseHistoryRepository {
   }
 
   @override
-  Future<History> getHistories(String bookId) async {
+  Future<History> getHistories(String bookId, String uId) async {
     if (bookId.isEmpty) {
       // Throw an error if the bookId parameter is empty.
       throw Exception("The bookId parameter cannot be empty.");

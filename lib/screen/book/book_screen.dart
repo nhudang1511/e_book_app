@@ -5,6 +5,7 @@ import 'package:translator/translator.dart';
 import 'package:material_dialogs/dialogs.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import '../../repository/repository.dart';
 import 'components/normal_void.dart';
 
 class BookScreen extends StatefulWidget {
@@ -59,12 +60,20 @@ class _BookScreenState extends State<BookScreen> {
   var chapterListMap;
   num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
+  HistoryBloc historyBloc = HistoryBloc(HistoryRepository());
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    BlocProvider.of<HistoryBloc>(context).add(LoadHistory());
+    historyBloc.add(LoadHistory());
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+    historyBloc.close();
+
   }
 
   void _scrollListener() {
