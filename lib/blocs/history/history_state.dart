@@ -19,6 +19,6 @@ class HistoryError extends HistoryState {
 }
 
 class HistoryLoadedById extends HistoryState {
-  final History history;
-  const HistoryLoadedById({required this.history});
+  final List<History> histories;
+  const HistoryLoadedById({required this.histories});
 }

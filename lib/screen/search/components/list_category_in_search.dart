@@ -45,15 +45,11 @@ class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
                 return const Center(child: CircularProgressIndicator());
               }
               if (state is CategoryLoaded) {
-                final List<Category> allCategories = state.categories
-                    .where((element) => element.status == true)
-                    .toList();
+                final List<Category> allCategories = state.categories;
                 return BlocBuilder<BookBloc, BookState>(
                   builder: (context, state) {
                     if (state is BookLoaded) {
-                      final List<Book> books = state.books
-                          .where((element) => element.status == true)
-                          .toList();
+                      final List<Book> books = state.books;
                       final List<Category> filteredCategories =
                       allCategories.where((category) {
                         // Check if any book has this category id

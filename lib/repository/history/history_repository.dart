@@ -78,7 +78,7 @@ class HistoryRepository extends BaseHistoryRepository {
   }
 
   @override
-  Future<History> getHistories(String bookId, String uId) async {
+  Future<List<History>> getHistories(String bookId, String uId) async {
     if (bookId.isEmpty) {
       // Throw an error if the bookId parameter is empty.
       throw Exception("The bookId parameter cannot be empty.");
@@ -86,15 +86,13 @@ class HistoryRepository extends BaseHistoryRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('histories')
-          .where('chapters', isEqualTo: bookId)
+          .where('chapters', isEqualTo: bookId).where('uId', isEqualTo: uId)
           .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        var data = querySnapshot.docs.first.data();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
         return History().fromJson(data);
-      } else {
-        // Trả về một giá trị mặc định nào đó hoặc null
-        return History(); // Hoặc trả về một đối tượng Chapters mặc định
-      }
+      }).toList();
     } catch (e) {
       log(e.toString());
       rethrow;

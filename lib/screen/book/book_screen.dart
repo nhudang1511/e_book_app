@@ -45,20 +45,16 @@ class _BookScreenState extends State<BookScreen> {
   var chapterListMap;
   num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
-  HistoryBloc historyBloc = HistoryBloc(HistoryRepository());
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    historyBloc.add(LoadHistory());
   }
   @override
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-    historyBloc.close();
-
   }
 
   void _scrollListener() {
@@ -167,12 +163,8 @@ class _BookScreenState extends State<BookScreen> {
                       localSelectedChapterId = chapter['id'];
                       return BlocBuilder<HistoryBloc, HistoryState>(
                         builder: (context, state) {
-                          if (state is HistoryLoaded) {
-                            final histories = state.histories
-                                .where((history) =>
-                                    history.chapters == widget.book.id &&
-                                    history.uId == widget.uId)
-                                .toList();
+                          if (state is HistoryLoadedById) {
+                            final histories = state.histories;
                             if (histories.isNotEmpty) {
                               final historyListMap = histories
                                   .map((histories) {

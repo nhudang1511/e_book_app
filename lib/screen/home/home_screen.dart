@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         uId: SharedService.getUserId(),
                         scrollDirection: Axis.horizontal,
                         height: 180,
-                        inHistory: true,
+                        inHistory: true, book: books,
                       ),
                     ],
                   ),

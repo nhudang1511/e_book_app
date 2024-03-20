@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
+import '../../model/models.dart';
 import '../../widget/widget.dart';
 import '../screen.dart';
 import 'components/favourites_tab.dart';
@@ -91,6 +92,7 @@ class CustomTab extends StatefulWidget {
 }
 
 class _CustomTabState extends State<CustomTab> {
+  List<Book> book = [];
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -128,13 +130,20 @@ class _CustomTabState extends State<CustomTab> {
                 ),
               ),
               Expanded(
-                child: TabBarView(
-                  children: [
-                    HistoriesTab(
-                      uId: widget.uId,
-                    ),
-                  const FavouritesTab(),
-                  ],
+                child: BlocBuilder<BookBloc, BookState>(
+                  builder: (context, state) {
+                    if(state is BookLoaded){
+                      book = state.books;
+                    }
+                    return TabBarView(
+                      children: [
+                        HistoriesTab(
+                          uId: widget.uId, book: book,
+                        ),
+                        FavouritesTab(book: book,),
+                      ],
+                    );
+                  },
                 ),
               )
             ],

@@ -92,7 +92,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                         BlocProvider.of<ChaptersBloc>(context)
                             .add(LoadChapters(widget.book.id ?? ''));
                         BlocProvider.of<HistoryBloc>(context)
-                            .add(LoadHistory());
+                            .add(LoadHistoryByBookId(widget.book.id ?? '', uId ?? ''));
                         Navigator.pushNamed(context, BookScreen.routeName, arguments: {
                           'book': widget.book,
                           'uId': uId,

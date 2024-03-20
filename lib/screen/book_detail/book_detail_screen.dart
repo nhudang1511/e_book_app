@@ -195,9 +195,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 ),
                 BlocBuilder<AuthorBloc, AuthorState>(
                   builder: (context, state) {
-                    if (state is AuthorLoading) {
-                      return const Expanded(child: CircularProgressIndicator());
-                    }
                     if (state is AuthorLoaded) {
                       Author? author = state.author;
                       return Text(

@@ -6,10 +6,12 @@ import '../../../model/models.dart';
 import '../../../widget/book_items/list_book_main.dart';
 
 class FavouritesTab extends StatefulWidget {
-  const FavouritesTab({super.key});
+  const FavouritesTab({super.key, required this.book});
 
   @override
   State<FavouritesTab> createState() => _FavouritesTabState();
+
+  final List<Book> book;
 }
 
 class _FavouritesTabState extends State<FavouritesTab> {
@@ -22,25 +24,19 @@ class _FavouritesTabState extends State<FavouritesTab> {
       builder: (context, state) {
         if (state is LibraryLoaded) {
           libraries = state.libraries;
-          return BlocBuilder<BookBloc, BookState>(
-            builder: (context, state) {
-              if (state is BookLoaded) {
-                matchingBooks = state.books
-                    .where((book) => libraries
-                    .any((library) => library.bookId == book.id))
-                    .toList();
-              }
-              return matchingBooks.isNotEmpty ? Column(
-                children: [
-                  ListBookMain(
-                      books: matchingBooks,
-                      scrollDirection: Axis.vertical,
-                      height: MediaQuery.of(context).size.height - 50,
-                      inLibrary: true),
-                ],
-              ) : const SizedBox();
-            },
-          );
+          matchingBooks = widget.book
+              .where((book) => libraries
+              .any((library) => library.bookId == book.id))
+              .toList();
+          return matchingBooks.isNotEmpty ? Column(
+            children: [
+              ListBookMain(
+                  books: matchingBooks,
+                  scrollDirection: Axis.vertical,
+                  height: MediaQuery.of(context).size.height - 50,
+                  inLibrary: true),
+            ],
+          ) : const SizedBox();
         }
         else {
           return const SizedBox();
