@@ -63,6 +63,10 @@ class AppRouter {
       case ReviewsScreen.routeName:
         Book book = settings.arguments as Book;
         return _route(ReviewsScreen(book: book));
+      case ChoosePaymentScreen.routeName:
+        return _route(const ChoosePaymentScreen());
+      case BankTransferScreen.routeName:
+        return _route(const BankTransferScreen());
       default:
         return _errorRoute();
     }

@@ -63,7 +63,7 @@ class LoginCubit extends Cubit<LoginState> {
       final credential = await _authRepository.logInWithGoogle();
       if (credential != null) {
         final user = await _userRepository.getUserByEmail(credential.email);
-        SharedService.setUserId(credential.uid);
+        // SharedService.setUserId(credential.uid);
         if (user == false) {
           await _userRepository.addUser(User(
               id: credential.uid,

@@ -11,6 +11,7 @@ import 'screen/admin/components/menu_app_controller.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,12 +20,19 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await SharedService.init();
+  // final firebaseMessaging = FirebaseMessaging.instance;
+  // await firebaseMessaging.requestPermission();
+  // final token = await firebaseMessaging.getToken();
+  // print('token: $token');
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),
   ));
 }
-
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   print('Handling a background message ${message.messageId}');
+// }
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 

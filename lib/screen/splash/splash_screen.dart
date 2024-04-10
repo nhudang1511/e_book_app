@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'package:e_book_app/screen/screen.dart';
 import 'package:flutter/material.dart';
-class SplashScreen extends StatelessWidget {
+
+class SplashScreen extends StatefulWidget {
   static const String routeName = '/splash';
 
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 2), () => Navigator.pushNamedAndRemoveUntil(context, MainScreen.routeName, (route) => false));
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onBackground,
       body: const Column(
@@ -20,5 +25,14 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+        const Duration(seconds: 2),
+        () => Navigator.pushNamedAndRemoveUntil(
+            context, MainScreen.routeName, (route) => false));
   }
 }

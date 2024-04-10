@@ -62,6 +62,9 @@ dependencies:
   rating_dialog: ^2.0.4
   rating_summary: ^1.0.2+1
   shared_preferences: ^2.2.2
+  firebase_messaging: ^14.7.10
+  custom_radio_grouped_button: ^2.2.1
+  flutter_paypal_checkout: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
