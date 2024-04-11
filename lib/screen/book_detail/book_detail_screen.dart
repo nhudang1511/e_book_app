@@ -41,14 +41,23 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     ).show();
   }
 
+  late AuthorBloc _authorBloc;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _authorBloc = AuthorBloc(
+      AuthorRepository(),
+    )..add(LoadedAuthor(widget.book.authodId ?? ''));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (_) => AuthorBloc(
-              AuthorRepository(),
-            )..add(LoadedAuthor(widget.book.authodId ?? ''))),
+            create: (_) => _authorBloc),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,

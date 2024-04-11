@@ -25,7 +25,8 @@ class BookCardMain extends StatefulWidget {
 
 class _BookCardMainState extends State<BookCardMain> {
   late Timer _timer;
-  String uId = SharedService.getUserId() ?? '';
+
+  //String uId = SharedService.getUserId() ?? '';
 
   @override
   void initState() {
@@ -124,84 +125,95 @@ class _BookCardMainState extends State<BookCardMain> {
                                       ],
                                     ),
                                   ),
-                                  if (uId != '')
-                                    IconButton(onPressed: () {
-                                      widget.inLibrary = !widget.inLibrary;
-                                      !widget.inLibrary
-                                          ? BlocProvider.of<LibraryBloc>(
-                                                  context)
-                                              .add(RemoveFromLibraryEvent(
+                                  BlocBuilder<AuthBloc, AuthState>(
+                                    builder: (context, state) {
+                                      if(state is AuthenticateState){
+                                        String uId = state.authUser?.uid ?? '';
+                                        return IconButton(onPressed: () {
+                                          widget.inLibrary = !widget.inLibrary;
+                                          !widget.inLibrary
+                                              ? BlocProvider.of<LibraryBloc>(
+                                              context)
+                                              .add(
+                                              RemoveFromLibraryEvent(
                                                   userId: SharedService
-                                                          .getUserId() ??
-                                                      '',
-                                                  bookId: widget.book.id ?? ''))
-                                          : BlocProvider.of<LibraryBloc>(
-                                                  context)
-                                              .add(AddToLibraryEvent(
-                                                  userId: SharedService
-                                                          .getUserId() ??
+                                                      .getUserId() ??
                                                       '',
                                                   bookId:
-                                                      widget.book.id ?? ''));
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          _timer = Timer(
-                                              const Duration(seconds: 1), () {
-                                            BlocProvider.of<LibraryBloc>(
-                                                    context)
-                                                .add(LoadLibraryByUid(uId));
-                                            Navigator.of(context).pop();
-                                          });
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        },
-                                      ).then((value) {
-                                        if (_timer.isActive) {
-                                          _timer.cancel();
-                                        }
-                                      });
-                                    }, icon:
-                                        BlocBuilder<LibraryBloc, LibraryState>(
-                                      builder: (context, state) {
-                                        if (state is LibraryLoaded) {
-                                          bool isBookInLibrary = state.libraries
-                                              .any((b) =>
-                                                  b.bookId == widget.book.id);
-                                          if (isBookInLibrary) {
-                                            widget.inLibrary =
-                                                true; // Nếu sách có trong Library, đặt inLibrary thành true
-                                          }
-                                        }
-                                        return Icon(
-                                          Icons.bookmark_outlined,
-                                          color: widget.inLibrary
-                                              ? const Color(0xFF8C2EEE)
-                                              : const Color(0xFFDFE2E0),
-                                        );
-                                      },
-                                    ))
-                                  else
-                                    IconButton(
-                                        onPressed: () {
-                                          _timer = Timer(
-                                              const Duration(seconds: 1), () {
-                                            Navigator.of(context).pop();
-                                          });
+                                                  widget.book.id ??
+                                                      ''))
+                                              : BlocProvider.of<
+                                              LibraryBloc>(context)
+                                              .add(AddToLibraryEvent(
+                                              userId: SharedService
+                                                  .getUserId() ??
+                                                  '',
+                                              bookId:
+                                              widget.book.id ?? ''));
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return const CustomDialogNotice(
-                                                title: Icons.downloading,
-                                                content: 'Please log in to add',
+                                              _timer = Timer(
+                                                  const Duration(seconds: 1), () {
+                                                BlocProvider.of<LibraryBloc>(
+                                                    context)
+                                                    .add(LoadLibraryByUid(uId));
+                                                Navigator.of(context).pop();
+                                              });
+                                              return const Center(
+                                                child:
+                                                CircularProgressIndicator(),
                                               );
                                             },
-                                          );
-                                        },
-                                        icon: const Icon(
-                                            Icons.bookmark_outlined,
-                                            color: Color(0xFFDFE2E0)))
+                                          ).then((value) {
+                                            if (_timer.isActive) {
+                                              _timer.cancel();
+                                            }
+                                          });
+                                        }, icon: BlocBuilder<LibraryBloc,
+                                            LibraryState>(
+                                          builder: (context, state) {
+                                            if (state is LibraryLoaded) {
+                                              bool isBookInLibrary =
+                                              state.libraries.any((b) =>
+                                              b.bookId == widget.book.id);
+                                              if (isBookInLibrary) {
+                                                widget.inLibrary =
+                                                true; // Nếu sách có trong Library, đặt inLibrary thành true
+                                              }
+                                            }
+                                            return Icon(
+                                              Icons.bookmark_outlined,
+                                              color: widget.inLibrary
+                                                  ? const Color(0xFF8C2EEE)
+                                                  : const Color(0xFFDFE2E0),
+                                            );
+                                          },
+                                        ));
+                                      }
+                                      else{
+                                        return IconButton(
+                                            onPressed: () {
+                                              _timer = Timer(
+                                                  const Duration(seconds: 1), () {
+                                                Navigator.of(context).pop();
+                                              });
+                                              showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return const CustomDialogNotice(
+                                                    title: Icons.downloading,
+                                                    content: 'Please log in to add',
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: const Icon(
+                                                Icons.bookmark_outlined,
+                                                color: Color(0xFFDFE2E0)));
+                                      }
+                                    },
+                                  )
                                 ],
                               ),
                             ),
@@ -211,7 +223,8 @@ class _BookCardMainState extends State<BookCardMain> {
                                   children: [
                                     widget.book.price.toString() == '0'
                                         ? const Icon(Icons.money_off)
-                                        : Text('Coins: ${widget.book.price.toString()}'),
+                                        : Text(
+                                            'Coins: ${widget.book.price.toString()}'),
                                     Row(
                                       children: [
                                         const Icon(Icons.menu_book),
