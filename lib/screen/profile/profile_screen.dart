@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 BlocBuilder<CoinsBloc, CoinsState>(
                                   builder: (context, state) {
                                     int coins = 0;
-                                    print(state);
+                                    // print(state);
                                     if(state is CoinsLoaded){
                                       coins = state.coins.quantity ?? 0;
                                     }

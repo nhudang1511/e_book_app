@@ -21,9 +21,9 @@ class AuthRepository extends BaseAuthRepository {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       final user = credential.user;
-      if(user != null){
-        SharedService.setUserId(user.uid);
-      }
+      // if(user != null){
+      //   SharedService.setUserId(user.uid);
+      // }
       return user;
     } catch (_) {}
     return null;
@@ -95,7 +95,7 @@ class AuthRepository extends BaseAuthRepository {
       final userCredential =
           await _firebaseAuth.signInWithCredential(credential);
       if(userCredential.user != null){
-        SharedService.setUserId(userCredential.user!.uid);
+        //SharedService.setUserId(userCredential.user!.uid);
       }
       return userCredential.user;
     } catch (e) {
@@ -117,7 +117,7 @@ class AuthRepository extends BaseAuthRepository {
       final credential =
           await _firebaseAuth.signInWithCredential(facebookAuthCredential);
       if(credential.user != null){
-        SharedService.setUserId(credential.user!.uid);
+        //SharedService.setUserId(credential.user!.uid);
       }
       return credential.user;
     } catch (e) {

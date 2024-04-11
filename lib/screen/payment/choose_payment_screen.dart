@@ -3,6 +3,9 @@ import 'package:e_book_app/repository/coins/coins_repository.dart';
 import 'package:e_book_app/screen/payment/bank_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import '../../blocs/coins/coins_bloc.dart';
 import '../../config/shared_preferences.dart';
 import '../../widget/widget.dart';
@@ -39,8 +42,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
         listener: (context, state) {
           if (state is AddCoins) {
             Navigator.pop(context);
-          }
-          else if (state is CoinsLoaded){
+          } else if (state is CoinsLoaded) {
             uId = state.coins.uId ?? '';
             coins = state.coins.quantity ?? 0;
             coinsId = state.coins.coinsId ?? '';
@@ -82,7 +84,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                     horizontal: true,
                     radioButtonValue: (value) {
                       setState(() {
-                        money =  int.parse(value);
+                        money = int.parse(value);
                       });
                     },
                     selectedColor:
@@ -122,24 +124,22 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                   "Contact us for any questions on your order.",
                               onSuccess: (Map params) async {
                                 print("onSuccess: $params");
-                                if(money == 1){
+                                if (money == 1) {
                                   coins = coins + 300;
-                                }
-                                else if(money == 5){
+                                } else if (money == 5) {
                                   coins = coins + 2000;
-                                }
-                                else if (money == 10){
+                                } else if (money == 10) {
                                   coins = coins + 5000;
                                 }
-                                if(uId != SharedService.getUserId()){
+                                if (uId != SharedService.getUserId()) {
                                   _coinsBloc.add(AddNewCoinsEvent(
                                       quantity: coins,
                                       uId: SharedService.getUserId() ?? ''));
-                                }
-                                else if (uId == SharedService.getUserId()){
+                                } else if (uId == SharedService.getUserId()) {
                                   _coinsBloc.add(EditCoinsEvent(
                                       quantity: coins,
-                                      uId: SharedService.getUserId() ?? '', coinsId: coinsId));
+                                      uId: SharedService.getUserId() ?? '',
+                                      coinsId: coinsId));
                                 }
                               },
                               onError: (error) {
@@ -151,6 +151,24 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                               },
                             ),
                           ));
+                        } else {
+                          Dialogs.materialDialog(
+                              msg: 'Please select coins to continue!',
+                              title: "Warning",
+                              color: Colors.white,
+                              context: context,
+                              actions: [
+                                IconsButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  text: "Ok",
+                                  iconData: Icons.cancel,
+                                  color: Colors.greenAccent,
+                                  textStyle: const TextStyle(color: Colors.white),
+                                  iconColor: Colors.white,
+                                ),
+                              ]);
                         }
                       },
                     ),
@@ -160,9 +178,12 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                     child: CustomButton(
                       title: "Bank Transfer",
                       onPressed: () {
-                        if (money != 0) {
-                          Navigator.pushNamed(
-                              context, BankTransferScreen.routeName);
+                        Navigator.pushNamed(
+                            context, BankTransferScreen.routeName);
+                        if (uId != SharedService.getUserId()) {
+                          _coinsBloc.add(AddNewCoinsEvent(
+                              quantity: 0,
+                              uId: SharedService.getUserId() ?? ''));
                         }
                       },
                     ),

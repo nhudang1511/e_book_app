@@ -72,12 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
       .toList();
   BookBloc bookBloc = BookBloc(BookRepository());
 
-
   @override
   void initState() {
     super.initState();
     bookBloc.add(LoadBooks());
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -131,12 +131,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             vertical: 8.0, horizontal: 4.0),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: (Theme.of(context).brightness ==
-                                Brightness.dark
-                                ? Colors.white
-                                : Colors.black)
-                                .withOpacity(
-                                _current == entry.key ? 0.9 : 0.4)),
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                    .withOpacity(
+                                        _current == entry.key ? 0.9 : 0.4)),
                       ),
                     );
                   }).toList(),
@@ -146,17 +146,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   books: books,
                   inLibrary: false,
                 ),
-                if(SharedService.getUserId() != '')
-                  Column(
-                    children: [
-                      DisplayHistories(
-                        uId: SharedService.getUserId(),
-                        scrollDirection: Axis.horizontal,
-                        height: 180,
-                        inHistory: true, book: books,
-                      ),
-                    ],
-                  ),
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                   if(state is AuthenticateState){
+                     return Column(
+                       children: [
+                         DisplayHistories(
+                           uId: state.authUser?.uid,
+                           scrollDirection: Axis.horizontal,
+                           height: 180,
+                           inHistory: true,
+                           book: books,
+                         ),
+                       ],
+                     );
+                   }
+                   return const SizedBox();
+                  },
+                ),
                 const SectionTitle(title: 'Recommendation'),
                 ListBookMain(
                   books: books.take(4).toList(),
