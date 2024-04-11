@@ -28,7 +28,6 @@ class HistoryRepository extends BaseHistoryRepository {
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
         var existingData = doc.data();
-
         // Lấy giá trị chapterScrollPositions từ Firebase
         var existingChapterScrollPositions =
             existingData['chapterScrollPositions'] as Map<String, dynamic>;
@@ -93,6 +92,28 @@ class HistoryRepository extends BaseHistoryRepository {
         data['id'] = doc.id;
         return History().fromJson(data);
       }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future<History> getHistoryByUId(String uId, String bookId) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('histories')
+          .where('uId', isEqualTo: uId).where('chapters', isEqualTo: bookId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var data = querySnapshot.docs.first.data();
+        data['id'] = querySnapshot.docs.first.id;
+        return History().fromJson(data);
+      }
+      else{
+        return History();
+      }
     } catch (e) {
       log(e.toString());
       rethrow;

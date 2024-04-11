@@ -32,7 +32,7 @@ class CoinsBloc extends Bloc<CoinsEvent, CoinsState> {
     emit(CoinsLoading());
     try {
       await _coinsRepository.addCoins(coins);
-      emit(AddCoins(coins: event.coins));
+      emit(AddCoins(coins: coins));
     } catch (e) {
       emit(const CoinsError('error'));
     }

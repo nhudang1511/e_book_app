@@ -50,7 +50,10 @@ class _BookScreenState extends State<BookScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
+    BlocProvider.of<HistoryBloc>(context)
+        .add(LoadHistoryByBookId(widget.book.id ?? '', widget.uId));
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -79,25 +82,28 @@ class _BookScreenState extends State<BookScreen> {
     }
     // Tính tổng phần trăm đã đọc của tất cả các chương
     // percentAllChapters(widget.chapterScrollPercentages);
-
   }
-  void percentAllChapters(Map<String, dynamic> chapterScrollPercentages){
+
+  void percentAllChapters(Map<String, dynamic> chapterScrollPercentages) {
     double totalPercentage = chapterScrollPercentages.values
         .fold(0, (sum, percentage) => sum + percentage);
 
     overallPercentage =
-    (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
+        (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
   }
+
   void increaseFontSize() {
     setState(() {
       fontSize += 2.0; // You can adjust the increment as needed
     });
   }
+
   void decreaseFontSize() {
     setState(() {
       fontSize -= 2.0;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -158,7 +164,8 @@ class _BookScreenState extends State<BookScreen> {
                         return aNumber.compareTo(bNumber);
                       });
                       chapter = chapterListMap[0];
-                      totalChapters = state.chapters.chapterList?.length ?? 1 * 100;
+                      totalChapters =
+                          state.chapters.chapterList?.length ?? 1 * 100;
                       localSelectedTableText = chapter['title'];
                       localSelectedChapterId = chapter['id'];
                       return BlocBuilder<HistoryBloc, HistoryState>(
@@ -207,17 +214,21 @@ class _BookScreenState extends State<BookScreen> {
                                   return prev;
                                 });
                                 // print('histories: $percentListMap');
-                                Map<String, dynamic> newChapterScrollPercentages =  mergePercentages(percentListMap, widget.chapterScrollPercentages);
-                                if(newChapterScrollPercentages.isNotEmpty){
-                                  percentAllChapters(newChapterScrollPercentages);
+                                Map<String, dynamic>
+                                    newChapterScrollPercentages =
+                                    mergePercentages(percentListMap,
+                                        widget.chapterScrollPercentages);
+                                if (newChapterScrollPercentages.isNotEmpty) {
+                                  percentAllChapters(
+                                      newChapterScrollPercentages);
                                 }
                                 // else{
                                 //   percentAllChapters(widget.chapterScrollPercentages);
                                 // }
-
                               }
                             } else {
-                              percentAllChapters(widget.chapterScrollPercentages);
+                              percentAllChapters(
+                                  widget.chapterScrollPercentages);
                             }
                             return SelectableText(
                               isFirst
@@ -510,7 +521,8 @@ class _BookScreenState extends State<BookScreen> {
                       if (state is ChaptersLoaded) {
                         final chapterList = state.chapters.chapterList;
                         // Convert the chapterList to a list of Map<String, dynamic>.
-                        final chapterListMap = chapterList?.entries.map((entry) {
+                        final chapterListMap =
+                            chapterList?.entries.map((entry) {
                           return {
                             'id': entry.key,
                             'title': entry.value,

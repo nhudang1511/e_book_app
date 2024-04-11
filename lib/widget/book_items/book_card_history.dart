@@ -132,7 +132,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                           widget.percent.isInfinite)
                                       ? LinearPercentIndicator(
                                           animation: true,
-                                          lineHeight: 10.0,
+                                          lineHeight: 4.0,
                                           animationDuration: 2500,
                                           percent: 0,
                                           center: const Text(
@@ -145,7 +145,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                         )
                                       : LinearPercentIndicator(
                                           animation: true,
-                                          lineHeight: 10.0,
+                                          lineHeight: 4.0,
                                           animationDuration: 2500,
                                           percent: widget.percent / 10000,
                                           center: const Text(

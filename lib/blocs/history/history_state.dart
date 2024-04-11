@@ -22,3 +22,8 @@ class HistoryLoadedById extends HistoryState {
   final List<History> histories;
   const HistoryLoadedById({required this.histories});
 }
+
+class HistoryLoadedByUId extends HistoryState {
+  final History history;
+  const HistoryLoadedByUId({required this.history});
+}

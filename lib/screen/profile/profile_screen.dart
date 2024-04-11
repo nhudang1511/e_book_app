@@ -210,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       coins = state.coins.quantity ?? 0;
                                     }
                                     return Text(
-                                      'Coins: \$$coins',
+                                      'Coins: $coins',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge!

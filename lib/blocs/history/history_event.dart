@@ -28,4 +28,8 @@ class LoadHistoryByBookId extends HistoryEvent {
   final String uId;
   LoadHistoryByBookId(this.bookId, this.uId);
 }
-
+class LoadedHistoryByUId extends HistoryEvent {
+  final String uId;
+  final String bookId;
+  LoadedHistoryByUId({required this.uId, required this.bookId});
+}

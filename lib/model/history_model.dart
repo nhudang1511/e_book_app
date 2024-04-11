@@ -8,6 +8,7 @@ class History extends CustomModel {
   final int? times;
   final Map<String, dynamic>? chapterScrollPositions;
   final Map<String, dynamic>? chapterScrollPercentages;
+  final String? id;
 
   History(
       {this.uId,
@@ -15,7 +16,9 @@ class History extends CustomModel {
       this.percent,
       this.times,
       this.chapterScrollPositions,
-      this.chapterScrollPercentages});
+      this.chapterScrollPercentages,
+        this.id
+      });
 
   @override
   Map<String, Object> toJson() {
@@ -37,7 +40,9 @@ class History extends CustomModel {
         percent: json['percent'],
         times: json['times'],
         chapterScrollPositions: json['chapterScrollPositions'],
-        chapterScrollPercentages: json['chapterScrollPercentages']);
+        chapterScrollPercentages: json['chapterScrollPercentages'],
+      id: json['id']
+    );
     return history;
   }
 

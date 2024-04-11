@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
                 ChaptersBloc(ChaptersRepository(),)),
         BlocProvider(
           create: (_) => HistoryBloc(
-            HistoryRepository())..add(LoadHistory()),
+            HistoryRepository()),
         ),
         BlocProvider(
           create: (_) => NoteBloc(

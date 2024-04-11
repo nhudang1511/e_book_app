@@ -114,10 +114,10 @@ class _BookCardMainState extends State<BookCardMain> {
                                                   .textTheme
                                                   .headlineSmall!
                                                   .copyWith(
-                                                  color: const Color(
-                                                      0xFFC7C7C7),
-                                                  fontWeight:
-                                                  FontWeight.normal),
+                                                      color: const Color(
+                                                          0xFFC7C7C7),
+                                                      fontWeight:
+                                                          FontWeight.normal),
                                             );
                                           },
                                         ),
@@ -186,18 +186,15 @@ class _BookCardMainState extends State<BookCardMain> {
                                     IconButton(
                                         onPressed: () {
                                           _timer = Timer(
-                                              const Duration(seconds: 1),
-                                                  () {
-                                                Navigator.of(context).pop();
-                                              });
+                                              const Duration(seconds: 1), () {
+                                            Navigator.of(context).pop();
+                                          });
                                           showDialog(
                                             context: context,
-                                            builder:
-                                                (BuildContext context) {
+                                            builder: (BuildContext context) {
                                               return const CustomDialogNotice(
                                                 title: Icons.downloading,
-                                                content:
-                                                'Please log in to add',
+                                                content: 'Please log in to add',
                                               );
                                             },
                                           );
@@ -212,7 +209,9 @@ class _BookCardMainState extends State<BookCardMain> {
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.money_off),
+                                    widget.book.price.toString() == '0'
+                                        ? const Icon(Icons.money_off)
+                                        : Text('Coins: ${widget.book.price.toString()}'),
                                     Row(
                                       children: [
                                         const Icon(Icons.menu_book),

@@ -40,6 +40,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
       create: (context) => _coinsBloc,
       child: BlocListener<CoinsBloc, CoinsState>(
         listener: (context, state) {
+          print(state);
           if (state is AddCoins) {
             Navigator.pop(context);
           } else if (state is CoinsLoaded) {
