@@ -9,10 +9,11 @@ class CustomSecondaryTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: Theme.of(context)
-          .textTheme
-          .displaySmall!
-          .copyWith(fontWeight: FontWeight.normal),
+      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+            fontWeight: FontWeight.normal,
+            fontSize: 16,
+          ),
+      textAlign: TextAlign.center,
     );
   }
 }

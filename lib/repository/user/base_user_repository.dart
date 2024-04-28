@@ -1,13 +1,16 @@
 import 'dart:io';
 
-import '../../model/user_model.dart';
+import 'package:e_book_app/model/models.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+
 
 abstract class BaseUserRepository {
-  Stream<User> getUser(String userId);
+
+  Stream<List<User>> getAllUsers();
+
+  Future<void> uploadAvatar({required File? fileAvatar});
+
+  Future<User?> getProfile({required auth.User user});
   Future<void> updateUser(User user);
   Future<void> addUser(User user);
-  Future<String> uploadAvatar(File fileAvatar);
-  Future<void> removeOldAvatar (String imageUrl);
-  Future<bool> getUserByEmail (String? email);
-  Stream<List<User>> getAllUsers();
 }

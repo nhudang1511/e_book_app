@@ -38,7 +38,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   style: Theme.of(context)
                       .textTheme
                       .displayLarge!
-                      .copyWith(fontSize: 12),
+                      .copyWith(fontSize: 16),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -50,7 +50,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              100), // Adjust the radius as needed
+                              4), // Adjust the radius as needed
                         ),
                       ),
                     ),
@@ -59,7 +59,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       style: Theme.of(context).textTheme.displayLarge!.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
-                          fontSize: 12),
+                          fontSize: 16),
                     ),
                   ),
                 ),

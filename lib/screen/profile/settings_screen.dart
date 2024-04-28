@@ -16,18 +16,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-    late AuthBloc _authBloc;
+  late AuthBloc _authBloc;
 
-    @override
-    void initState() {
-      super.initState();
-      _authBloc = BlocProvider.of<AuthBloc>(context);
-    }
-    @override
-    void dispose() {
-      super.dispose();
-      _authBloc.close();
-    }
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +32,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: "Settings",
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 32, left: 32, top: 32),
-              child: InkWell(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 24,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -64,44 +62,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         flex: 1,
                         child: Switch(
                           activeColor: Theme.of(context).colorScheme.primary,
-                          value: Provider.of<ThemeProvider>(context).themeData == darkTheme,
+                          value:
+                              Provider.of<ThemeProvider>(context).themeData ==
+                                  darkTheme,
                           onChanged: (bool value) {
-                            Provider.of<ThemeProvider>(context, listen:  false).toggleTheme();
+                            Provider.of<ThemeProvider>(context, listen: false)
+                                .toggleTheme();
                           },
                         )),
                   ],
                 ),
               ),
-            ),
-            BlocBuilder<AuthBloc, AuthState>(builder: (context, state){
-              if (state is AuthInitial || state is UnAuthenticateState){
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: CustomButton(
-                    title: "Log in",
-                    onPressed: () {
-                      Navigator.pushNamed(context, LoginScreen.routeName);
-                    },
-                  ),
-                );
-              }
-              if (state is AuthenticateState) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: CustomButton(
-                    title: "Log out",
-                    onPressed: () {
-                      _authBloc.add(AuthEventLoggedOut());
-                      Navigator.pushNamedAndRemoveUntil(context, MainScreen.routeName, (route) => false);
-                    },
-                  ),
-                );
-              }
-              else {
-                return const Text("Something went wrong");
-              }
-            })
-          ],
+              BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                if (state is AuthInitial || state is UnAuthenticateState) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 32.0),
+                    child: CustomButton(
+                      title: "Log in",
+                      onPressed: () {
+                        Navigator.pushNamed(context, LoginScreen.routeName);
+                      },
+                    ),
+                  );
+                }
+                if (state is AuthenticateState) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 32.0),
+                    child: CustomButton(
+                      title: "Log out",
+                      onPressed: () {
+                        _authBloc.add(AuthEventLoggedOut());
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, MainScreen.routeName, (route) => false);
+                      },
+                    ),
+                  );
+                } else {
+                  return const Text("Something went wrong");
+                }
+              })
+            ],
+          ),
         ),
       ),
     );

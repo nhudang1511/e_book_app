@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'package:e_book_app/cubits/cubits.dart';
-import 'package:e_book_app/screen/forgot_password/enter_email_screen.dart';
 import 'package:e_book_app/screen/screen.dart';
+import 'package:e_book_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/repository.dart';
@@ -20,76 +19,72 @@ class _LoginScreenState extends State<LoginScreen> {
   final formField = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool passwordVisible = true;
+  bool isButtonDisabled = true;
 
-  //late LoginCubit _loginCubit;
-  late Timer _timer;
+  late LoginCubit _loginCubit;
 
-  final LoginCubit _loginCubit = LoginCubit(
-    authRepository: AuthRepository(),
-    userRepository: UserRepository(),
-  );
+
+
+  void _onSetDisableButton(String text) {
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        !isEmail(emailController.text)) {
+      setState(() {
+        isButtonDisabled = true;
+      });
+    } else {
+      setState(() {
+        isButtonDisabled = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _loginCubit = BlocProvider.of(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
-    return BlocProvider(
-      create: (context) => _loginCubit,
-      child: BlocListener<LoginCubit, LoginState>(
-        listener: (context, state) {
-          if (state.status == LoginStatus.success) {
-            Navigator.pop(context);
-          }
-          if (state.status == LoginStatus.emailDiffProvider) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                _timer = Timer(const Duration(seconds: 2), () {
-                  Navigator.of(context).pop();
-                });
-                return const CustomDialogNotice(
-                  title: Icons.info,
-                  content:
-                      'Email already exists and is registered with another provider.',
-                );
-              },
-            ).then((value) {
-              if (_timer.isActive) {
-                _timer.cancel();
-              }
-            });
-          }
-          if (state.status == LoginStatus.error) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                _timer = Timer(const Duration(seconds: 2), () {
-                  Navigator.of(context).pop();
-                });
-                return const CustomDialogNotice(
-                  title: Icons.info,
-                  content: 'Invalid account or password.',
-                );
-              },
-            ).then((value) {
-              if (_timer.isActive) {
-                _timer.cancel();
-              }
-            });
-          }
-        },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          body: SingleChildScrollView(
-            child: Center(
-              child: SizedBox(
-                height: currentHeight,
-                child: Form(
-                  key: formField,
+    return BlocListener<LoginCubit, LoginState>(
+      listener: (context, state) {
+        if (state.status == LoginStatus.success) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          ShowSnackBar.success(InfoMessage.LOGIN_SUCCESS, context);
+        }
+        if (state.status == LoginStatus.verifying) {
+          Navigator.pushNamed(context, VerifyEmailLoginScreen.routeName);
+        }
+        if (state.status == LoginStatus.submitting) {
+          LoadingOverlay.showLoading(context);
+        }
+        if (state.status == LoginStatus.error) {
+          ShowSnackBar.error(state.exception!, context);
+        }
+        if (state.status != LoginStatus.submitting) {
+          LoadingOverlay.dismissLoading();
+        }
+        if (state.status == LoginStatus.unVerify) {
+          Navigator.pushNamedAndRemoveUntil(context,
+              MainScreen.routeName, (route) => false);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              height: currentHeight,
+              child: Form(
+                key: formField,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 24,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
@@ -113,60 +108,79 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           //email input
                           CustomTextField(
-                            hint: "Email",
+                            label: "Email",
+                            icon: Icons.email,
                             controller: emailController,
+                            validator: (value) {
+                              if (value.toString().isEmpty) {
+                                return null;
+                              }
+                              return isEmail(value.toString())
+                                  ? null
+                                  : InfoMessage.emailValid;
+                            },
                             onChanged: (value) {
                               _loginCubit.emailChanged(value);
+                              _onSetDisableButton(value);
                             },
                           ),
-                          PasswordInput(
-                            hint: "Password",
+                          CustomTextField(
+                            label: "Password",
+                            icon: Icons.lock,
                             controller: passwordController,
+                            validator: (value) {
+                              if (value.toString().isEmpty) {
+                                return null;
+                              }
+                              return null;
+                            },
+                            isObscureText: passwordVisible,
+                            suffixIcon: passwordVisible == true
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIcon: () {
+                              setState(() {
+                                passwordVisible = !passwordVisible;
+                              });
+                            },
                             onChanged: (value) {
                               _loginCubit.passwordChanged(value);
+                              _onSetDisableButton(value);
                             },
                           ),
                           //password input
                         ],
                       ),
                       //forgot password
-                      Padding(
-                        padding: const EdgeInsets.only(right: 32),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, EnterEmailScreen.routeName);
-                              },
-                              child: Text(
-                                "Forgot Password?",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontSize: 16,
-                                    ),
-                              ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, EnterEmailScreen.routeName);
+                            },
+                            child: Text(
+                              "Forgot Password?",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                    fontSize: 12,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       //login button
-                      BlocBuilder<LoginCubit, LoginState>(
-                        buildWhen: (previous, current) =>
-                            previous.status != current.status,
-                        builder: (context, state) {
-                          return state.status == LoginStatus.submitting
-                              ? const CircularProgressIndicator()
-                              : CustomButton(
-                                  title: "Login",
-                                  onPressed: () {
-                                    if (formField.currentState!.validate()) {
-                                      _loginCubit.logInWithCredentials();
-                                    }
-                                  },
-                                );
+                      CustomButton(
+                        title: "Login",
+                        disabled: isButtonDisabled,
+                        onPressed: () {
+                          if (formField.currentState!.validate()) {
+                            _loginCubit.logInWithCredentials();
+                          }
                         },
                       ),
                       //or with
@@ -209,7 +223,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(context, SignupScreen.routeName);
+                              Navigator.pushNamed(
+                                  context, SignupScreen.routeName);
                             },
                             child: Text(
                               "Sign in",

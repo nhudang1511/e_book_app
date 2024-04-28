@@ -1,5 +1,6 @@
 import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/config/theme/theme_provider.dart';
+import 'package:e_book_app/cubits/cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +8,6 @@ import 'blocs/blocs.dart';
 import 'config/app_route.dart';
 import 'config/theme/theme.dart';
 import 'firebase_options.dart';
-import 'screen/admin/components/menu_app_controller.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +30,7 @@ Future<void> main() async {
     child: const MyApp(),
   ));
 }
+
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   print('Handling a background message ${message.messageId}');
 // }
@@ -45,46 +46,67 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) => ForgotPasswordCubit(
+            authRepository: AuthRepository(),
+          ),
+          child: const EnterEmailScreen(),
+        ),
+        BlocProvider(
+          create: (_) => SignupCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+          ),
+          child: const SignupScreen(),
+        ),
+        BlocProvider(
+          create: (_) => LoginCubit(
+            authRepository: AuthRepository(),
+            userRepository: UserRepository(),
+
+          ),
+          child: const LoginScreen(),
+        ),
+        BlocProvider(
           create: (_) => AuthBloc(
             authRepository: AuthRepository(),
           )..add(AuthEventStarted()),
         ),
         BlocProvider(
-          create: (_) => BookBloc(BookRepository(),
+          create: (_) => BookBloc(
+            BookRepository(),
           )..add(LoadBooks()),
         ),
+        // BlocProvider(
+        //   create: (_) => UserBloc(
+        //     authRepository: AuthRepository(),
+        //     userRepository: UserRepository(),
+        //   )..add(LoadUser()),
+        // ),
+        // BlocProvider(
+        //   create: (_) => ListUserBloc(
+        //     userRepository: UserRepository(),
+        //   )..add(LoadListUser()),
+        // ),
         BlocProvider(
-          create: (_) => UserBloc(
-            authRepository: AuthRepository(),
-            userRepository: UserRepository(),
-          )..add(LoadUser()),
+          create: (_) => LibraryBloc(LibraryRepository())..add(LoadLibrary()),
         ),
         BlocProvider(
-          create: (_) => ListUserBloc(
-            userRepository: UserRepository(),
-          )..add(LoadListUser()),
-        ),
-        ChangeNotifierProvider(create: (context) => MenuAppController()),
+            create: (_) => ChaptersBloc(
+                  ChaptersRepository(),
+                )),
         BlocProvider(
-          create: (_) => LibraryBloc(
-            LibraryRepository())..add(LoadLibrary()),
-        ),
-        BlocProvider(
-            create: (_) =>
-                ChaptersBloc(ChaptersRepository(),)),
-        BlocProvider(
-          create: (_) => HistoryBloc(
-            HistoryRepository()),
+          create: (_) => HistoryBloc(HistoryRepository()),
         ),
         BlocProvider(
           create: (_) => NoteBloc(
-           NoteRepository(),
+            NoteRepository(),
           ),
         ),
       ],

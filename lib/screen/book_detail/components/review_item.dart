@@ -147,7 +147,7 @@ class ReviewItemCard extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ListUserLoaded) {
             User? user = state.users.firstWhere(
-              (u) => u.id == userId,
+              (u) => u.uid == userId,
             );
             //need fix
             return SingleChildScrollView(
@@ -156,7 +156,7 @@ class ReviewItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.fullName,
+                    user.displayName!,
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),

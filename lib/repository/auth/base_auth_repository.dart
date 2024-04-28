@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 abstract class BaseAuthRepository {
-  Stream<auth.User?> get user;
-
   Future<auth.User?> signUp({
     required String email,
     required String password,
@@ -15,12 +13,28 @@ abstract class BaseAuthRepository {
 
   Future<void> signOut();
 
-  Future<bool> changePassword({required String newPassword, required String oldPassword,});
-
   Future<auth.User?> logInWithGoogle();
 
   Future<auth.User?> logInWithFacebook();
 
-  Future<bool> forgotPassword(String email);
+  Future<void> forgotPassword({
+    required String email,
+  });
 
+  Stream<auth.User?> get user;
+
+  Future<bool> isVerified();
+
+  Future<void> sendEmailVerification();
+
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  });
+
+  Future<auth.User> updateProfile(
+    String? displayName,
+    String? phoneNumber,
+    String? avatar,
+  );
 }

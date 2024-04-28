@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:e_book_app/cubits/cubits.dart';
 import 'package:e_book_app/screen/screen.dart';
+import 'package:e_book_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../repository/repository.dart';
 import '../../widget/widget.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -23,62 +21,73 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  late Timer _timer;
-  final SignupCubit _signupCubit = SignupCubit(
-    authRepository: AuthRepository(),
-    userRepository: UserRepository(),
-  );
+
+  bool isButtonDisabled = true;
+  bool passwordVisible = true;
+
+  late SignupCubit _signupCubit;
+
+  void _onsetDisableButton(String text) {
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty ||
+        !isEmail(emailController.text) ||
+        !isPassword(passwordController.text) ||
+        passwordController.text != confirmPasswordController.text) {
+      setState(() {
+        isButtonDisabled = true;
+      });
+    } else {
+      setState(() {
+        isButtonDisabled = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _signupCubit = BlocProvider.of(context);
   }
-
-  bool validatePassword(String value) {
-    String pattern =
-        r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()\-_+=<>?/{}[\]]{8,}$";
-    RegExp regExp = RegExp(pattern);
-    return regExp.hasMatch(value);
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentHeight = MediaQuery.of(context).size.height;
-    return BlocProvider(
-      create: (context) => _signupCubit,
-      child: BlocListener<SignupCubit, SignupState>(
-        listener: (context, state) {
-          if (state.status == SignupStatus.success) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, MainScreen.routeName, (route) => false);
-          }
-          if (state.status == SignupStatus.emailExists) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                _timer = Timer(const Duration(seconds: 3), () {
-                  Navigator.of(context).pop();
-                });
-                return const CustomDialogNotice(
-                  title: Icons.info,
-                  content: 'Email already exists.',
-                );
-              },
-            ).then((value) {
-              if (_timer.isActive) {
-                _timer.cancel();
-              }
-            });
-          }
-        },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          body: SingleChildScrollView(
-            child: Center(
-              child: SizedBox(
-                height: currentHeight,
-                child: Form(
-                  key: formField,
+    return BlocListener<SignupCubit, SignupState>(
+      listener: (context, state) {
+        if (state.status == SignupStatus.success) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, MainScreen.routeName, (route) => false);
+          ShowSnackBar.success(InfoMessage.CONFIRM_SIGN_UP_SUCCESS, context);
+        }
+        if (state.status == SignupStatus.submitting) {
+          LoadingOverlay.showLoading(context);
+        }
+        if (state.status == SignupStatus.verifying) {
+          LoadingOverlay.dismissLoading();
+          Navigator.pushNamed(context, VerifyEmailScreen.routeName);
+        }
+        if (state.status == SignupStatus.error) {
+          LoadingOverlay.dismissLoading();
+          ShowSnackBar.error(state.exception!, context);
+        }
+        if (state.status == SignupStatus.unVerify) {
+          Navigator.pushNamedAndRemoveUntil(context,
+              MainScreen.routeName, (route) => false);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              height: currentHeight,
+              child: Form(
+                key: formField,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 24,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
@@ -98,34 +107,74 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       Column(
                         children: [
-                          CustomTextField(
-                            hint: "Full Name",
-                            controller: fullNameController,
-                            onChanged: (value) {
-                              _signupCubit.fullNameChanged(value);
-                            },
-                          ),
-                          CustomTextField(
-                            hint: "Phone Number",
-                            controller: phoneNumberController,
-                            onChanged: (value) {
-                              _signupCubit.phoneNumberChanged(value);
-                            },
-                          ),
                           //email input
                           CustomTextField(
-                            hint: "Email",
+                            label: "Email",
+                            icon: Icons.email,
                             controller: emailController,
+                            validator: (value) {
+                              if (value.toString().isEmpty) {
+                                return null;
+                              }
+                              return isEmail(value.toString())
+                                  ? null
+                                  : InfoMessage.emailValid;
+                            },
                             onChanged: (value) {
                               _signupCubit.emailChanged(value);
+                              _onsetDisableButton(value);
                             },
                           ),
                           //password input
-                          PasswordInput(
-                            hint: "Password",
+                          CustomTextField(
+                            label: "Password",
+                            icon: Icons.lock,
                             controller: passwordController,
+                            isObscureText: passwordVisible,
+                            suffixIcon: passwordVisible == true
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIcon: () {
+                              setState(() {
+                                passwordVisible = !passwordVisible;
+                              });
+                            },
+                            validator: (value) {
+                              if (value.toString().isEmpty) {
+                                return null;
+                              }
+                              return isPassword(value.toString())
+                                  ? null
+                                  : InfoMessage.passwordValid;
+                            },
                             onChanged: (value) {
                               _signupCubit.passwordChanged(value);
+                              _onsetDisableButton(value);
+                            },
+                          ),
+                          CustomTextField(
+                            label: "Confirm Password",
+                            icon: Icons.lock,
+                            controller: confirmPasswordController,
+                            isObscureText: passwordVisible,
+                            suffixIcon: passwordVisible == true
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIcon: () {
+                              setState(() {
+                                passwordVisible = !passwordVisible;
+                              });
+                            },
+                            validator: (value) {
+                              if (value.toString().isEmpty) {
+                                return null;
+                              }
+                              return  passwordController.text == confirmPasswordController.text
+                                  ? null
+                                  : InfoMessage.confirmPasswordValid;
+                            },
+                            onChanged: (value) {
+                              _onsetDisableButton(value);
                             },
                           ),
                         ],
@@ -133,31 +182,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       //signup button
                       CustomButton(
                         title: "Sign up",
+                        disabled: isButtonDisabled,
                         onPressed: () {
                           if (formField.currentState!.validate()) {
-                            if (validatePassword(
-                                passwordController.value.text)) {
-                              _signupCubit.signUpWithEmailAndPassword();
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  _timer =
-                                      Timer(const Duration(seconds: 3), () {
-                                    Navigator.of(context).pop();
-                                  });
-                                  return const CustomDialogNotice(
-                                    title: Icons.info,
-                                    content:
-                                        'Password must be a minimum 8 characters, at least one uppercase letter, one lowercase letter and one number.',
-                                  );
-                                },
-                              ).then((value) {
-                                if (_timer.isActive) {
-                                  _timer.cancel();
-                                }
-                              });
-                            }
+                            _signupCubit.signUpWithEmailAndPassword();
                           }
                         },
                       ),
@@ -179,9 +207,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   .textTheme
                                   .titleLarge!
                                   .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                             ),
                           ),
                         ],
