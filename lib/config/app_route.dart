@@ -11,10 +11,6 @@ class AppRouter {
         return _route(const ChangePasswordScreen());
       case EnterEmailScreen.routeName:
         return _route(const EnterEmailScreen());
-      case EnterNewPasswordScreen.routeName:
-        return _route(const EnterNewPasswordScreen());
-      case EnterOTPScreen.routeName:
-        return _route(const EnterOTPScreen());
       case EditProfileScreen.routeName:
         return _route(const EditProfileScreen());
       case HomeScreen.routeName:
@@ -37,7 +33,8 @@ class AppRouter {
         final User user = settings.arguments as User;
         return _route(TextNotesScreen(user: user));
       case BookDetailScreen.routeName:
-        final Map<String, dynamic> arguments = settings.arguments as Map<String, dynamic>;
+        final Map<String, dynamic> arguments =
+            settings.arguments as Map<String, dynamic>;
         final Book book = arguments['book'] as Book;
         final bool inLibrary = arguments['inLibrary'] as bool;
         return _route(BookDetailScreen(book: book, inLibrary: inLibrary));
@@ -46,20 +43,18 @@ class AppRouter {
         return _route(CategoryScreen(category: category));
       case BookScreen.routeName:
         final Map<String, dynamic> arguments =
-        settings.arguments as Map<String, dynamic>;
+            settings.arguments as Map<String, dynamic>;
         final Book book = arguments['book'] as Book;
         final String uId = arguments['uId'] as String;
         final Map<String, dynamic> chapterScrollPositions =
-        arguments['chapterScrollPositions'];
+            arguments['chapterScrollPositions'];
         final Map<String, dynamic> chapterScrollPercentages =
-        arguments['chapterScrollPercentages'];
+            arguments['chapterScrollPercentages'];
         return _route(BookScreen(
             book: book,
             uId: uId,
             chapterScrollPositions: chapterScrollPositions,
             chapterScrollPercentages: chapterScrollPercentages));
-      case AdminPanel.routeName:
-        return _route(const AdminPanel());
       case ReviewsScreen.routeName:
         Book book = settings.arguments as Book;
         return _route(ReviewsScreen(book: book));
@@ -67,6 +62,12 @@ class AppRouter {
         return _route(const ChoosePaymentScreen());
       case BankTransferScreen.routeName:
         return _route(const BankTransferScreen());
+      case VerifyEmailScreen.routeName:
+        return _route(const VerifyEmailScreen());
+      case VerifyEmailLoginScreen.routeName:
+        return _route(const VerifyEmailLoginScreen());
+      case ResetPasswordScreen.routeName:
+        return _route(const ResetPasswordScreen());
       default:
         return _errorRoute();
     }
@@ -81,6 +82,7 @@ class AppRouter {
               ),
             ));
   }
+
   static Route _route(screen) {
     return MaterialPageRoute(builder: (context) => screen);
   }

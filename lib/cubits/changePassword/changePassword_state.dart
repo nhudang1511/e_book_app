@@ -1,25 +1,24 @@
 part of 'changePassword_cubit.dart';
 
-enum ChangePasswordStatus { initial, submitting, success, wrongPassword, error }
+enum ChangePasswordStatus { initial, submitting, success, error }
 
 class ChangePasswordState extends Equatable {
   final String oldPassword;
   final String newPassword;
-  final String confirmNewPassword;
   final ChangePasswordStatus status;
+  final String? exception;
 
   const ChangePasswordState({
     required this.oldPassword,
     required this.newPassword,
-    required this.confirmNewPassword,
     required this.status,
+    this.exception,
   });
 
   factory ChangePasswordState.initial() {
     return const ChangePasswordState(
       oldPassword: '',
       newPassword: '',
-      confirmNewPassword: '',
       status: ChangePasswordStatus.initial,
     );
   }
@@ -27,16 +26,17 @@ class ChangePasswordState extends Equatable {
   ChangePasswordState copyWith({
     String? oldPassword,
     String? newPassword,
-    String? confirmNewPassword,
     ChangePasswordStatus? status,
+    String? exception,
   }) {
     return ChangePasswordState(
-        oldPassword: oldPassword ?? this.oldPassword,
-        newPassword: newPassword ?? this.newPassword,
-        confirmNewPassword: confirmNewPassword ?? this.confirmNewPassword,
-        status: status ?? this.status);
+      oldPassword: oldPassword ?? this.oldPassword,
+      newPassword: newPassword ?? this.newPassword,
+      status: status ?? this.status,
+      exception: exception ?? this.exception,
+    );
   }
 
   @override
-  List<Object?> get props => [oldPassword, newPassword, confirmNewPassword, status];
+  List<Object?> get props => [oldPassword, newPassword, status];
 }

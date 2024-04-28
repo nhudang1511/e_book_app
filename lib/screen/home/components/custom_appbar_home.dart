@@ -19,21 +19,9 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
       title: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthenticateState) {
-            return BlocBuilder<UserBloc, UserState>(
-              builder: (context, state) {
-                if(state is UserLoaded){
-                  return Text(
-                    'Welcome ${state.user.fullName}',
-                    style: Theme.of(context).textTheme.displayMedium,
-                  );
-                }
-                else{
-                  return Text(
-                    'Welcome back',
-                    style: Theme.of(context).textTheme.displayMedium,
-                  );
-                }
-              },
+            return Text(
+              'Welcome ${state.authUser?.displayName != null ? state.authUser?.displayName! : state.authUser?.email!.split('@')[0]}',
+              style: Theme.of(context).textTheme.displayMedium,
             );
           } else {
             return Text(
@@ -50,6 +38,5 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size.fromHeight(50.0);
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e_book_app/cubits/cubits.dart';
 import 'package:e_book_app/screen/forgot_password/enter_email_screen.dart';
 import 'package:e_book_app/widget/widget.dart';
@@ -7,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../repository/repository.dart';
+import '../../utils/utils.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -22,23 +21,34 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmNewPasswordController = TextEditingController();
+  bool passwordVisible = true;
+  bool isButtonDisabled = true;
+  bool newPasswordVisible = true;
+
   final ChangePasswordCubit _changePasswordCubit = ChangePasswordCubit(
     authRepository: AuthRepository(),
-    userRepository: UserRepository(),
   );
-  late Timer _timer;
+
+  void _onSetDisableButton(String text) {
+    if (oldPasswordController.text.isEmpty ||
+        newPasswordController.text.isEmpty ||
+        confirmNewPasswordController.text.isEmpty ||
+        !isPassword(newPasswordController.text) ||
+        newPasswordController.text != confirmNewPasswordController.text) {
+      setState(() {
+        isButtonDisabled = true;
+      });
+    } else {
+      setState(() {
+        isButtonDisabled = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     //_changePasswordCubit = BlocProvider.of(context);
-  }
-
-  bool validatePassword(String value) {
-    String pattern =
-        r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()\-_+=<>?/{}[\]]{8,}$";
-    RegExp regExp = RegExp(pattern);
-    return regExp.hasMatch(value);
   }
 
   @override
@@ -48,42 +58,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       create: (context) => _changePasswordCubit,
       child: BlocListener<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
-          if (state.status == ChangePasswordStatus.wrongPassword) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                _timer = Timer(const Duration(seconds: 2), () {
-                  Navigator.of(context).pop();
-                });
-                return const CustomDialogNotice(
-                  title: Icons.info,
-                  content: 'Wrong password.',
-                );
-              },
-            ).then((value) {
-              if (_timer.isActive) {
-                _timer.cancel();
-              }
-            });
+          if (state.status == ChangePasswordStatus.submitting) {
+            LoadingOverlay.showLoading(context);
+          }
+          if (state.status != ChangePasswordStatus.submitting) {
+            LoadingOverlay.dismissLoading();
+          }
+          if (state.status == ChangePasswordStatus.error) {
+            ShowSnackBar.error(state.exception!, context);
           }
           if (state.status == ChangePasswordStatus.success) {
             Navigator.pop(context);
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                _timer = Timer(const Duration(seconds: 2), () {
-                  Navigator.of(context).pop();
-                });
-                return const CustomDialogNotice(
-                  title: Icons.check_circle,
-                  content: 'Changed password successfully.',
-                );
-              },
-            ).then((value) {
-              if (_timer.isActive) {
-                _timer.cancel();
-              }
-            });
+            ShowSnackBar.success(InfoMessage.CHANGE_PASSWORD_SUCCESS, context);
           }
         },
         child: Scaffold(
@@ -97,105 +83,121 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 height: currentHeight,
                 child: Form(
                   key: formField,
-                  child: Column(
-                    children: <Widget>[
-                      PasswordInput(
-                        hint: "Old Password",
-                        controller: oldPasswordController,
-                        onChanged: (value) {
-                          _changePasswordCubit.oldPasswordChanged(value);
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 32, top: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, EnterEmailScreen.routeName);
-                              },
-                              child: Text(
-                                "Forgot Password?",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontSize: 16,
-                                    ),
-                              ),
-                            ),
-                          ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        CustomTextField(
+                          label: "Old Password",
+                          icon: Icons.lock,
+                          controller: oldPasswordController,
+                          isObscureText: passwordVisible,
+                          suffixIcon: passwordVisible == true
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixIcon: () {
+                            setState(() {
+                              passwordVisible = !passwordVisible;
+                            });
+                          },
+                          onChanged: (value) {
+                            _changePasswordCubit.oldPasswordChanged(value);
+                            _onSetDisableButton(value);
+                          },
                         ),
-                      ),
-                      PasswordInput(
-                        hint: "New Password",
-                        controller: newPasswordController,
-                        onChanged: (value) {
-                          _changePasswordCubit.newPasswordChanged(value);
-                        },
-                      ),
-                      PasswordInput(
-                        hint: "Confirm New Password",
-                        controller: confirmNewPasswordController,
-                        onChanged: (value) {
-                          _changePasswordCubit.confirmNewPasswordChanged(value);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      CustomButton(
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, EnterEmailScreen.routeName);
+                                },
+                                child: Text(
+                                  "Forgot Password?",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        CustomTextField(
+                          label: "New Password",
+                          icon: Icons.lock,
+                          controller: newPasswordController,
+                          isObscureText: newPasswordVisible,
+                          suffixIcon: newPasswordVisible == true
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixIcon: () {
+                            setState(() {
+                              newPasswordVisible = !newPasswordVisible;
+                            });
+                          },
+                          validator: (value) {
+                            if (value.toString().isEmpty) {
+                              return null;
+                            }
+                            return isPassword(value.toString())
+                                ? null
+                                : InfoMessage.passwordValid;
+                          },
+                          onChanged: (value) {
+                            _changePasswordCubit.newPasswordChanged(value);
+                            _onSetDisableButton(value);
+                          },
+                        ),
+                        CustomTextField(
+                          label: "Confirm New Password",
+                          icon: Icons.lock,
+                          controller: confirmNewPasswordController,
+                          isObscureText: newPasswordVisible,
+                          suffixIcon: newPasswordVisible == true
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixIcon: () {
+                            setState(() {
+                              newPasswordVisible = !newPasswordVisible;
+                            });
+                          },
+                          validator: (value) {
+                            if (value.toString().isEmpty) {
+                              return null;
+                            }
+                            return newPasswordController.text ==
+                                    confirmNewPasswordController.text
+                                ? null
+                                : InfoMessage.confirmPasswordValid;
+                          },
+                          onChanged: (value) {
+                            _onSetDisableButton(value);
+                          },
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        CustomButton(
                           title: "Update",
+                          disabled: isButtonDisabled,
                           onPressed: () {
                             if (formField.currentState!.validate()) {
-                              if (newPasswordController.value.text ==
-                                  confirmNewPasswordController.value.text) {
-                                if (validatePassword(
-                                    newPasswordController.value.text)) {
-                                  _changePasswordCubit.changePassword();
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      _timer =
-                                          Timer(const Duration(seconds: 3), () {
-                                        Navigator.of(context).pop();
-                                      });
-                                      return const CustomDialogNotice(
-                                        title: Icons.info,
-                                        content:
-                                            'Password must be a minimum 8 characters, at least one uppercase letter, one lowercase letter and one number.',
-                                      );
-                                    },
-                                  ).then((value) {
-                                    if (_timer.isActive) {
-                                      _timer.cancel();
-                                    }
-                                  });
-                                }
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    _timer =
-                                        Timer(const Duration(seconds: 2), () {
-                                      Navigator.of(context).pop();
-                                    });
-                                    return const CustomDialogNotice(
-                                      title: Icons.info,
-                                      content: 'Password does not match.',
-                                    );
-                                  },
-                                ).then((value) {
-                                  if (_timer.isActive) {
-                                    _timer.cancel();
-                                  }
-                                });
-                              }
+                              _changePasswordCubit.changePassword();
                             }
-                          }),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

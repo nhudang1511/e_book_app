@@ -1,26 +1,22 @@
 part of "signup_cubit.dart";
 
-enum SignupStatus { initial, submitting, success, emailExists, error }
+enum SignupStatus { initial, submitting, verifying, unVerify, success, error }
 
 class SignupState extends Equatable {
-  final String fullName;
-  final String phoneNumber;
   final String email;
   final String password;
   final SignupStatus status;
+  final String? exception;
 
   const SignupState({
-    required this.fullName,
-    required this.phoneNumber,
     required this.email,
     required this.password,
     required this.status,
+    this.exception,
   });
 
   factory SignupState.initial() {
     return const SignupState(
-      fullName: "",
-      phoneNumber: "",
       email: "",
       password: '',
       status: SignupStatus.initial,
@@ -28,21 +24,19 @@ class SignupState extends Equatable {
   }
 
   SignupState copyWith({
-    String? fullName,
-    String? phoneNumber,
     String? email,
     String? password,
     SignupStatus? status,
+    String? exception,
   }) {
     return SignupState(
-      fullName: fullName ?? this.fullName,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
       email: email ?? this.email,
       password: password ?? this.password,
       status: status ?? this.status,
+      exception: exception ?? this.exception,
     );
   }
 
   @override
-  List<Object?> get props => [fullName, phoneNumber, email, password, status];
+  List<Object?> get props => [email, password, status];
 }

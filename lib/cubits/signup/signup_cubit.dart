@@ -1,41 +1,25 @@
 import 'dart:async';
 
-import 'package:e_book_app/model/models.dart';
+import 'package:e_book_app/exceptions/exceptions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/repository/repository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:e_book_app/model/models.dart' as model;
 
 part 'signup_state.dart';
 
 class SignupCubit extends Cubit<SignupState> {
   final AuthRepository _authRepository;
   final UserRepository _userRepository;
-  User? newUser;
+  Timer? timer;
 
-  SignupCubit(
-      {required AuthRepository authRepository,
-      required UserRepository userRepository})
-      : _authRepository = authRepository,
+  SignupCubit({
+    required AuthRepository authRepository,
+    required UserRepository userRepository,
+  })  : _authRepository = authRepository,
         _userRepository = userRepository,
-        super(SignupState.initial()) {}
-
-  void fullNameChanged(String value) {
-    emit(
-      state.copyWith(
-        fullName: value,
-        status: SignupStatus.initial,
-      ),
-    );
-  }
-
-  void phoneNumberChanged(String value) {
-    emit(
-      state.copyWith(
-        phoneNumber: value,
-        status: SignupStatus.initial,
-      ),
-    );
-  }
+        super(SignupState.initial());
 
   void emailChanged(String value) {
     emit(
@@ -60,28 +44,53 @@ class SignupCubit extends Cubit<SignupState> {
     emit(state.copyWith(status: SignupStatus.submitting));
     try {
       final credential = await _authRepository.signUp(
-          email: state.email, password: state.password);
+        email: state.email,
+        password: state.password,
+      );
       if (credential != null) {
-        await _userRepository.addUser(User(
-            id: credential.uid,
-            fullName: state.fullName,
-            email: state.email,
-            imageUrl:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-e-book-app.appspot.com/o/avatar_user%2Fdefault_avatar.png?alt=media&token=8389d86c-b1bf-4af6-ad6f-a09f41ce7c44",
-            passWord: state.password,
-            phoneNumber: state.phoneNumber,
-            provider: 'email',
-            status: true));
-        emit(state.copyWith(status: SignupStatus.success));
+        verifyAccount(credential);
       } else {
-        emit(state.copyWith(status: SignupStatus.error));
+        emit(
+          state.copyWith(
+            status: SignupStatus.error,
+            exception: 'Sign up failed.',
+          ),
+        );
       }
-    } catch (e) {
-      if (e.toString() == 'Exception: email-already-in-use') {
-        emit(state.copyWith(status: SignupStatus.emailExists));
-      } else {
-        emit(state.copyWith(status: SignupStatus.error));
-      }
+    } on ServerException catch (e) {
+      emit(state.copyWith(
+        status: SignupStatus.error,
+        exception: e.message,
+      ));
     }
+  }
+
+  Future<void> verifyAccount(User credential) async {
+    if (state.status == SignupStatus.verifying) return;
+    emit(state.copyWith(status: SignupStatus.verifying));
+    try {
+      timer = Timer.periodic(const Duration(seconds: 3), (_) async {
+        final isVerified = await _authRepository.isVerified();
+        if (isVerified) {
+          timer?.cancel();
+          await _userRepository.addUser(model.User.fromFirebaseUser(credential));
+          emit(state.copyWith(status: SignupStatus.success));
+        }
+      });
+    } catch (e) {
+      emit(state.copyWith(
+          status: SignupStatus.error, exception: 'Verification error.'));
+    }
+  }
+
+  Future<void> unVerifyAccount() async {
+    timer?.cancel();
+    emit(state.copyWith(status: SignupStatus.unVerify));
+  }
+
+  Future<void> sendEmailVerification() async {
+    try {
+      await _authRepository.sendEmailVerification();
+    } catch (_) {}
   }
 }

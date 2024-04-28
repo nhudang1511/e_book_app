@@ -1,50 +1,104 @@
+// ignore_for_file: unnecessary_null_in_if_null_operators
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
-  final String hint;
+// ignore: must_be_immutable
+class CustomTextField extends StatefulWidget {
+  final String label;
+  final IconData? icon;
   final TextEditingController controller;
-  final Function(String) onChanged;
+  final Function(String)? onChanged;
+  final String? Function(String?)? validator;
+  final String? content;
+  final bool disabled;
+  final int? maxLength;
+  final int? minLength;
+  final TextStyle? labelStyle;
+  final IconData? suffixIcon;
+  final Function()? onSuffixIcon;
+  final bool? isObscureText;
 
-  const CustomTextField(
-      {required this.hint,
-      super.key,
-      required this.controller,
-      required this.onChanged});
+  const CustomTextField({
+    super.key,
+    required this.label,
+    this.icon,
+    required this.controller,
+    this.onChanged,
+    this.content,
+    this.disabled = false,
+    this.maxLength,
+    this.minLength,
+    this.validator,
+    this.suffixIcon,
+    this.onSuffixIcon,
+    this.isObscureText,
+    this.labelStyle,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _showClearIcon = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.content != null) {
+      widget.controller.text = widget.content!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 32, top: 32, right: 32),
+      padding: const EdgeInsets.only(top: 16),
       child: TextFormField(
-        controller: controller,
+        maxLength: widget.maxLength ?? null,
+        // Check if maxLength is null
+        minLines: widget.minLength ?? null,
+        controller: widget.controller,
+        obscureText: widget.isObscureText == true,
+        enabled: !widget.disabled,
         decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: Theme.of(context).textTheme.labelSmall,
+          errorStyle: TextStyle(
+            fontWeight: FontWeight.w100,
+            fontSize: 12,
+          ),
+          errorMaxLines: 3,
+          border: const OutlineInputBorder(),
+          prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_showClearIcon)
+                IconButton(
+                    onPressed: () {
+                      widget.controller.clear();
+                      setState(() {
+                        _showClearIcon = false;
+                      });
+                    },
+                    icon: const Icon(Icons.clear)),
+              if (widget.suffixIcon != null)
+                IconButton(
+                  onPressed: widget.onSuffixIcon,
+                  icon: Icon(widget.suffixIcon),
+                ),
+            ],
+          ),
+          labelText: widget.label,
+          labelStyle: widget.labelStyle ?? null,
+          hintStyle: Theme.of(context).textTheme.bodyLarge,
         ),
-        validator: (value) {
-          if (hint == "Email") {
-            bool emailValid = RegExp(
-                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                .hasMatch(value!);
-            if (value!.isEmpty) {
-              return "Enter Email";
-            } else if (!emailValid) {
-              return "Enter Valid Email";
-            }
-          } else if (hint == "Phone Number") {
-            bool phoneNumberValid = RegExp(r'^[0-9]{10}$').hasMatch(value!);
-            if (value!.isEmpty) {
-              return "Enter Phone number";
-            } else if (!phoneNumberValid) {
-              return "Enter Valid Phone number";
-            }
-          } else if (hint == "Full Name") {
-            if (value!.isEmpty) {
-              return "Enter Full name";
-            }
-          }
+        onChanged: (text) {
+          setState(() {
+            _showClearIcon = widget.controller.text.isNotEmpty;
+          });
+          widget.onChanged!(text);
         },
-        onChanged: onChanged,
+        validator: !_showClearIcon ? null : widget.validator,
+        autovalidateMode: AutovalidateMode.always,
       ),
     );
   }

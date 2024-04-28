@@ -13,23 +13,21 @@ class CustomTitle extends StatelessWidget {
       children: [
         Text(
           title1,
-          style: Theme.of(context)
-              .textTheme
-              .displayLarge!
-              .copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 28,
+              ),
         ),
         const Text(" "),
         Text(
           title2,
-          style: Theme.of(context)
-              .textTheme
-              .displayLarge!
-              .copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 28,
+              ),
         ),
       ],
     );
   }
-
 }

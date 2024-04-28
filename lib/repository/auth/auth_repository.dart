@@ -1,7 +1,7 @@
 import 'dart:async';
 
-
 import 'package:e_book_app/config/shared_preferences.dart';
+import 'package:e_book_app/exceptions/exceptions.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -20,12 +20,22 @@ class AuthRepository extends BaseAuthRepository {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      final user = credential.user;
-      if(user != null){
-        SharedService.setUserId(user.uid);
+      if (credential.user != null) {
+        return credential.user;
       }
-      return user;
-    } catch (_) {}
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        throw ServerException(ServerException.LOGIN_INCORRECT);
+      } else if (e.code == 'user-disabled') {
+        throw ServerException(ServerException.USER_DISABLE);
+      } else if (e.code == 'too-many-requests') {
+        throw ServerException(ServerException.TOO_MANY_REQUESTS);
+      } else {
+        throw ServerException(ServerException.LOGIN_FAILURE);
+      }
+    } catch (e) {
+      throw ServerException(ServerException.LOGIN_FAILURE);
+    }
     return null;
   }
 
@@ -36,7 +46,9 @@ class AuthRepository extends BaseAuthRepository {
         _firebaseAuth.signOut(),
       ]);
       SharedService.clear();
-    } catch (_) {}
+    } catch (e) {
+      throw ServerException(ServerException.LOGOUT_FAILURE);
+    }
   }
 
   @override
@@ -45,56 +57,33 @@ class AuthRepository extends BaseAuthRepository {
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      final user = credential.user;
-      return user;
+      await _firebaseAuth.currentUser?.sendEmailVerification();
+      return credential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        throw Exception(e.code);
+        throw ServerException(ServerException.EMAIL_EXISTED);
+      } else {
+        throw ServerException(ServerException.SIGN_UP_FAILURE);
       }
-    }
-    return null;
-  }
-
-  @override
-  Stream<User?> get user => _firebaseAuth.authStateChanges();
-
-  @override
-  Future<bool> changePassword({required String newPassword, required String oldPassword}) async {
-    try {
-      bool success = false;
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: _firebaseAuth.currentUser!.email!,
-        password: oldPassword,
-      );
-      UserCredential? authResult = await _firebaseAuth.currentUser
-          ?.reauthenticateWithCredential(credential);
-      // Thực hiện xác thực lại người dùng
-      await _firebaseAuth.currentUser
-          ?.updatePassword(newPassword)
-          .then((_) => {success = true});
-      return success;
     } catch (e) {
-      throw Exception(e);
+      throw ServerException(ServerException.SIGN_UP_FAILURE);
     }
   }
 
   @override
   Future<User?> logInWithGoogle() async {
     try {
-      // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
-      // Create a new credential
+          await googleUser?.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
       final userCredential =
-      await _firebaseAuth.signInWithCredential(credential);
-      if(userCredential.user != null){
+          await _firebaseAuth.signInWithCredential(credential);
+      if (userCredential.user != null) {
         SharedService.setUserId(userCredential.user!.uid);
       }
       return userCredential.user;
@@ -106,17 +95,15 @@ class AuthRepository extends BaseAuthRepository {
   @override
   Future<User?> logInWithFacebook() async {
     try {
-      // Trigger the sign-in flow
-      final LoginResult loginResult = await FacebookAuth.instance.login( permissions: (["public_profile", "email"]));
+      final LoginResult loginResult = await FacebookAuth.instance
+          .login(permissions: (["public_profile", "email"]));
 
-      // Create a credential from the access token
       final OAuthCredential facebookAuthCredential =
-      FacebookAuthProvider.credential(loginResult.accessToken!.token);
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-      // Once signed in, return the UserCredential
       final credential =
-      await _firebaseAuth.signInWithCredential(facebookAuthCredential);
-      if(credential.user != null){
+          await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+      if (credential.user != null) {
         SharedService.setUserId(credential.user!.uid);
       }
       return credential.user;
@@ -126,16 +113,113 @@ class AuthRepository extends BaseAuthRepository {
   }
 
   @override
-  Future<bool> forgotPassword(String email) async {
+  Future<void> forgotPassword({
+    required String email,
+  }) async {
     try {
-      bool status = false;
-      await _firebaseAuth
-          .sendPasswordResetEmail(email: email)
-          .then((value) => status = true)
-          .catchError((e) => status = false);
-      return status;
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw ServerException(ServerException.EMAIL_NOT_EXIST);
+      } else {
+        throw ServerException(ServerException.FORGOT_PASSWORD_FAILUARE);
+      }
+    }
+  }
+
+  @override
+  Stream<User?> get user => _firebaseAuth.authStateChanges();
+
+  @override
+  Future<bool> isVerified() async {
+    try {
+      await _firebaseAuth.currentUser?.reload();
+      bool isVerified = _firebaseAuth.currentUser!.emailVerified;
+      if (isVerified) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
-      throw Exception(e);
+      return false;
+    }
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    try {
+      await _firebaseAuth.currentUser?.reload();
+      bool isVerified = _firebaseAuth.currentUser!.emailVerified;
+      if (!isVerified) {
+        await _firebaseAuth.currentUser?.sendEmailVerification();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'too-many-requests') {
+        throw ServerException(ServerException.TOO_MANY_REQUESTS);
+      } else {
+        rethrow;
+      }
+    } catch (e) {
+      if (e.toString().contains('auth/too-many-requests')) {
+        throw ServerException(ServerException.TOO_MANY_REQUESTS);
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final userCurrent = _firebaseAuth.currentUser;
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: userCurrent!.email!,
+        password: oldPassword,
+      );
+      await userCurrent.reauthenticateWithCredential(credential);
+      if (newPassword == oldPassword) {
+        throw ServerException(ServerException.SAME_PASSWORD);
+      }
+      await userCurrent.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        throw ServerException(ServerException.WRONG_PASSWORD);
+      } else {
+        throw ServerException(ServerException.CHANGE_PASSWORD_FAILURE);
+      }
+    } on ServerException catch (e) {
+      rethrow;
+    } catch (e) {
+      throw ServerException(ServerException.CHANGE_PASSWORD_FAILURE);
+    }
+  }
+
+  @override
+  Future<User> updateProfile(
+    String? displayName,
+    String? phoneNumber,
+    String? avatar,
+  ) async {
+    try {
+      if (displayName != '') {
+        await _firebaseAuth.currentUser!.updateDisplayName(displayName);
+      }
+      if (phoneNumber != '') {
+        await _firebaseAuth.currentUser!
+            .updatePhoneNumber(phoneNumber as PhoneAuthCredential);
+      }
+      if (avatar != '') {
+        await _firebaseAuth.currentUser!.updatePhotoURL(avatar);
+      }
+      await _firebaseAuth.currentUser!.reload();
+      return _firebaseAuth.currentUser!;
+    } on FirebaseAuthException catch (e) {
+      throw ServerException(ServerException.CHANGE_PROFILE_FAILURE);
+    } catch (e) {
+      throw ServerException(ServerException.CHANGE_PROFILE_FAILURE);
     }
   }
 }
