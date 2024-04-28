@@ -156,7 +156,9 @@ class ReviewItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.displayName!,
+                    user.displayName != null
+                        ? user.displayName!
+                        : user.email.split('@')[0],
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
