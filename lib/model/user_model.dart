@@ -35,8 +35,10 @@ class User extends Equatable {
   // final String? phoneNumber;
   final String? displayName;
   final String? photoURL;
+  final bool? status;
 
   const User({
+    this.status = true,
     required this.uid,
     required this.email,
     // this.phoneNumber,
@@ -56,8 +58,8 @@ class User extends Equatable {
 
   Map<String, Object?> toDocument() {
     Map<String, Object?> document = {
-      "id": uid,
       "email": email,
+      "status": status,
     };
     if (displayName != null) {
       document["displayName"] = displayName;
@@ -81,8 +83,7 @@ class User extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         uid,
         displayName,
         email,
