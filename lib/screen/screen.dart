@@ -20,3 +20,4 @@ export 'admin/admin_panel.screen.dart';
 export 'reviews/reviews_screen.dart';
 export 'payment/choose_payment_screen.dart';
 export 'payment/bank_transfer_screen.dart';
+export 'mission/mission_screen.dart';

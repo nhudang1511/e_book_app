@@ -337,6 +337,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       title: "Add coins",
                                       currentHeight: currentHeight),
+                                  CustomInkwell(
+                                      onTap: () {
+                                        Navigator.pushNamed(context,
+                                            MissionScreen.routeName);
+                                      },
+                                      mainIcon: Icon(
+                                        Icons.task,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                      title: "Add coins",
+                                      currentHeight: currentHeight),
                                   //line
                                   Padding(
                                     padding: const EdgeInsets.only(

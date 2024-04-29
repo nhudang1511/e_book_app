@@ -67,6 +67,8 @@ class AppRouter {
         return _route(const ChoosePaymentScreen());
       case BankTransferScreen.routeName:
         return _route(const BankTransferScreen());
+      case MissionScreen.routeName:
+        return _route(const MissionScreen());
       default:
         return _errorRoute();
     }
