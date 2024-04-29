@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
-                                    4), // Adjust the radius as needed
+                                    100), // Adjust the radius as needed
                               ),
                             ),
                           ),

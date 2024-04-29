@@ -68,6 +68,8 @@ class AppRouter {
         return _route(const VerifyEmailLoginScreen());
       case ResetPasswordScreen.routeName:
         return _route(const ResetPasswordScreen());
+      case MissionScreen.routeName:
+        return _route(const MissionScreen());
       default:
         return _errorRoute();
     }
@@ -82,7 +84,6 @@ class AppRouter {
               ),
             ));
   }
-
   static Route _route(screen) {
     return MaterialPageRoute(builder: (context) => screen);
   }

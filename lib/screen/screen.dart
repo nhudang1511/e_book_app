@@ -20,3 +20,4 @@ export 'payment/bank_transfer_screen.dart';
 export 'signup/verify_email_screen.dart';
 export 'login/verify_email_login_screen.dart';
 export 'forgot_password/reset_password_screen.dart';
+export 'mission/mission_screen.dart';
