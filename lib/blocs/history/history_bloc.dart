@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/models.dart';
@@ -20,18 +19,18 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
-    final histories = History(
-        uId: event.uId,
-        chapters: event.chapters,
-        percent: event.percent,
-        times: event.times,
-        chapterScrollPositions: event.chapterScrollPositions,
-        chapterScrollPercentages: event.chapterScrollPercentages);
     emit(HistoryLoading());
     try {
+      final histories = History(
+          uId: event.uId,
+          chapters: event.chapters,
+          percent: event.percent,
+          times: event.times,
+          chapterScrollPositions: event.chapterScrollPositions,
+          chapterScrollPercentages: event.chapterScrollPercentages);
       // Thêm sách vào thư viện
-      await _historyRepository.addBookInHistory(histories);
-      emit(HistoryLoaded(histories: event.histories));
+      History history = await _historyRepository.addBookInHistory(histories);
+      emit(HistoryLoaded(histories: [history]));
     } catch (e) {
       emit(HistoryError('error in add'));
     }
@@ -51,7 +50,6 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       List<History> history = await _historyRepository.getHistories(event.bookId, event.uId);
       emit(HistoryLoadedById(histories: history));
     } catch (e) {
-      print(e.toString());
       emit(HistoryError(e.toString()));
     }
   }

@@ -5,9 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
+import '../../repository/note/note_repository.dart';
 
 class TextNoteCard extends StatefulWidget {
   final Note note;
+
   const TextNoteCard({super.key, required this.note});
 
   @override
@@ -20,14 +22,14 @@ class _TextNoteCardState extends State<TextNoteCard> {
   late Timer _timer;
   String uId = SharedService.getUserId() ?? '';
   BookBloc bookBloc = BookBloc(BookRepository());
-
+  NoteBloc noteBloc = NoteBloc(NoteRepository());
 
   @override
   void initState() {
     super.initState();
     bookBloc.add(LoadBooksById(widget.note.bookId ?? ''));
+    noteBloc.add(LoadedNote(uId: uId));
   }
-
 
   @override
   void dispose() {
@@ -38,89 +40,106 @@ class _TextNoteCardState extends State<TextNoteCard> {
   @override
   Widget build(BuildContext context) {
     final currentWidth = MediaQuery.of(context).size.width;
-    return  Padding(
-      padding: const EdgeInsets.only(right: 32, left: 32, bottom: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onBackground,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        width: currentWidth,
-        // height: height,
+    return BlocProvider(
+      create: (context) => noteBloc,
+      child: BlocListener<NoteBloc, NoteState>(
+        listener: (context, state) {
+          // TODO: implement listener}
+          print(state);
+        },
         child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
+          padding: const EdgeInsets.only(right: 32, left: 32, bottom: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onBackground,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            width: currentWidth,
+            // height: height,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.note.title ?? '',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                noteBloc.add(RemoveNoteEvent(
+                                    bookId: widget.note.bookId ?? '',
+                                    content: widget.note.content ?? '',
+                                    title: widget.note.title ?? '',
+                                    userId: widget.note.uId ?? '',
+                                    noteId: widget.note.noteId ?? ''));
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    _timer =
+                                        Timer(const Duration(seconds: 1), () {
+                                      noteBloc.add(LoadedNote(uId: uId));
+                                      Navigator.of(context).pop();
+                                    });
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                ).then((value) {
+                                  if (_timer.isActive) {
+                                    _timer.cancel();
+                                  }
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              )),
+                          IconButton(
+                              onPressed: () {
+                                _showClipboardDialog(context, widget.note);
+                              },
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              )),
+                        ],
+                      )
+                    ],
+                  ),
                   Text(
-                    widget.note.title ?? '',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    widget.note.content ?? '',
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Row(
                     children: [
-                      IconButton(onPressed: (){
-                        BlocProvider.of<NoteBloc>(context).add(
-                            RemoveNoteEvent(
-                                bookId: widget.note.bookId ?? '',
-                                content: widget.note.content ?? '',
-                                title: widget.note.title ?? '',
-                                userId: widget.note.uId ?? '',
-                                noteId: widget.note.noteId ?? ''));
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            _timer = Timer(
-                                const Duration(seconds: 1),
-                                    () {
-                                      BlocProvider.of<NoteBloc>(context)
-                                          .add(LoadedNote(uId: uId));
-                                  Navigator.of(context).pop();
-                                });
-                            return const Center(child: CircularProgressIndicator());
+                      Expanded(
+                        child: BlocBuilder<BookBloc, BookState>(
+                          builder: (context, state) {
+                            String bookName = widget.note.bookId ?? '';
+                            if (state is BookLoaded) {
+                              Book book = state.books.first;
+                              bookName = book.title ?? '';
+                            }
+                            return Text(
+                              bookName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.labelSmall,
+                              textAlign: TextAlign.end,
+                            );
                           },
-                        ).then((value) {
-                          if (_timer.isActive) {
-                            _timer.cancel();
-                          }
-                        });
-                      }, icon: const Icon(Icons.delete, color: Colors.white,)),
-                      IconButton(onPressed: (){
-                        _showClipboardDialog(context, widget.note);
-                      }, icon: const Icon(Icons.edit, color: Colors.white,)),
+                        ),
+                      ),
                     ],
-                  )
-                ],
-              ),
-              Text(
-                widget.note.content ?? '',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: BlocBuilder<BookBloc, BookState>(
-                      builder: (context, state) {
-                        String bookName = widget.note.bookId ?? '';
-                        if (state is BookLoaded) {
-                          Book book = state.books.first;
-                          bookName = book.title ?? '';
-                        }
-                        return Text(
-                          bookName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          textAlign: TextAlign.end,
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -222,7 +241,7 @@ class _TextNoteCardState extends State<TextNoteCard> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                BlocProvider.of<NoteBloc>(context).add(EditNoteEvent(
+                noteBloc.add(EditNoteEvent(
                     bookId: note.bookId ?? '',
                     content: contentController.text.isNotEmpty
                         ? contentController.text
@@ -232,13 +251,10 @@ class _TextNoteCardState extends State<TextNoteCard> {
                         : note.title ?? '',
                     userId: note.uId ?? '',
                     noteId: note.noteId ?? ''));
-                _timer = Timer(
-                    const Duration(seconds: 1),
-                        () {
-                      BlocProvider.of<NoteBloc>(context)
-                          .add(LoadedNote(uId: uId));
-                      Navigator.of(context).pop();
-                    });
+                _timer = Timer(const Duration(seconds: 1), () {
+                  noteBloc.add(LoadedNote(uId: uId));
+                  Navigator.of(context).pop();
+                });
               },
               child: const Text(
                 'Save',

@@ -147,7 +147,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                                           animation: true,
                                           lineHeight: 4.0,
                                           animationDuration: 2500,
-                                          percent: widget.percent / 10000,
+                                          percent: widget.percent / 100,
                                           center: const Text(
                                             "",
                                             style:

@@ -1,24 +1,16 @@
 part of 'review_bloc.dart';
 
-abstract class ReviewEvent extends Equatable {
+abstract class ReviewEvent{
   const ReviewEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class LoadedReview extends ReviewEvent {
-  @override
-  List<Object?> get props => [];
 }
 
 class UpdateReview extends ReviewEvent {
   final List<Review> reviews;
 
   const UpdateReview(this.reviews);
-
-  @override
-  List<Object?> get props => [reviews];
 }
 
 class AddNewReviewEvent extends ReviewEvent {
@@ -37,7 +29,4 @@ class AddNewReviewEvent extends ReviewEvent {
       required this.time,
       required this.rating
       });
-
-  @override
-  List<Object?> get props => [bookId, content, status, userId, time];
 }

@@ -55,10 +55,10 @@ class _ReviewItemState extends State<ReviewItem> {
             ratingFiveCount = ratingCounts[5] ?? 0;
 
             average = (ratingOneCount +
-                ratingTwoCount*2 +
-                ratingThreeCount*3 +
-                ratingFourCount*4 +
-                ratingFiveCount*5) /
+                    ratingTwoCount * 2 +
+                    ratingThreeCount * 3 +
+                    ratingFourCount * 4 +
+                    ratingFiveCount * 5) /
                 reviews.length;
           }
           return Column(
@@ -68,15 +68,15 @@ class _ReviewItemState extends State<ReviewItem> {
                 child: reviews.isEmpty
                     ? const SizedBox()
                     : RatingSummary(
-                  counter: reviews.length,
-                  average: average,
-                  showAverage: true,
-                  counterFiveStars: ratingFiveCount,
-                  counterFourStars: ratingFourCount,
-                  counterThreeStars: ratingThreeCount,
-                  counterTwoStars: ratingTwoCount,
-                  counterOneStars: ratingOneCount,
-                ),
+                        counter: reviews.length,
+                        average: average,
+                        showAverage: true,
+                        counterFiveStars: ratingFiveCount,
+                        counterFourStars: ratingFourCount,
+                        counterThreeStars: ratingThreeCount,
+                        counterTwoStars: ratingTwoCount,
+                        counterOneStars: ratingOneCount,
+                      ),
               ),
               SizedBox(
                   width: MediaQuery.of(context).size.width - 20,
@@ -86,8 +86,8 @@ class _ReviewItemState extends State<ReviewItem> {
                             arguments: widget.book);
                       },
                       style: ButtonStyle(
-                        shape: MaterialStateProperty.all<
-                            RoundedRectangleBorder>(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 100), // Adjust the radius as needed
@@ -203,7 +203,7 @@ Map<int, int> countRatings(List<Review> reviews) {
   // Đếm số lượng của từng rating trong danh sách đánh giá
   for (var review in reviews) {
     // Kiểm tra rating và tăng số lượng tương ứng
-    ratingCounts[review.rating ?? 0] = ratingCounts[review.rating]! + 1;
+    ratingCounts[review.rating] = ratingCounts[review.rating]! + 1;
   }
 
   return ratingCounts;

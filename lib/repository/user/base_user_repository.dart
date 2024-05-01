@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 abstract class BaseUserRepository {
 
-  Stream<List<User>> getAllUsers();
+  Future<List<User>> getAllUsers();
 
   Future<void> uploadAvatar({required File? fileAvatar});
 

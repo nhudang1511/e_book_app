@@ -59,12 +59,13 @@ class _DetailBookItemState extends State<DetailBookItem> {
             }
           }),
           BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
-            //print(state);
+            print(state);
             if (state is HistoryLoadedByUId) {
               if(state.history.id != null){
                 inHis = true;
               }
             }
+            print(inHis);
           }),
         ],
         child: Container(
@@ -138,9 +139,6 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             final Map<String, dynamic> tempPercent = {};
                             BlocProvider.of<ChaptersBloc>(context)
                                 .add(LoadChapters(widget.book.id ?? ''));
-                            // BlocProvider.of<HistoryBloc>(context).add(
-                            //     LoadHistoryByBookId(
-                            //         widget.book.id ?? '', uId ?? ''));
                             if (widget.book.price == 0 || inHis == true) {
                               Navigator.pushNamed(context, BookScreen.routeName,
                                   arguments: {

@@ -83,17 +83,11 @@ class _MyAppState extends State<MyApp> {
             BookRepository(),
           )..add(LoadBooks()),
         ),
-        // BlocProvider(
-        //   create: (_) => UserBloc(
-        //     authRepository: AuthRepository(),
-        //     userRepository: UserRepository(),
-        //   )..add(LoadUser()),
-        // ),
-        // BlocProvider(
-        //   create: (_) => ListUserBloc(
-        //     userRepository: UserRepository(),
-        //   )..add(LoadListUser()),
-        // ),
+        BlocProvider(
+          create: (_) => ListUserBloc(
+             UserRepository(),
+          )..add(LoadListUser()),
+        ),
         BlocProvider(
           create: (_) => LibraryBloc(LibraryRepository())..add(LoadLibrary()),
         ),
@@ -102,7 +96,7 @@ class _MyAppState extends State<MyApp> {
                   ChaptersRepository(),
                 )),
         BlocProvider(
-          create: (_) => HistoryBloc(HistoryRepository()),
+          create: (_) => HistoryBloc(HistoryRepository())..add(LoadHistory()),
         ),
         BlocProvider(
           create: (_) => NoteBloc(

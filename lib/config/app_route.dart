@@ -30,8 +30,7 @@ class AppRouter {
       case SignupScreen.routeName:
         return _route(const SignupScreen());
       case TextNotesScreen.routeName:
-        final User user = settings.arguments as User;
-        return _route(TextNotesScreen(user: user));
+        return _route(TextNotesScreen());
       case BookDetailScreen.routeName:
         final Map<String, dynamic> arguments =
             settings.arguments as Map<String, dynamic>;

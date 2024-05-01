@@ -30,8 +30,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _authBloc = BlocProvider.of<AuthBloc>(context);
-    // _coinsBloc = CoinsBloc(CoinsRepository())
-    //   ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+    _coinsBloc = CoinsBloc(CoinsRepository())
+      ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
   }
 
   @override
@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           }
           if (state is AuthenticateState) {
-            print(state.authUser);
+            //print(state.authUser);
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.background,
               appBar: const CustomAppBar(title: 'Profile'),
@@ -207,22 +207,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   .bodyLarge!
                                   .copyWith(fontSize: 16),
                             ),
-                            // BlocBuilder<CoinsBloc, CoinsState>(
-                            //   builder: (context, state) {
-                            //     int coins = 0;
-                            //     // print(state);
-                            //     if (state is CoinsLoaded) {
-                            //       coins = state.coins.quantity ?? 0;
-                            //     }
-                            //     return Text(
-                            //       'Coins: $coins',
-                            //       style: Theme.of(context)
-                            //           .textTheme
-                            //           .bodyLarge!
-                            //           .copyWith(fontSize: 16),
-                            //     );
-                            //   },
-                            // )
+                            BlocBuilder<CoinsBloc, CoinsState>(
+                              builder: (context, state) {
+                                int coins = 0;
+                                // print(state);
+                                if (state is CoinsLoaded) {
+                                  coins = state.coins.quantity ?? 0;
+                                }
+                                return Text(
+                                  'Coins: $coins',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(fontSize: 16),
+                                );
+                              },
+                            )
                           ],
                         ),
                         //edit button
@@ -306,8 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               CustomInkwell(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, TextNotesScreen.routeName,
-                                      arguments: state.authUser);
+                                      context, TextNotesScreen.routeName);
                                 },
                                 mainIcon: Icon(
                                   Icons.edit_note,

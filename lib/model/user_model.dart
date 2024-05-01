@@ -69,12 +69,12 @@ class User extends Equatable {
     return document;
   }
 
-  static User fromSnapshot(DocumentSnapshot snap) {
+  static User fromJson(Map<String, dynamic> doc) {
     User user = User(
-      uid: snap.id,
-      displayName: snap['displayName'],
-      email: snap['email'],
-      photoURL: snap['photoURL'],
+      uid: doc['id'],
+      displayName: doc['displayName'],
+      email: doc['email'],
+      photoURL: doc['photoURL'],
       // phoneNumber: snap['phoneNumber'],
     );
     return user;

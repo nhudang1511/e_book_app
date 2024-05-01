@@ -16,7 +16,7 @@ class HistoryRepository extends BaseHistoryRepository {
   //   return _firebaseFirestore.collection('histories').add(history.toDocument());
   // }
   @override
-  Future<void> addBookInHistory(History history) async {
+  Future<History> addBookInHistory(History history) async {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('histories')
@@ -30,9 +30,9 @@ class HistoryRepository extends BaseHistoryRepository {
         var existingData = doc.data();
         // Lấy giá trị chapterScrollPositions từ Firebase
         var existingChapterScrollPositions =
-            existingData['chapterScrollPositions'] as Map<String, dynamic>;
+        existingData['chapterScrollPositions'] as Map<String, dynamic>;
         var existingChapterScrollPercentages =
-            existingData['chapterScrollPercentages'] as Map<String, dynamic>;
+        existingData['chapterScrollPercentages'] as Map<String, dynamic>;
         // Cập nhật giá trị chapterScrollPositions, times và percent mới
         var updatedData = {
           'percent': history.percent,
@@ -48,18 +48,28 @@ class HistoryRepository extends BaseHistoryRepository {
         };
 
         await doc.reference.update(updatedData);
+
+        // Trả về lịch sử đã được cập nhật
+        return History().fromJson(doc.data());
       } else {
         // Nếu không tồn tại, thêm một tài liệu mới với chapterScrollPositions mới
-        await _firebaseFirestore.collection('histories').add({
+        var newDocRef = await _firebaseFirestore.collection('histories').add({
           ...history.toJson(),
           'chapterScrollPositions': history.chapterScrollPositions,
           'chapterScrollPercentages': history.chapterScrollPercentages
         });
+
+        // Lấy dữ liệu của tài liệu mới được thêm và trả về
+        var newDocSnapshot = await newDocRef.get();
+        return History().fromJson(newDocSnapshot.data()!);
       }
     } catch (e) {
       //print('Error adding book in history: $e');
+      // Nếu có lỗi, trả về null hoặc xử lý theo ý định của bạn
+      rethrow;
     }
   }
+
 
   @override
   Future<List<History>> getAllHistories() async {

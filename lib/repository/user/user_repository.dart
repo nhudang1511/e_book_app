@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -57,9 +58,19 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Stream<List<model.User>> getAllUsers() {
-    return _firebaseFirestore.collection('users').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => model.User.fromSnapshot(doc)).toList();
-    });
+  Future<List<model.User>> getAllUsers() async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('users')
+          .get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return model.User.fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 }
