@@ -157,7 +157,7 @@ class _BookCardMainState extends State<BookCardMain> {
                                                   const Duration(seconds: 1), () {
                                                 BlocProvider.of<LibraryBloc>(
                                                     context)
-                                                    .add(LoadLibraryByUid(uId));
+                                                    .add(LoadLibrary());
                                                 Navigator.of(context).pop();
                                               });
                                               return const Center(
@@ -176,7 +176,7 @@ class _BookCardMainState extends State<BookCardMain> {
                                             if (state is LibraryLoaded) {
                                               bool isBookInLibrary =
                                               state.libraries.any((b) =>
-                                              b.bookId == widget.book.id);
+                                              b.bookId == widget.book.id && b.userId == SharedService.getUserId());
                                               if (isBookInLibrary) {
                                                 widget.inLibrary =
                                                 true; // Nếu sách có trong Library, đặt inLibrary thành true

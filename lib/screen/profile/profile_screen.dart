@@ -81,8 +81,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 12.0),
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, LoginScreen.routeName);
+                          onPressed: () async {
+                            await Navigator.pushNamed(context, LoginScreen.routeName);
+                            _coinsBloc = CoinsBloc(CoinsRepository())
+                              ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
                           },
                           style: ButtonStyle(
                             shape: MaterialStateProperty.all<

@@ -84,7 +84,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       widget._timer =
                           Timer(const Duration(seconds: 1), () {
                             BlocProvider.of<LibraryBloc>(context)
-                                .add(LoadLibraryByUid(uId));
+                                .add(LoadLibrary());
                             Navigator.of(context).pop();
                           });
                       return const Center(

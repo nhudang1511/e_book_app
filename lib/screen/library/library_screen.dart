@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
@@ -72,7 +73,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: const CustomAppBar(title: 'My Library'),
-          body: CustomTab(uId: state.authUser!.uid),
+          body: CustomTab(uId: SharedService.getUserId() ?? ''),
         );
       } else {
         return const Text("Something went wrong");
