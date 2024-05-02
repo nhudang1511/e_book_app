@@ -99,9 +99,11 @@ class _MyAppState extends State<MyApp> {
           create: (_) => HistoryBloc(HistoryRepository())..add(LoadHistory()),
         ),
         BlocProvider(
+          create: (_) => ReviewBloc(reviewRepository: ReviewRepository())..add(LoadedReview())),
+        BlocProvider(
           create: (_) => NoteBloc(
             NoteRepository(),
-          ),
+          )..add(LoadedNote(uId: SharedService.getUserId() ?? '')),
         ),
       ],
       child: MaterialApp(

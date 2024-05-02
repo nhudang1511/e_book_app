@@ -19,23 +19,10 @@ class ReviewItem extends StatefulWidget {
 class _ReviewItemState extends State<ReviewItem> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('review')
-          .orderBy("time", descending: false)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<Review> reviews = snapshot.data!.docs.map((doc) {
-            return Review(
-              bookId: doc['bookId'],
-              content: doc['content'],
-              status: doc['status'],
-              userId: doc['userId'],
-              time: doc['time'],
-              rating: doc['rating'],
-            );
-          }).toList();
+    return BlocBuilder<ReviewBloc, ReviewState>(
+      builder: (context, state) {
+        if (state is ReviewLoaded) {
+          List<Review> reviews = state.reviews;
           reviews = reviews
               .where((element) => element.bookId == widget.book.id)
               .toList();
@@ -55,10 +42,10 @@ class _ReviewItemState extends State<ReviewItem> {
             ratingFiveCount = ratingCounts[5] ?? 0;
 
             average = (ratingOneCount +
-                    ratingTwoCount * 2 +
-                    ratingThreeCount * 3 +
-                    ratingFourCount * 4 +
-                    ratingFiveCount * 5) /
+                ratingTwoCount * 2 +
+                ratingThreeCount * 3 +
+                ratingFourCount * 4 +
+                ratingFiveCount * 5) /
                 reviews.length;
           }
           return Column(
@@ -68,15 +55,15 @@ class _ReviewItemState extends State<ReviewItem> {
                 child: reviews.isEmpty
                     ? const SizedBox()
                     : RatingSummary(
-                        counter: reviews.length,
-                        average: average,
-                        showAverage: true,
-                        counterFiveStars: ratingFiveCount,
-                        counterFourStars: ratingFourCount,
-                        counterThreeStars: ratingThreeCount,
-                        counterTwoStars: ratingTwoCount,
-                        counterOneStars: ratingOneCount,
-                      ),
+                  counter: reviews.length,
+                  average: average,
+                  showAverage: true,
+                  counterFiveStars: ratingFiveCount,
+                  counterFourStars: ratingFourCount,
+                  counterThreeStars: ratingThreeCount,
+                  counterTwoStars: ratingTwoCount,
+                  counterOneStars: ratingOneCount,
+                ),
               ),
               SizedBox(
                   width: MediaQuery.of(context).size.width - 20,
@@ -87,7 +74,7 @@ class _ReviewItemState extends State<ReviewItem> {
                       },
                       style: ButtonStyle(
                         shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                        MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 100), // Adjust the radius as needed
