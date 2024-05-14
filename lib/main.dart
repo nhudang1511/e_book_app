@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
           create: (_) => HistoryBloc(HistoryRepository())..add(LoadHistory()),
         ),
         BlocProvider(
-          create: (_) => ReviewBloc(reviewRepository: ReviewRepository())..add(LoadedReview())),
+          create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
         BlocProvider(
           create: (_) => NoteBloc(
             NoteRepository(),

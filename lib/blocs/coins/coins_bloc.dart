@@ -49,7 +49,7 @@ class CoinsBloc extends Bloc<CoinsEvent, CoinsState> {
       await _coinsRepository.editCoins(coins);
       emit(AddCoins(coins: coins));
     } catch (e) {
-      print('error: ${e.toString()}');
+      //print('error: ${e.toString()}');
       emit(CoinsError('error: $e'));
     }
   }

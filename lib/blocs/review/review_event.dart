@@ -6,13 +6,6 @@ abstract class ReviewEvent{
 
 class LoadedReview extends ReviewEvent {
 }
-
-class UpdateReview extends ReviewEvent {
-  final List<Review> reviews;
-
-  const UpdateReview(this.reviews);
-}
-
 class AddNewReviewEvent extends ReviewEvent {
   final String bookId;
   final String content;

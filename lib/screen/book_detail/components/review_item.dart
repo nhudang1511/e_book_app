@@ -190,7 +190,7 @@ Map<int, int> countRatings(List<Review> reviews) {
   // Đếm số lượng của từng rating trong danh sách đánh giá
   for (var review in reviews) {
     // Kiểm tra rating và tăng số lượng tương ứng
-    ratingCounts[review.rating] = ratingCounts[review.rating]! + 1;
+    ratingCounts[review.rating!] = ratingCounts[review.rating]! + 1;
   }
 
   return ratingCounts;

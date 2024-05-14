@@ -10,26 +10,20 @@ part 'review_state.dart';
 
 class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   final ReviewRepository _reviewRepository;
-  StreamSubscription? _reviewSubscription;
 
-  ReviewBloc({required ReviewRepository reviewRepository})
-      : _reviewRepository = reviewRepository,
-        super(ReviewInitial()) {
+  ReviewBloc(this._reviewRepository)
+      :super(ReviewInitial()) {
     on<LoadedReview>(_onLoadReview);
-    on<UpdateReview>(_onUpdateReview);
     on<AddNewReviewEvent>(_onAddNewReview);
   }
 
   void _onLoadReview(event, Emitter<ReviewState> emit) async {
-    emit(ReviewLoading());
-    _reviewSubscription?.cancel();
-    _reviewSubscription = _reviewRepository
-        .getAllReview()
-        .listen((event) => add(UpdateReview(event)));
-  }
-
-  void _onUpdateReview(event, Emitter<ReviewState> emit) async {
-    emit(ReviewLoaded(reviews: event.reviews));
+    try {
+      List<Review> reviews = await _reviewRepository.getAllReview();
+      emit(ReviewLoaded(reviews: reviews));
+    } catch (e) {
+      emit(ReviewError(e.toString()));
+    }
   }
 
   void _onAddNewReview(event, Emitter<ReviewState> emit) async {
@@ -40,11 +34,10 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         userId: event.userId,
         time: event.time,
         rating: event.rating);
-    _reviewSubscription?.cancel();
     emit(ReviewLoading());
     try {
       await _reviewRepository.addBookInHistory(review);
-      emit(ReviewLoaded(reviews: event.reviews));
+      emit(ReviewLoaded(reviews: [review]));
     } catch (e) {
       emit(const ReviewError('error'));
     }

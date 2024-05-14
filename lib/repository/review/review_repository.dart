@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/model/models.dart';
 import 'base_review_repository.dart';
@@ -9,18 +11,23 @@ class ReviewRepository extends BaseReviewRepository{
   ReviewRepository({FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
   @override
-  Stream<List<Review>> getAllReview() {
-    return _firebaseFirestore
-        .collection('review').orderBy("time",descending: false)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => Review.fromSnapshot(doc)).toList();
-    });
+  Future<List<Review>> getAllReview() async {
+    try {
+      var querySnapshot = await _firebaseFirestore.collection('review').get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Review().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   @override
   Future<void> addBookInHistory(Review review) {
-    return _firebaseFirestore.collection('review').add(review.toDocument());
+    return _firebaseFirestore.collection('review').add(review.toJson());
   }
 
 }

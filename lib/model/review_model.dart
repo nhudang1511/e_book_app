@@ -1,45 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book_app/model/custom_model.dart';
 import 'package:equatable/equatable.dart';
 
-class Review extends Equatable {
-  final String bookId;
-  final String content;
-  final bool status;
-  final String userId;
-  final Timestamp time;
-  final int rating;
+class Review extends CustomModel {
+  final String? bookId;
+  final String? content;
+  final bool? status;
+  final String? userId;
+  final Timestamp? time;
+  final int? rating;
 
-  const Review(
-      {required this.bookId,
-      required this.content,
-      required this.status,
-      required this.userId,
-      required this.time,
-      required this.rating
+  Review(
+      {this.bookId,
+      this.content,
+      this.status,
+      this.userId,
+      this.time,
+      this.rating
       });
-
+  
   @override
-  List<Object?> get props => [bookId, content, status, userId, time, rating];
-
-  static Review fromSnapshot(DocumentSnapshot snap) {
+  Review fromJson(Map<String, dynamic> json) {
     Review review = Review(
-        bookId: snap['bookId'],
-        content: snap['content'],
-        status: snap['status'],
-        userId: snap['userId'],
-        time: snap['time'],
-      rating: snap['rating']
+        bookId: json['bookId'],
+        content: json['content'],
+        status: json['status'],
+        userId: json['userId'],
+        time: json['time'],
+      rating: json['rating']
     );
     return review;
   }
-  Map<String, Object> toDocument() {
+
+  @override
+  Map<String, Object> toJson() {
     return {
-      'bookId': bookId,
-      'content': content,
-      'status': status,
-      'userId': userId,
-      'time': time,
-      'rating': rating
+      'bookId': bookId!,
+      'content': content!,
+      'status': status!,
+      'userId': userId!,
+      'time': time!,
+      'rating': rating!
     };
   }
 }
