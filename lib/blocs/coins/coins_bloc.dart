@@ -18,7 +18,13 @@ class CoinsBloc extends Bloc<CoinsEvent, CoinsState> {
   void _onLoadCoins(event, Emitter<CoinsState> emit) async {
     try {
       Coins coins = await _coinsRepository.getCoinsById(event.uId);
-      emit(CoinsLoaded(coins: coins));
+      if(coins.quantity != null){
+        emit(CoinsLoaded(coins: coins));
+      }
+      else{
+        await _coinsRepository.addCoins(Coins(uId: event.uId, quantity: 0));
+        emit(AddCoins(coins: coins));
+      }
     } catch (e) {
       emit(CoinsError(e.toString()));
     }
@@ -26,13 +32,16 @@ class CoinsBloc extends Bloc<CoinsEvent, CoinsState> {
 
   void _onAddNewCoins(event, Emitter<CoinsState> emit) async {
     final coins = Coins(
-      quantity: event.quantity,
-      uId: event.uId
+        quantity: event.quantity,
+        uId: event.uId
     );
     emit(CoinsLoading());
     try {
-      await _coinsRepository.addCoins(coins);
-      emit(AddCoins(coins: coins));
+      Coins? newCoins = await _coinsRepository.getCoinsById(event.uId);
+      if(newCoins.coinsId == null){
+        await _coinsRepository.addCoins(coins);
+        emit(AddCoins(coins: coins));
+      }
     } catch (e) {
       emit(const CoinsError('error'));
     }

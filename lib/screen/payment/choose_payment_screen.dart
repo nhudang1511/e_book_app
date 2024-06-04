@@ -6,8 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import '../../blocs/blocs.dart';
 import '../../blocs/coins/coins_bloc.dart';
 import '../../config/shared_preferences.dart';
+import '../../model/models.dart';
+import '../../repository/mission/mission_repository.dart';
 import '../../widget/widget.dart';
 import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 
@@ -26,28 +29,77 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   String uId = '';
   int coins = 0;
   String coinsId = '';
+  late MissionBloc _missionBloc;
+  Mission newMission = Mission();
 
   @override
   void initState() {
     super.initState();
     _coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+    _missionBloc = MissionBloc(MissionRepository())
+      ..add(LoadedMissionsByType(type: 'coins'));
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => _coinsBloc,
-      child: BlocListener<CoinsBloc, CoinsState>(
-        listener: (context, state) {
-          if (state is AddCoins) {
-            Navigator.pop(context);
-          } else if (state is CoinsLoaded) {
-            uId = state.coins.uId ?? '';
-            coins = state.coins.quantity ?? 0;
-            coinsId = state.coins.coinsId ?? '';
-          }
-        },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => _coinsBloc),
+        BlocProvider(create: (context) => _missionBloc)
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<CoinsBloc, CoinsState>(
+            listener: (context, state) {
+              print(state);
+              if (state is AddCoins) {
+                _missionBloc.add(EditMissions(mission: newMission));
+                //Navigator.pop(context);
+              } else if (state is CoinsLoaded) {
+                uId = state.coins.uId ?? '';
+                coins = state.coins.quantity ?? 0;
+                coinsId = state.coins.coinsId ?? '';
+              }
+            },
+          ),
+          BlocListener<MissionBloc, MissionState>(
+              listener: (context, state) {
+                print(state);
+                if (state is MissionLoaded) {
+                  // if(state.missions.isNotEmpty){
+                  //   Map<String, dynamic> users;
+                  //   if (state.missions.first.users != null) {
+                  //     // Kiểm tra xem users có chứa uId hiện tại không
+                  //     String currentUserId = SharedService.getUserId() ?? '';
+                  //     users = state.missions.first.users!;
+                  //     if (users.containsKey(currentUserId)) {
+                  //       // Tăng giá trị của uId hiện tại lên 1 đơn vị
+                  //       int currentValue = users[currentUserId] as int;
+                  //       users[currentUserId] = currentValue + 1;
+                  //     } else {
+                  //       // Thêm một mục mới với uId hiện tại và giá trị là 1
+                  //       users[currentUserId] = 1;
+                  //     }
+                  //   } else {
+                  //     // Nếu users rỗng, tạo một map mới chứa uId hiện tại và giá trị là 1
+                  //     users = {
+                  //       SharedService.getUserId() ?? '': 1,
+                  //     };
+                  //   }
+                  //   newMission = Mission(
+                  //     detail: state.missions.first.detail,
+                  //     name: state.missions.first.name,
+                  //     coins: state.missions.first.coins,
+                  //     times: state.missions.first.times,
+                  //     type: state.missions.first.type,
+                  //     id: state.missions.first.id,
+                  //     users: users,
+                  //   );
+                  // }
+                }
+              },)
+        ],
         child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             appBar: const CustomAppBar(

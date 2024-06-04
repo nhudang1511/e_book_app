@@ -10,3 +10,4 @@ export 'note/note_bloc.dart';
 export 'list_user/list_user_bloc.dart';
 export 'coins/coins_bloc.dart';
 export 'mission/mission_bloc.dart';
+export 'mission_user/mission_user_bloc.dart';

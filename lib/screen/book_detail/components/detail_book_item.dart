@@ -59,13 +59,13 @@ class _DetailBookItemState extends State<DetailBookItem> {
             }
           }),
           BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
-            print(state);
+            //print(state);
             if (state is HistoryLoadedByUId) {
               if(state.history.id != null){
                 inHis = true;
               }
             }
-            print(inHis);
+            //print(inHis);
           }),
         ],
         child: Container(

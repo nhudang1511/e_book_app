@@ -18,6 +18,12 @@ class EditMissions extends MissionEvent {
     required this.mission
   });
 }
-class LoadedMissionsByFinish extends MissionEvent{
-  LoadedMissionsByFinish();
+class LoadedMissionsByTypeExcludingId extends MissionEvent{
+  final String type;
+  final String missionId;
+  LoadedMissionsByTypeExcludingId({required this.type, required this.missionId});
+}
+class LoadedMissionsById extends MissionEvent{
+  final String missionId;
+  LoadedMissionsById({required this.missionId});
 }

@@ -35,31 +35,18 @@ class MissionRepository extends BaseMissionRepository {
   }
 
   @override
-  Future<Mission> getMissionByType(String type) async {
+  Future<List<Mission>>? getMissionByType(String type) async {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('mission')
-          .orderBy("times", descending: false)
+          .orderBy("times", descending: true)
           .where('type', isEqualTo: type)
           .get();
-      for (var doc in querySnapshot.docs) {
-        var missionData = doc.data();
-        missionData['id'] = doc.id;
-
-        Mission mission = Mission().fromJson(missionData);
-        // Check if the mission's users map is not empty and contains the current userId
-        if (mission.users != null &&
-            mission.users!.containsKey(SharedService.getUserId())) {
-          if (mission.users![SharedService.getUserId()] < mission.times ||
-              mission.users![SharedService.getUserId()] >= 0) {
-            return mission;
-          }
-        } else {
-          return mission;
-        }
-      }
-
-      return Mission(); // Trả về mission mặc định nếu không tìm thấy mission thỏa mãn điều kiện
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return Mission().fromJson(data);
+      }).toList();
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -67,21 +54,46 @@ class MissionRepository extends BaseMissionRepository {
   }
 
   @override
-  Future<List<Mission>> getMissionsFinish() async {
+  Future<Mission?> getMissionByTypeExcludingId(
+      String type, String excludeId) async {
     try {
-      var querySnapshot = await _firebaseFirestore.collection('mission').get();
-      List<Mission> missions = [];
+      var querySnapshot = await _firebaseFirestore
+          .collection('mission')
+          .orderBy("times", descending: false)
+          .where('type', isEqualTo: type)
+          .get();
+
       for (var doc in querySnapshot.docs) {
-        var data = doc.data();
-        data['id'] = doc.id;
-        Mission mission = Mission().fromJson(data);
-        if (mission.users != null && mission.users!.containsKey(SharedService.getUserId())) {
-          if (mission.users![SharedService.getUserId()] == mission.times) {
-            missions.add(mission);
-          }
+        if (doc.id != excludeId) {
+          var data = doc.data();
+          data['id'] = doc.id;
+          return Mission().fromJson(data);
         }
       }
-      return missions;
+      return null;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Mission?> getMissionById(String missionId) async {
+    try {
+      var documentSnapshot =
+          await _firebaseFirestore.collection('mission').doc(missionId).get();
+
+      if (documentSnapshot.exists) {
+        var data = documentSnapshot.data();
+        if (data != null) {
+          data['id'] = documentSnapshot.id;
+          return Mission().fromJson(data);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
     } catch (e) {
       log(e.toString());
       rethrow;

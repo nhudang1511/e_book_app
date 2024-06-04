@@ -10,6 +10,10 @@ class MissionLoaded extends MissionState{
   final List<Mission> missions;
   const MissionLoaded({this.missions = const <Mission>[]});
 }
+class MissionLoadedByType extends MissionState{
+  final List<Mission> mission;
+  const MissionLoadedByType({required this.mission});
+}
 class MissionLoadedByFinish extends MissionState{
   final List<Mission> missions;
   const MissionLoadedByFinish({this.missions = const <Mission>[]});

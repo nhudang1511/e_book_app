@@ -1,21 +1,20 @@
 import 'package:e_book_app/model/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../model/mission_model.dart';
 import '../../repository/mission/mission_repository.dart';
 
 part 'mission_event.dart';
+
 part 'mission_state.dart';
 
 class MissionBloc extends Bloc<MissionEvent, MissionState> {
   final MissionRepository _missionRepository;
 
-  MissionBloc(this._missionRepository)
-      : super(MissionInitial()) {
+  MissionBloc(this._missionRepository) : super(MissionInitial()) {
     on<LoadedMissions>(_onLoadMissions);
     on<EditMissions>(_onEditMissions);
     on<LoadedMissionsByType>(_onLoadMissionsByType);
-    on<LoadedMissionsByFinish>(_onLoadMissionsByFinish);
+    // on<LoadedMissionsByTypeExcludingId>(_onLoadMissionsByTypeExcludingId);
+    // on<LoadedMissionsById>(_onLoadMissionsById);
   }
 
   void _onLoadMissions(event, Emitter<MissionState> emit) async {
@@ -26,6 +25,7 @@ class MissionBloc extends Bloc<MissionEvent, MissionState> {
       emit(MissionError(e.toString()));
     }
   }
+
   void _onEditMissions(event, Emitter<MissionState> emit) async {
     emit(MissionLoading());
     try {
@@ -36,21 +36,52 @@ class MissionBloc extends Bloc<MissionEvent, MissionState> {
       emit(MissionError(e.toString()));
     }
   }
+
   void _onLoadMissionsByType(event, Emitter<MissionState> emit) async {
     try {
-      Mission mission = await _missionRepository.getMissionByType(event.type);
-      emit(MissionLoaded(missions: [mission]));
+      List<Mission>? mission = await _missionRepository.getMissionByType(event.type);
+      if(mission != null){
+        emit(MissionLoadedByType(mission: mission));
+      }
+      else{
+        emit(const MissionError(''));
+      }
     } catch (e) {
       //print(e.toString());
       emit(MissionError(e.toString()));
     }
   }
-  void _onLoadMissionsByFinish(event, Emitter<MissionState> emit) async {
-    try {
-      List<Mission> mission = await _missionRepository.getMissionsFinish();
-      emit(MissionLoadedByFinish(missions: mission));
-    } catch (e) {
-      emit(MissionError(e.toString()));
-    }
-  }
+
+  // void _onLoadMissionsByTypeExcludingId(
+  //     event, Emitter<MissionState> emit) async {
+  //   try {
+  //     Mission? mission = await _missionRepository.getMissionByTypeExcludingId(
+  //         event.type, event.missionId);
+  //     if(mission != null){
+  //       emit(MissionLoadedByType(mission: mission));
+  //     }
+  //     else{
+  //       emit(const MissionError(''));
+  //     }
+  //   } catch (e) {
+  //     //print(e.toString());
+  //     emit(MissionError(e.toString()));
+  //   }
+  // }
+
+  // void _onLoadMissionsById(event, Emitter<MissionState> emit) async {
+  //   try {
+  //     Mission? mission =
+  //         await _missionRepository.getMissionById(event.missionId);
+  //     if(mission != null){
+  //       emit(MissionLoadedByType(mission: mission));
+  //     }
+  //     else{
+  //       emit(const MissionError(''));
+  //     }
+  //   } catch (e) {
+  //     //print(e.toString());
+  //     emit(MissionError(e.toString()));
+  //   }
+  // }
 }

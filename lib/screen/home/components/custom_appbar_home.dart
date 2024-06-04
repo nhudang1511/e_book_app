@@ -20,7 +20,8 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
         builder: (context, state) {
           if (state is AuthenticateState) {
             return Text(
-              'Welcome ${state.authUser?.displayName != null ? state.authUser?.displayName! : state.authUser?.email!.split('@')[0]}',
+              'Welcome '
+              '${state.authUser?.displayName != null && state.authUser!.displayName!.isNotEmpty ? state.authUser?.displayName! : state.authUser?.email!.split('@')[0]}',
               style: Theme.of(context).textTheme.displayMedium,
             );
           } else {

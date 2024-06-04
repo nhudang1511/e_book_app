@@ -4,10 +4,10 @@ import 'package:e_book_app/repository/mission/mission_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/screen/screen.dart';
-
 import '../../config/shared_preferences.dart';
-import '../../model/mission_model.dart';
+import '../../model/mission_user_model.dart';
 import '../../repository/coins/coins_repository.dart';
+import '../../repository/mission_user/mission_user_repository.dart';
 import '../../widget/widget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -26,20 +26,23 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late CoinsBloc _coinsBloc;
   late AuthBloc _authBloc;
   late MissionBloc _missionBloc;
+  late MissionUserBloc _missionUserBloc;
+  late CoinsBloc _coinsBloc;
   Coins coins = Coins();
   int addCoins = 0;
+  MissionUser missionUser = MissionUser();
 
   @override
   void initState() {
     super.initState();
     _authBloc = BlocProvider.of<AuthBloc>(context);
+    _missionBloc = MissionBloc(MissionRepository());
+    _missionUserBloc = MissionUserBloc(MissionUserRepository())
+      ..add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
     _coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
-    _missionBloc = MissionBloc(MissionRepository())
-      ..add(LoadedMissionsByFinish());
   }
 
   @override
@@ -47,40 +50,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final currentHeight = MediaQuery.of(context).size.height;
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => _coinsBloc),
         BlocProvider(create: (context) => _missionBloc),
+        BlocProvider(create: (context) => _missionUserBloc),
+        BlocProvider(create: (context) => _coinsBloc),
       ],
-      child: BlocListener<MissionBloc, MissionState>(
-        listener: (context, state) {
-          // TODO: implement listener}
-          print(state);
-          if (state is MissionLoadedByFinish) {
-            List<Mission> missions = state.missions;
-            Map<String, dynamic>? users;
-            for (Mission m in missions) {
-              addCoins = addCoins + m.coins!;
-              users = m.users;
-              String currentUserId = SharedService.getUserId() ?? '';
-              if (users!.containsKey(currentUserId)) {
-                users[currentUserId] = -1;
-              }
-              Mission newMission = Mission(
-                  id: m.id,
-                  type: m.type,
-                  times: m.times,
-                  coins: m.coins,
-                  name: m.name,
-                  detail: m.detail,
-                  users: users);
-              _missionBloc.add(EditMissions(mission: newMission));
-            }
-          } else if (state is MissionLoaded) {
-            _coinsBloc.add(EditCoinsEvent(
-                quantity: coins.quantity! + addCoins,
-                uId: coins.uId ?? '',
-                coinsId: coins.coinsId ?? ''));
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<CoinsBloc, CoinsState>(listener: (context, state) {
+            print(state);
+          }),
+          BlocListener<MissionUserBloc, MissionUserState>(
+              listener: (context, state) {
+            print(state);
+          }),
+          BlocListener<MissionBloc, MissionState>(listener: (context, state) {
+            print(state);
+          }),
+        ],
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             if (state is AuthInitial || state is UnAuthenticateState) {
@@ -126,11 +112,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () async {
                               await Navigator.pushNamed(
                                   context, LoginScreen.routeName);
-                              _coinsBloc = CoinsBloc(CoinsRepository())
-                                ..add(LoadedCoins(
+                              CoinsBloc(CoinsRepository())
+                                .add(LoadedCoins(
                                     uId: SharedService.getUserId() ?? ''));
-                              _missionBloc = MissionBloc(MissionRepository())
-                                ..add(LoadedMissionsByFinish());
+                              // _missionBloc = MissionBloc(MissionRepository())
+                              //   ..add(LoadedMissionsByFinish());
                             },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all<
@@ -204,7 +190,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             }
             if (state is AuthenticateState) {
-              //print(state.authUser);
               return Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.background,
                 appBar: const CustomAppBar(title: 'Profile'),
@@ -242,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               //name
                               Text(
-                                state.authUser?.displayName != null
+                                state.authUser?.displayName != null  && state.authUser!.displayName!.isNotEmpty
                                     ? state.authUser!.displayName!
                                     : state.authUser!.email!.split('@')[0],
                                 textAlign: TextAlign.center,
@@ -261,8 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   // print(state);
                                   if (state is CoinsLoaded) {
                                     coins = state.coins;
-                                  }
-                                  else if(state is AddCoins){
+                                  } else if (state is AddCoins) {
                                     coins = state.coins;
                                   }
                                   return Text(
@@ -388,9 +372,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       await Navigator.pushNamed(context,
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
-                                        _coinsBloc.add(LoadedCoins(
-                                            uId: SharedService.getUserId() ??
-                                                ''));
+                                        CoinsBloc(CoinsRepository())
+                                            .add(LoadedCoins(
+                                            uId: SharedService.getUserId() ?? ''));
+                                        // _missionBloc =
+                                        //     MissionBloc(MissionRepository())
+                                        //       ..add(LoadedMissionsByFinish());
                                       });
                                     },
                                     mainIcon: Icon(

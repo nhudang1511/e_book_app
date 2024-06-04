@@ -21,6 +21,7 @@ class AuthRepository extends BaseAuthRepository {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       if (credential.user != null) {
+        SharedService.setUserId(credential.user!.uid);
         return credential.user;
       }
     } on FirebaseAuthException catch (e) {
@@ -58,6 +59,9 @@ class AuthRepository extends BaseAuthRepository {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
       await _firebaseAuth.currentUser?.sendEmailVerification();
+      if (credential.user != null) {
+        SharedService.setUserId(credential.user!.uid);
+      }
       return credential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {

@@ -8,9 +8,8 @@ class Mission extends CustomModel{
   final int? times;
   final int? coins;
   final String? id;
-  final Map<String, dynamic>? users;
 
-  Mission({this.name, this.detail, this.type, this.times, this.coins, this.id, this.users});
+  Mission({this.name, this.detail, this.type, this.times, this.coins, this.id});
 
   @override
   Mission fromJson(Map<String, dynamic> json) {
@@ -21,7 +20,6 @@ class Mission extends CustomModel{
       times: json['times'],
       coins: json['coins'],
       id: json['id'],
-      users: json['user']
     );
     return mission;
   }
@@ -34,7 +32,6 @@ class Mission extends CustomModel{
       'type': type,
       'times': times,
       'coins': coins,
-      'user': users
     };
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/repository/mission/mission_repository.dart';
+import 'package:e_book_app/repository/mission_user/mission_user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rating_dialog/rating_dialog.dart';
@@ -28,13 +29,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   bool isReviewed = false;
   late Timer _timer;
   late MissionBloc missionBloc;
-  Mission newMission = Mission();
+  late MissionUserBloc missionUserBloc;
+  List<Mission> mission = [];
+  MissionUser missionUser = MissionUser();
+  bool isEdit = false;
 
   @override
   void initState() {
     super.initState();
     missionBloc = MissionBloc(MissionRepository())
       ..add(LoadedMissionsByType(type: 'comment'));
+    missionUserBloc = MissionUserBloc(MissionUserRepository());
   }
 
   @override
@@ -44,44 +49,42 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => missionBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => missionBloc,
+        ),
+        BlocProvider(create: (context) => missionUserBloc),
+      ],
       child: MultiBlocListener(
         listeners: [
           BlocListener<MissionBloc, MissionState>(
             listener: (context, state) {
-              if (state is MissionLoaded) {
-                Map<String, dynamic> users;
-                if (state.missions.first.users != null) {
-                  // Kiểm tra xem users có chứa uId hiện tại không
-                  String currentUserId = SharedService.getUserId() ?? '';
-                  users = state.missions.first.users!;
-                  if (users.containsKey(currentUserId)) {
-                    // Tăng giá trị của uId hiện tại lên 1 đơn vị
-                    int currentValue = users[currentUserId] as int;
-                    users[currentUserId] = currentValue + 1;
-                  } else {
-                    // Thêm một mục mới với uId hiện tại và giá trị là 1
-                    users[currentUserId] = 1;
-                  }
-                } else {
-                  // Nếu users rỗng, tạo một map mới chứa uId hiện tại và giá trị là 1
-                  users = {
-                    SharedService.getUserId() ?? '': 1,
-                  };
+              print('m: $state');
+              if (state is MissionLoadedByType) {
+                mission = state.mission;
+                for(var m in mission){
+                  missionUserBloc.add(LoadedMissionsUserById(
+                      missionId: m.id ?? '',
+                      uId: SharedService.getUserId() ?? ''));
                 }
-                newMission = Mission(
-                  detail: state.missions.first.detail,
-                  name: state.missions.first.name,
-                  coins: state.missions.first.coins,
-                  times: state.missions.first.times,
-                  type: state.missions.first.type,
-                  id: state.missions.first.id,
-                  users: users,
-                );
               }
             },
-          )
+          ),
+          BlocListener<MissionUserBloc, MissionUserState>(
+              listener: (context, state) {
+            print(state);
+            if (state is MissionUserLoaded) {
+              missionUser = MissionUser(
+                uId: state.mission.uId,
+                times: state.mission.times! + 1,
+                missionId: state.mission.missionId,
+                status: true,
+                id: state.mission.id
+              );
+            } else if (state is MissionUserError) {
+            }
+          })
         ],
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
@@ -229,7 +232,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                         builder: (BuildContext context) {
                                           _timer = Timer(
                                               const Duration(seconds: 1), () {
-                                            missionBloc.add(EditMissions(mission: newMission));
+                                              missionUserBloc.add(
+                                                  EditMissionUsers(
+                                                      mission: missionUser));
                                             BlocProvider.of<ReviewBloc>(context)
                                                 .add(LoadedReview());
                                             Navigator.of(context).pop();
