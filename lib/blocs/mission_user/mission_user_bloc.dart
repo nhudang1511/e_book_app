@@ -98,7 +98,9 @@ class MissionUserBloc extends Bloc<MissionUserEvent, MissionUserState> {
               quantity: coins.quantity! + mission!.coins!));
         }
       }
-      emit(MissionUserListLoaded(mission: missionUser));
+      if(missionUser.isNotEmpty){
+        emit(MissionUserListLoaded(mission: missionUser));
+      }
     } catch (e) {
       emit(MissionUserError(e.toString()));
     }

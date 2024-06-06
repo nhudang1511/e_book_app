@@ -23,8 +23,10 @@ class CoinsBloc extends Bloc<CoinsEvent, CoinsState> {
       }
       else{
         Coins newCoins = Coins(uId: event.uId, quantity: 0);
-        await _coinsRepository.addCoins(newCoins);
-        emit(AddCoins(coins: newCoins));
+        if(newCoins.uId != ''){
+          await _coinsRepository.addCoins(newCoins);
+          emit(AddCoins(coins: newCoins));
+        }
       }
     } catch (e) {
       emit(CoinsError(e.toString()));
