@@ -29,16 +29,12 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   String uId = '';
   int coins = 0;
   String coinsId = '';
-  late MissionBloc _missionBloc;
-  Mission newMission = Mission();
 
   @override
   void initState() {
     super.initState();
     _coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
-    _missionBloc = MissionBloc(MissionRepository())
-      ..add(LoadedMissionsByType(type: 'coins'));
   }
 
   @override
@@ -46,7 +42,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => _coinsBloc),
-        BlocProvider(create: (context) => _missionBloc)
       ],
       child: MultiBlocListener(
         listeners: [
@@ -54,8 +49,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
             listener: (context, state) {
               print(state);
               if (state is AddCoins) {
-                _missionBloc.add(EditMissions(mission: newMission));
-                //Navigator.pop(context);
+                Navigator.pop(context);
               } else if (state is CoinsLoaded) {
                 uId = state.coins.uId ?? '';
                 coins = state.coins.quantity ?? 0;
@@ -63,42 +57,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
               }
             },
           ),
-          BlocListener<MissionBloc, MissionState>(
-              listener: (context, state) {
-                print(state);
-                if (state is MissionLoaded) {
-                  // if(state.missions.isNotEmpty){
-                  //   Map<String, dynamic> users;
-                  //   if (state.missions.first.users != null) {
-                  //     // Kiểm tra xem users có chứa uId hiện tại không
-                  //     String currentUserId = SharedService.getUserId() ?? '';
-                  //     users = state.missions.first.users!;
-                  //     if (users.containsKey(currentUserId)) {
-                  //       // Tăng giá trị của uId hiện tại lên 1 đơn vị
-                  //       int currentValue = users[currentUserId] as int;
-                  //       users[currentUserId] = currentValue + 1;
-                  //     } else {
-                  //       // Thêm một mục mới với uId hiện tại và giá trị là 1
-                  //       users[currentUserId] = 1;
-                  //     }
-                  //   } else {
-                  //     // Nếu users rỗng, tạo một map mới chứa uId hiện tại và giá trị là 1
-                  //     users = {
-                  //       SharedService.getUserId() ?? '': 1,
-                  //     };
-                  //   }
-                  //   newMission = Mission(
-                  //     detail: state.missions.first.detail,
-                  //     name: state.missions.first.name,
-                  //     coins: state.missions.first.coins,
-                  //     times: state.missions.first.times,
-                  //     type: state.missions.first.type,
-                  //     id: state.missions.first.id,
-                  //     users: users,
-                  //   );
-                  // }
-                }
-              },)
         ],
         child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -190,11 +148,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                   } else if (money == 10) {
                                     coins = coins + 5000;
                                   }
-                                  if (uId != SharedService.getUserId()) {
-                                    _coinsBloc.add(AddNewCoinsEvent(
-                                        quantity: coins,
-                                        uId: SharedService.getUserId() ?? ''));
-                                  } else if (uId == SharedService.getUserId()) {
+                                 if (uId == SharedService.getUserId()) {
                                     _coinsBloc.add(EditCoinsEvent(
                                         quantity: coins,
                                         uId: SharedService.getUserId() ?? '',
@@ -240,11 +194,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                         onPressed: () {
                           Navigator.pushNamed(
                               context, BankTransferScreen.routeName);
-                          if (uId != SharedService.getUserId()) {
-                            _coinsBloc.add(AddNewCoinsEvent(
-                                quantity: 0,
-                                uId: SharedService.getUserId() ?? ''));
-                          }
                         },
                       ),
                     ),

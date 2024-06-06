@@ -62,6 +62,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
             print(state);
+            if (state is MissionUserListLoaded) {
+              _coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+            }
           }),
           BlocListener<MissionBloc, MissionState>(listener: (context, state) {
             print(state);
@@ -112,11 +115,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () async {
                               await Navigator.pushNamed(
                                   context, LoginScreen.routeName);
-                              CoinsBloc(CoinsRepository())
-                                .add(LoadedCoins(
-                                    uId: SharedService.getUserId() ?? ''));
-                              // _missionBloc = MissionBloc(MissionRepository())
-                              //   ..add(LoadedMissionsByFinish());
+                              _coinsBloc.add(LoadedCoins(
+                                  uId: SharedService.getUserId() ?? ''));
                             },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all<
@@ -227,7 +227,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               //name
                               Text(
-                                state.authUser?.displayName != null  && state.authUser!.displayName!.isNotEmpty
+                                state.authUser?.displayName != null &&
+                                        state.authUser!.displayName!.isNotEmpty
                                     ? state.authUser!.displayName!
                                     : state.authUser!.email!.split('@')[0],
                                 textAlign: TextAlign.center,
@@ -372,9 +373,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       await Navigator.pushNamed(context,
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
-                                        CoinsBloc(CoinsRepository())
-                                            .add(LoadedCoins(
-                                            uId: SharedService.getUserId() ?? ''));
+                                        _coinsBloc.add(LoadedCoins(
+                                            uId: SharedService.getUserId() ??
+                                                ''));
                                         // _missionBloc =
                                         //     MissionBloc(MissionRepository())
                                         //       ..add(LoadedMissionsByFinish());
