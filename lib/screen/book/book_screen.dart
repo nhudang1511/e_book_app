@@ -46,6 +46,7 @@ class _BookScreenState extends State<BookScreen> {
   num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
   late HistoryBloc historyBloc;
+  late NoteBloc noteBloc;
 
   @override
   void initState() {
@@ -53,6 +54,7 @@ class _BookScreenState extends State<BookScreen> {
     _scrollController.addListener(_scrollListener);
     historyBloc = HistoryBloc(HistoryRepository())
       ..add(LoadHistoryByBookId(widget.book.id ?? '', widget.uId));
+    noteBloc = NoteBloc(NoteRepository())..add(LoadedNote(uId: widget.uId));
   }
 
   @override
@@ -729,7 +731,7 @@ class _BookScreenState extends State<BookScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                BlocProvider.of<NoteBloc>(context).add(AddNewNoteEvent(
+                noteBloc.add(AddNewNoteEvent(
                     bookId: widget.book.id ?? '',
                     content: selectedText,
                     title: noteContentController.text,

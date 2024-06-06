@@ -102,8 +102,7 @@ class _MyAppState extends State<MyApp> {
           create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
         BlocProvider(
           create: (_) => NoteBloc(
-            NoteRepository(),
-          )..add(LoadedNote(uId: SharedService.getUserId() ?? '')),
+            NoteRepository(),),
         ),
       ],
       child: MaterialApp(

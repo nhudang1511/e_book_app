@@ -37,8 +37,10 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
     emit(NoteLoading());
     try {
       await _noteRepository.addNote(note);
-      emit(NoteLoaded(notes: event.notes));
+      List<Note> notes = await _noteRepository.getAllNoteById(event.userId);
+      emit(NoteLoaded(notes: notes));
     } catch (e) {
+      print(e.toString());
       emit(const NoteError('error'));
     }
   }
@@ -51,7 +53,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
     emit(NoteLoading());
     try {
       await _noteRepository.removeNote(note);
-      emit(NoteLoaded(notes: event.notes));
+      emit(AddNote(note: note));
     } catch (e) {
       emit(const NoteError('error'));
     }
@@ -65,7 +67,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
     emit(NoteLoading());
     try {
       await _noteRepository.editNote(note);
-      emit(NoteLoaded(notes:event.notes));
+      emit(AddNote(note: note));
     } catch (e) {
       emit(NoteError('error: $e'));
     }
