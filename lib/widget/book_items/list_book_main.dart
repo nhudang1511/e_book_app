@@ -10,27 +10,16 @@ class ListBookMain extends StatelessWidget {
 
   const ListBookMain(
       {super.key,
-        required this.books,
-        required this.scrollDirection,
-        required this.height,
-        required this.inLibrary});
+      required this.books,
+      required this.scrollDirection,
+      required this.height,
+      required this.inLibrary});
 
   @override
   Widget build(BuildContext context) {
-    return inLibrary
-        ? Expanded(
+    return Expanded(
       child: ListView.builder(
           scrollDirection: scrollDirection,
-          itemCount: books.length,
-          itemBuilder: (context, index) {
-            return BookCardMain(book: books[index], inLibrary: inLibrary);
-          }),
-    )
-        : SizedBox(
-      height: height,
-      child: ListView.builder(
-          scrollDirection: scrollDirection,
-          physics: const NeverScrollableScrollPhysics(),
           itemCount: books.length,
           itemBuilder: (context, index) {
             return BookCardMain(book: books[index], inLibrary: inLibrary);

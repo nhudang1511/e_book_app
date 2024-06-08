@@ -50,9 +50,7 @@ class _ReviewItemState extends State<ReviewItem> {
           }
           return Column(
             children: [
-              SizedBox(
-                height: 150,
-                child: reviews.isEmpty
+               reviews.isEmpty
                     ? const SizedBox()
                     : RatingSummary(
                   counter: reviews.length,
@@ -64,7 +62,6 @@ class _ReviewItemState extends State<ReviewItem> {
                   counterTwoStars: ratingTwoCount,
                   counterOneStars: ratingOneCount,
                 ),
-              ),
               SizedBox(
                   width: MediaQuery.of(context).size.width - 20,
                   child: ElevatedButton(

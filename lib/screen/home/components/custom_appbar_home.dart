@@ -13,9 +13,9 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+    return SliverAppBar(
       elevation: 0,
+      pinned: true,
       title: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthenticateState) {

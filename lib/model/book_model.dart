@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'custom_model.dart';
-class Book extends CustomModel{
+
+class Book extends CustomModel {
   final String? id;
   final String? authodId;
   final List<String>? categoryId;
@@ -15,22 +16,25 @@ class Book extends CustomModel{
   final List<String>? bookPreview;
   final int? chapters;
   final String? country;
+  final DateTime? createAt;
+  final DateTime? updateAt;
 
-  Book({
-    this.id,
-    this.authodId,
-    this.categoryId,
-    this.description,
-    this.imageUrl,
-    this.language,
-    this.price,
-    this.publishDate,
-    this.status,
-    this.title,
-    this.bookPreview,
-    this.chapters,
-    this.country
-  });
+  Book(
+      {this.id,
+      this.authodId,
+      this.categoryId,
+      this.description,
+      this.imageUrl,
+      this.language,
+      this.price,
+      this.publishDate,
+      this.status,
+      this.title,
+      this.bookPreview,
+      this.chapters,
+      this.country,
+      this.createAt,
+      this.updateAt});
 
   @override
   Book fromJson(Map<String, dynamic> json) {
@@ -47,8 +51,9 @@ class Book extends CustomModel{
         title: json['title'],
         bookPreview: List<String>.from(json['bookPreview']),
         country: json['country'],
-        chapters: json['chapters']
-    );
+        chapters: json['chapters'],
+        createAt: (json['create_at'] as Timestamp).toDate(),
+        updateAt: (json['update_at'] as Timestamp).toDate());
     return book;
   }
 

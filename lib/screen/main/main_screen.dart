@@ -34,6 +34,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: _buildPage(_currentIndex),
       ),

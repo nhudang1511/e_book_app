@@ -26,6 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
   List<Book> books = [];
+  List<Book> newBooks = [];
+  List<Book> recommendBooks = [];
   final List<Widget> imageSliders = listQuote
       .map((item) => Container(
             margin: const EdgeInsets.all(5.0),
@@ -88,94 +90,127 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final now = TimeOfDay.now();
     String period = getDayPeriod(now);
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: CustomAppBarHome(title: period),
-      body: SingleChildScrollView(
-        child: BlocBuilder<BookBloc, BookState>(
-          builder: (context, state) {
-            //print(SharedService.getUserId());
-            if (state is BookLoading) {
-              return const Center(child: CircularProgressIndicator());
+    return BlocBuilder<BookBloc, BookState>(
+      builder: (context, state) {
+        if (state is BookLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is BookLoaded) {
+          //print(state.books.length);
+          books = state.books;
+          newBooks.clear();
+          for (var b in books) {
+            DateTime currentDate = DateTime.now();
+            // Trừ 3 ngày từ ngày hiện tại
+            DateTime dateBeforeThreeDays =
+                currentDate.subtract(const Duration(days: 3));
+            if (b.createAt!.isAfter(dateBeforeThreeDays) ||
+                b.updateAt!.isAfter(dateBeforeThreeDays)) {
+              newBooks.add(b);
             }
-            if (state is BookLoaded) {
-              //print(state.books.length);
-              books = state.books;
-            }
-            return Column(
+          }
+        }
+        return CustomScrollView(
+          slivers: <Widget>[
+            CustomAppBarHome(title: period),
+            // const SectionTitle(title: 'New reals'),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CarouselSlider(
+                      items: imageSliders,
+                      carouselController: _controller,
+                      options: CarouselOptions(
+                          viewportFraction: 1,
+                          autoPlay: true,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _current = index;
+                            });
+                          }),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: listQuote.asMap().entries.map((entry) {
+                      return GestureDetector(
+                        onTap: () => _controller.animateToPage(entry.key),
+                        child: Container(
+                          width: 12.0,
+                          height: 12.0,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 4.0),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black)
+                                  .withOpacity(
+                                      _current == entry.key ? 0.9 : 0.4)),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+            SliverToBoxAdapter(
+                child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CarouselSlider(
-                    items: imageSliders,
-                    carouselController: _controller,
-                    options: CarouselOptions(
-                        viewportFraction: 1,
-                        autoPlay: true,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _current = index;
-                          });
-                        }),
+                const SectionTitle(title: 'New reals'),
+                SizedBox(
+                  height: 150,
+                  child: ListBook(
+                    books: newBooks,
+                    inLibrary: false,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: listQuote.asMap().entries.map((entry) {
-                    return GestureDetector(
-                      onTap: () => _controller.animateToPage(entry.key),
-                      child: Container(
-                        width: 12.0,
-                        height: 12.0,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 4.0),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black)
-                                    .withOpacity(
-                                        _current == entry.key ? 0.9 : 0.4)),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SectionTitle(title: 'New reals'),
-                ListBook(
-                  books: books,
-                  inLibrary: false,
-                ),
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                   if(state is AuthenticateState){
-                     return Column(
-                       children: [
-                         DisplayHistories(
-                           uId: state.authUser?.uid,
-                           scrollDirection: Axis.horizontal,
-                           height: 180,
-                           inHistory: true,
-                           book: books,
-                         ),
-                       ],
-                     );
-                   }
-                   return const SizedBox();
-                  },
-                ),
-                const SectionTitle(title: 'Recommendation'),
-                ListBookMain(
-                  books: books.take(4).toList(),
-                  scrollDirection: Axis.vertical,
-                  height: MediaQuery.of(context).size.height,
-                  inLibrary: false,
-                ),
               ],
-            );
-          },
-        ),
-      ),
+            )),
+            SliverToBoxAdapter(
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthenticateState) {
+                    return Column(
+                      children: [
+                        DisplayHistories(
+                          uId: state.authUser?.uid,
+                          scrollDirection: Axis.horizontal,
+                          height: 180,
+                          inHistory: true,
+                          book: books,
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return Column(
+                  children: [
+                    const SectionTitle(title: 'Recommendation'),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 4,
+                        itemBuilder: (BuildContext context, int index) {
+                          return BookCardMain(
+                              book: books[index], inLibrary: false);
+                        }),
+                  ],
+                );
+              }, childCount: 1),
+            ),
+          ],
+        );
+      },
     );
   }
 
