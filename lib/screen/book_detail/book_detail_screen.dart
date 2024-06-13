@@ -43,6 +43,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   late AuthorBloc _authorBloc;
 
+
   @override
   void initState() {
     super.initState();
@@ -55,173 +56,179 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => _authorBloc),
+        BlocProvider(
+            create: (_) => _authorBloc),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
-              actions: [
-                if (uId != '')
-                  IconButton(onPressed: () {
-                    widget.inLibrary = !widget.inLibrary;
-                    !widget.inLibrary
-                        ? BlocProvider.of<LibraryBloc>(context).add(
-                            RemoveFromLibraryEvent(
-                                userId: uId, bookId: widget.book.id ?? ''))
-                        : BlocProvider.of<LibraryBloc>(context).add(
-                            AddToLibraryEvent(
-                                userId: uId, bookId: widget.book.id ?? ''));
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        widget._timer = Timer(const Duration(seconds: 1), () {
-                          BlocProvider.of<LibraryBloc>(context)
-                              .add(LoadLibrary());
-                          Navigator.of(context).pop();
-                        });
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                    ).then((value) {
-                      if (widget._timer.isActive) {
-                        widget._timer.cancel();
-                      }
-                    });
-                  }, icon: BlocBuilder<LibraryBloc, LibraryState>(
-                    builder: (context, state) {
-                      if (state is LibraryLoaded) {
-                        bool isBookInLibrary = state.libraries.any((b) =>
-                            b.bookId == widget.book.id &&
-                            b.userId == SharedService.getUserId());
-                        if (isBookInLibrary) {
-                          widget.inLibrary =
-                              true; // Nếu sách có trong Library, đặt inLibrary thành true
-                        }
-                      }
-                      return Icon(
-                        Icons.bookmark_outlined,
-                        color: widget.inLibrary
-                            ? const Color(0xFF8C2EEE)
-                            : const Color(0xFFDFE2E0),
+        appBar: AppBar(
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            elevation: 0,
+            iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
+            actions: [
+              if (uId != '')
+                IconButton(onPressed: () {
+                  widget.inLibrary = !widget.inLibrary;
+                  !widget.inLibrary
+                      ? BlocProvider.of<LibraryBloc>(context).add(
+                      RemoveFromLibraryEvent(
+                          userId: uId,
+                          bookId: widget.book.id ?? ''))
+                      : BlocProvider.of<LibraryBloc>(context).add(
+                      AddToLibraryEvent(
+                          userId: uId,
+                          bookId: widget.book.id ?? ''));
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      widget._timer =
+                          Timer(const Duration(seconds: 1), () {
+                            BlocProvider.of<LibraryBloc>(context)
+                                .add(LoadLibrary());
+                            Navigator.of(context).pop();
+                          });
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
                     },
-                  ))
-                else
-                  IconButton(
-                      onPressed: () {
-                        widget._timer = Timer(const Duration(seconds: 1), () {
-                          Navigator.of(context).pop();
-                        });
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const CustomDialogNotice(
-                              title: Icons.downloading,
-                              content: 'Please log in to add',
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(Icons.bookmark_outlined,
-                          color: Color(0xFFDFE2E0))),
+                  ).then((value) {
+                    if (widget._timer.isActive) {
+                      widget._timer.cancel();
+                    }
+                  });
+                }, icon: BlocBuilder<LibraryBloc, LibraryState>(
+                  builder: (context, state) {
+                    if (state is LibraryLoaded) {
+                      bool isBookInLibrary = state.libraries.any((b) =>
+                      b.bookId == widget.book.id);
+                      if (isBookInLibrary) {
+                        widget.inLibrary =
+                        true; // Nếu sách có trong Library, đặt inLibrary thành true
+                      }
+                    }
+                    return Icon(
+                      Icons.bookmark_outlined,
+                      color: widget.inLibrary
+                          ? const Color(0xFF8C2EEE)
+                          : const Color(0xFFDFE2E0),
+                    );
+                  },
+                ))
+              else
                 IconButton(
                     onPressed: () {
-                      // Share.share(
-                      //     'https://web.facebook.com/profile.php?id=100017418181405');
-                      Share.share(widget.book.imageUrl ?? '');
+                      widget._timer = Timer(
+                          const Duration(seconds: 1),
+                              () {
+                            Navigator.of(context).pop();
+                          });
+                      showDialog(
+                        context: context,
+                        builder:
+                            (BuildContext context) {
+                          return const CustomDialogNotice(
+                            title: Icons.downloading,
+                            content:
+                            'Please log in to add',
+                          );
+                        },
+                      );
                     },
                     icon: const Icon(
-                      Icons.share,
-                      color: Color(0xFFDFE2E0),
-                    )),
-              ],
-              pinned: true,
-            ),
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      Image.network(
-                        widget.book.imageUrl ?? '',
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: 250,
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        height: 30,
-                        width: MediaQuery.of(context).size.width / 2,
-                        child: InkWell(
-                          onTap: () =>
-                              showHideDotsPopup(widget.book.bookPreview ?? []),
-                          child: Container(
-                            decoration:
-                                BoxDecoration(color: Colors.grey.withAlpha(90)),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.remove_red_eye_rounded,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Preview',
-                                  style: TextStyle(color: Colors.white),
-                                )
-                              ],
-                            ),
+                        Icons.bookmark_outlined,
+                        color: Color(0xFFDFE2E0))),
+              IconButton(
+                  onPressed: () {
+                    // Share.share(
+                    //     'https://web.facebook.com/profile.php?id=100017418181405');
+                    Share.share(widget.book.imageUrl ?? '');
+                  },
+                  icon: const Icon(
+                    Icons.share,
+                    color: Color(0xFFDFE2E0),
+                  )),
+              // IconButton(
+              //     onPressed: () {},
+              //     icon: const Icon(
+              //       Icons.download,
+              //       color: Color(0xFFDFE2E0),
+              //     ))
+            ]),
+        body: SingleChildScrollView(
+          child: IntrinsicHeight(
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Image.network(
+                      widget.book.imageUrl ?? '',
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: 250,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      height: 30,
+                      width: MediaQuery.of(context).size.width / 2,
+                      child: InkWell(
+                        onTap: () => showHideDotsPopup(widget.book.bookPreview ?? []),
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.grey.withAlpha(90)),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.remove_red_eye_rounded,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                'Preview',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    widget.book.title ?? '',
-                    style: Theme.of(context).textTheme.displayMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  BlocBuilder<AuthorBloc, AuthorState>(
-                    builder: (context, state) {
-                      if (state is AuthorLoaded) {
-                        Author? author = state.author;
-                        return Text(
-                          author.fullName ?? '',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(
-                                color: const Color(0xFFC7C7C7),
-                                fontWeight: FontWeight.normal,
-                              ),
-                        );
-                      } else {
-                        return const Text("Something went wrong");
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  CustomTabInBook(
-                    book: widget.book,
-                  ),
-                ],
-              ),
-            )
-          ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  widget.book.title ?? '',
+                  style: Theme.of(context).textTheme.displayMedium,
+                  textAlign: TextAlign.center,
+                ),
+                BlocBuilder<AuthorBloc, AuthorState>(
+                  builder: (context, state) {
+                    if (state is AuthorLoaded) {
+                      Author? author = state.author;
+                      return Text(
+                        author.fullName ?? '',
+                        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          color: const Color(0xFFC7C7C7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      );
+                    } else {
+                      return const Text("Something went wrong");
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                CustomTabInBook(
+                  book: widget.book,
+                ),
+              ],
+            ),
+          ),
         ),
+
       ),
     );
   }

@@ -26,10 +26,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late AuthBloc _authBloc;
-  late MissionBloc _missionBloc;
-  late MissionUserBloc _missionUserBloc;
-  late CoinsBloc _coinsBloc;
+  late AuthBloc authBloc;
+  late MissionBloc missionBloc;
+  late MissionUserBloc missionUserBloc;
+  late CoinsBloc coinsBloc;
   Coins coins = Coins();
   int addCoins = 0;
   MissionUser missionUser = MissionUser();
@@ -37,11 +37,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _authBloc = BlocProvider.of<AuthBloc>(context);
-    _missionBloc = MissionBloc(MissionRepository());
-    _missionUserBloc = MissionUserBloc(MissionUserRepository())
+    authBloc = BlocProvider.of<AuthBloc>(context);
+    missionBloc = MissionBloc(MissionRepository());
+    missionUserBloc = MissionUserBloc(MissionUserRepository())
       ..add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
-    _coinsBloc = CoinsBloc(CoinsRepository())
+    coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
   }
 
@@ -50,24 +50,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final currentHeight = MediaQuery.of(context).size.height;
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => _missionBloc),
-        BlocProvider(create: (context) => _missionUserBloc),
-        BlocProvider(create: (context) => _coinsBloc),
+        BlocProvider(create: (context) => missionBloc),
+        BlocProvider(create: (context) => missionUserBloc),
+        BlocProvider(create: (context) => coinsBloc),
       ],
       child: MultiBlocListener(
         listeners: [
           BlocListener<CoinsBloc, CoinsState>(listener: (context, state) {
-            print(state);
+            //print(state);
           }),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
             print(state);
             if (state is MissionUserListLoaded) {
-              _coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+              coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
             }
           }),
           BlocListener<MissionBloc, MissionState>(listener: (context, state) {
-            print(state);
+            //print(state);
           }),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
@@ -115,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () async {
                               await Navigator.pushNamed(
                                   context, LoginScreen.routeName);
-                              _coinsBloc.add(LoadedCoins(
+                              coinsBloc.add(LoadedCoins(
                                   uId: SharedService.getUserId() ?? ''));
                             },
                             style: ButtonStyle(
@@ -270,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.pushNamed(
                                         context, EditProfileScreen.routeName)
                                     .then((value) => {
-                                          _authBloc.add(
+                                          authBloc.add(
                                             AuthEventStarted(),
                                           )
                                         });
@@ -373,12 +373,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       await Navigator.pushNamed(context,
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
-                                        _coinsBloc.add(LoadedCoins(
+                                        coinsBloc.add(LoadedCoins(
                                             uId: SharedService.getUserId() ??
                                                 ''));
-                                        // _missionBloc =
-                                        //     MissionBloc(MissionRepository())
-                                        //       ..add(LoadedMissionsByFinish());
+                                        missionUserBloc.add(LoadedMissionUsers(
+                                            uId: SharedService.getUserId() ??
+                                                ''));
                                       });
                                     },
                                     mainIcon: Icon(
@@ -400,18 +400,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                 ),
-                                CustomInkwell(
-                                    onTap: () async {
-                                      await Navigator.pushNamed(
-                                          context, MissionScreen.routeName);
-                                    },
-                                    mainIcon: Icon(
-                                      Icons.task,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                    title: "Missions",
-                                    currentHeight: currentHeight),
                                 //line
                                 Container(
                                   height: 1,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e_book_app/screen/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:readmore/readmore.dart';
 import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
@@ -101,6 +102,8 @@ class _BookCardMainState extends State<BookCardMain> {
                                           style: Theme.of(context)
                                               .textTheme
                                               .headlineSmall,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         BlocBuilder<AuthorBloc, AuthorState>(
                                           builder: (context, state) {
@@ -109,7 +112,8 @@ class _BookCardMainState extends State<BookCardMain> {
                                               author = state.author;
                                             }
                                             return Text(
-                                              maxLines: 2,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                               author.fullName ?? '',
                                               style: Theme.of(context)
                                                   .textTheme
@@ -128,7 +132,6 @@ class _BookCardMainState extends State<BookCardMain> {
                                   BlocBuilder<AuthBloc, AuthState>(
                                     builder: (context, state) {
                                       if(state is AuthenticateState){
-                                        String uId = state.authUser?.uid ?? '';
                                         return IconButton(onPressed: () {
                                           widget.inLibrary = !widget.inLibrary;
                                           !widget.inLibrary

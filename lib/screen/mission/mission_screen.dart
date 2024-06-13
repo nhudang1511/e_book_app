@@ -1,10 +1,12 @@
-import 'package:e_book_app/blocs/mission/mission_bloc.dart';
-import 'package:e_book_app/repository/mission/mission_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocs/blocs.dart';
+import '../../config/shared_preferences.dart';
 import '../../model/mission_model.dart';
+import '../../repository/repository.dart';
 import '../../widget/widget.dart';
+import '../screen.dart';
 
 class MissionScreen extends StatefulWidget {
   const MissionScreen({super.key});
@@ -31,12 +33,12 @@ class _MissionScreenState extends State<MissionScreen> {
       child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: const CustomAppBar(
-            title: "List missions",
+            title: "Missions",
           ),
           body: BlocBuilder<MissionBloc, MissionState>(
             builder: (context, state) {
               List<Mission> missions = [];
-              if(state is MissionLoaded){
+              if (state is MissionLoaded) {
                 missions = state.missions;
               }
               return Container(
@@ -48,12 +50,20 @@ class _MissionScreenState extends State<MissionScreen> {
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         shape: RoundedRectangleBorder(
-                          side: const BorderSide(width: 2),
+                          side: BorderSide(
+                              width: 2,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         leading: CircleAvatar(
                           backgroundColor: const Color(0xff6ae792),
-                          child: Text(index.toString()),
+                          child: Text(index.toString(),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .background)),
                         ),
                         title: Text(
                           'Title ${missions[index].name}',
@@ -62,11 +72,20 @@ class _MissionScreenState extends State<MissionScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Content: ${missions[index].detail}',
-                                style: const TextStyle(color: Colors.black)),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer)),
                             Text('Type: ${missions[index].type}',
-                                style: const TextStyle(color: Colors.black)),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer)),
                             Text('Coins: ${missions[index].coins}',
-                                style: const TextStyle(color: Colors.black)),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer)),
                           ],
                         ),
                         trailing: const Icon(Icons.more_vert),

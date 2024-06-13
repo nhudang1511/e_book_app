@@ -41,7 +41,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                   CategoryRepository(),
                 )..add(LoadCategory())),
       ],
-      child: InkWell(
+      child: GestureDetector(
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -50,7 +50,7 @@ class _BookCardHistoryState extends State<BookCardHistory> {
             );
           },
           child: Container(
-            width: MediaQuery.of(context).size.width - 10,
+            width: (MediaQuery.of(context).size.width - 10) / 2,
             height: 150,
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             child: BlocBuilder<CategoryBloc, CategoryState>(
@@ -69,85 +69,39 @@ class _BookCardHistoryState extends State<BookCardHistory> {
                       categoryNames.add(category.name ?? '');
                     }
                   }
-                  return Row(
+                  return Column(
                     children: [
                       Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Image.network(widget.book.imageUrl ?? '')),
                       const SizedBox(width: 5),
                       Expanded(
-                          flex: 2,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.book.title ?? '',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall,
-                                      ),
-                                      BlocBuilder<AuthorBloc, AuthorState>(
-                                        builder: (context, state) {
-                                          if (state is AuthorLoaded) {
-                                            Author? author =
-                                                state.author;
-                                            return Text(
-                                              author.fullName ?? '',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall!
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xFFC7C7C7),
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                            );
-                                          } else {
-                                            return const Text(
-                                                "Something went wrong");
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 3,
-                                child: (widget.percent.isNaN ||
-                                        widget.percent.isInfinite)
-                                    ? LinearPercentIndicator(
-                                        animation: true,
-                                        lineHeight: 4.0,
-                                        animationDuration: 2500,
-                                        percent: 0,
-                                        center: const Text(
-                                          "",
-                                          style:
-                                              TextStyle(color: Colors.white),
-                                        ),
-                                        progressColor:
-                                            const Color(0xFF8C2EEE),
-                                      )
-                                    : LinearPercentIndicator(
-                                        animation: true,
-                                        lineHeight: 4.0,
-                                        animationDuration: 2500,
-                                        percent: widget.percent / 100,
-                                        center: const Text(
-                                          "",
-                                          style:
-                                              TextStyle(color: Colors.white),
-                                        ),
-                                        progressColor:
-                                            const Color(0xFF8C2EEE),
-                                      ),
-                              ),
-                            ],
-                          ))
+                        flex: 1,
+                        child:
+                            (widget.percent.isNaN || widget.percent.isInfinite)
+                                ? LinearPercentIndicator(
+                                    animation: true,
+                                    lineHeight: 4.0,
+                                    animationDuration: 2500,
+                                    percent: 0,
+                                    center: const Text(
+                                      "",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    progressColor: const Color(0xFF8C2EEE),
+                                  )
+                                : LinearPercentIndicator(
+                                    animation: true,
+                                    lineHeight: 4.0,
+                                    animationDuration: 2500,
+                                    percent: widget.percent / 100,
+                                    center: const Text(
+                                      "",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    progressColor: const Color(0xFF8C2EEE),
+                                  ),
+                      )
                     ],
                   );
                 } else {

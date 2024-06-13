@@ -37,12 +37,12 @@ class _BottomNavigationBarWidgetState extends State<CustomNavBar> {
           icon: Icon(Icons.library_books_rounded),
           label: 'Library',
         ),
+        BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'Mission'),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Profile',
         ),
       ],
-
       type: BottomNavigationBarType.fixed,
       currentIndex: _currentIndex,
       selectedItemColor: Theme.of(context).colorScheme.primary,

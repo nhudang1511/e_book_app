@@ -52,12 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      ReadMoreText(
+                      Text(
                         item.quote,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
-                        trimLength: 100,
-                        colorClickableText: Colors.white.withAlpha(80),
+                        maxLines: 5,overflow: TextOverflow.ellipsis,
                       ),
                       Text(item.name,
                           style: const TextStyle(
@@ -157,19 +156,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SliverToBoxAdapter(
-                child: Column(
-              children: [
-                const SectionTitle(title: 'New reals'),
-                SizedBox(
-                  height: 150,
-                  child: ListBook(
-                    books: newBooks,
-                    inLibrary: false,
-                  ),
-                ),
-              ],
-            )),
+            if(newBooks.isNotEmpty)
+              SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      const SectionTitle(title: 'New reals'),
+                      SizedBox(
+                        height: 150,
+                        child: ListBook(
+                          books: newBooks,
+                          inLibrary: false,
+                        ),
+                      ),
+                    ],
+                  )),
             SliverToBoxAdapter(
               child: BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
@@ -195,11 +195,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverChildBuilderDelegate((BuildContext context, int index) {
                 return Column(
                   children: [
-                    const SectionTitle(title: 'Recommendation'),
+                    const SectionTitle(title: 'All Books'),
                     ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 4,
+                        itemCount: books.length,
                         itemBuilder: (BuildContext context, int index) {
                           return BookCardMain(
                               book: books[index], inLibrary: false);

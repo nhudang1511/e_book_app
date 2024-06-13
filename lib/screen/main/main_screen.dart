@@ -53,6 +53,8 @@ class _MainPageState extends State<MainPage> {
       case 2:
         return const LibraryScreen();
       case 3:
+        return const MissionScreen();
+      case 4:
         return const ProfileScreen();
       default:
         return const MainScreen();

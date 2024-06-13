@@ -35,15 +35,15 @@ class ListBookHistory extends StatelessWidget {
                 }),
           )
         : Expanded(
-            child: ListView.builder(
-                scrollDirection: scrollDirection,
-                itemCount: books.length,
-                itemBuilder: (context, index) {
-                  return BookCardHistory(
-                      book: books[index],
-                      inLibrary: inLibrary,
-                      percent: percent[index]);
-                }),
-          );
+            child: GridView.builder(
+            padding: const EdgeInsets.all(5),
+            itemCount: books.length,
+            gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemBuilder: (context, index) => BookCardHistory(
+                book: books[index],
+                inLibrary: inLibrary,
+                percent: percent[index]),
+          ));
   }
 }

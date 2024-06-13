@@ -1,16 +1,13 @@
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-import 'package:e_book_app/repository/coins/coins_repository.dart';
 import 'package:e_book_app/screen/payment/bank_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import '../../blocs/blocs.dart';
-import '../../blocs/coins/coins_bloc.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
-import '../../repository/mission/mission_repository.dart';
+import '../../repository/repository.dart';
 import '../../widget/widget.dart';
 import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 
@@ -26,15 +23,22 @@ class ChoosePaymentScreen extends StatefulWidget {
 class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   int money = 0;
   late CoinsBloc _coinsBloc;
+  late MissionBloc missionBloc;
+  late MissionUserBloc missionUserBloc;
   String uId = '';
   int coins = 0;
   String coinsId = '';
+  List<Mission> mission = [];
+  MissionUser missionUser = MissionUser();
 
   @override
   void initState() {
     super.initState();
     _coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+    missionBloc = MissionBloc(MissionRepository())
+      ..add(LoadedMissionsByType(type: 'coins'));
+    missionUserBloc = MissionUserBloc(MissionUserRepository());
   }
 
   @override
@@ -42,6 +46,10 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => _coinsBloc),
+        BlocProvider(
+          create: (context) => missionBloc,
+        ),
+        BlocProvider(create: (context) => missionUserBloc),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -57,6 +65,35 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
               }
             },
           ),
+          BlocListener<MissionBloc, MissionState>(
+            listener: (context, state) {
+              //print('m: $state');
+              if (state is MissionLoadedByType) {
+                mission = state.mission;
+                mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
+                for(var m in mission){
+                  print(m.id);
+                  missionUserBloc.add(LoadedMissionsUserById(
+                      missionId: m.id ?? '',
+                      uId: SharedService.getUserId() ?? ''));
+                }
+              }
+            },
+          ),
+          BlocListener<MissionUserBloc, MissionUserState>(
+              listener: (context, state) {
+                print(state);
+                if (state is MissionUserLoaded) {
+                  missionUser = MissionUser(
+                      uId: state.mission.uId,
+                      times: state.mission.times! + 1,
+                      missionId: state.mission.missionId,
+                      status: true,
+                      id: state.mission.id
+                  );
+                } else if (state is MissionUserError) {
+                }
+              })
         ],
         child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -153,6 +190,9 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                         quantity: coins,
                                         uId: SharedService.getUserId() ?? '',
                                         coinsId: coinsId));
+                                    missionUserBloc.add(
+                                        EditMissionUsers(
+                                            mission: missionUser));
                                   }
                                 },
                                 onError: (error) {

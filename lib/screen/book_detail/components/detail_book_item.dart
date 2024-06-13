@@ -7,6 +7,7 @@ import 'package:readmore/readmore.dart';
 import '../../../blocs/blocs.dart';
 import '../../../config/shared_preferences.dart';
 import '../../../model/book_model.dart';
+import '../../../model/models.dart';
 import '../../../repository/repository.dart';
 import '../../screen.dart';
 
@@ -20,22 +21,28 @@ class DetailBookItem extends StatefulWidget {
 }
 
 class _DetailBookItemState extends State<DetailBookItem> {
-  late CoinsBloc _coinsBloc;
-  late HistoryBloc _historyBloc;
+  late CoinsBloc coinsBloc;
+  late HistoryBloc historyBloc;
+  late MissionBloc missionBloc;
+  late MissionUserBloc missionUserBloc;
   String uIdInCoins = '';
   int coins = 0;
   String coinsId = '';
   bool inHis = false;
+  List<Mission> mission = [];
+  MissionUser missionUser = MissionUser();
 
   @override
   void initState() {
     super.initState();
-    _coinsBloc = CoinsBloc(CoinsRepository())
+    coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
-    _historyBloc = HistoryBloc(HistoryRepository())
+    historyBloc = HistoryBloc(HistoryRepository())
       ..add(LoadedHistoryByUId(
           uId: SharedService.getUserId() ?? '', bookId: widget.book.id ?? ''));
-    // print(widget.book.price.toString());
+    missionBloc = MissionBloc(MissionRepository())
+      ..add(LoadedMissionsByType(type: 'read'));
+    missionUserBloc = MissionUserBloc(MissionUserRepository());
   }
 
   @override
@@ -43,11 +50,15 @@ class _DetailBookItemState extends State<DetailBookItem> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<CoinsBloc>(
-          create: (BuildContext context) => _coinsBloc,
+          create: (BuildContext context) => coinsBloc,
         ),
         BlocProvider<HistoryBloc>(
-          create: (BuildContext context) => _historyBloc,
+          create: (BuildContext context) => historyBloc,
         ),
+        BlocProvider(
+          create: (context) => missionBloc,
+        ),
+        BlocProvider(create: (context) => missionUserBloc),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -67,6 +78,35 @@ class _DetailBookItemState extends State<DetailBookItem> {
             }
             //print(inHis);
           }),
+          BlocListener<MissionBloc, MissionState>(
+            listener: (context, state) {
+              //print('m: $state');
+              if (state is MissionLoadedByType) {
+                mission = state.mission;
+                mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
+                for(var m in mission){
+                  print(m.id);
+                  missionUserBloc.add(LoadedMissionsUserById(
+                      missionId: m.id ?? '',
+                      uId: SharedService.getUserId() ?? ''));
+                }
+              }
+            },
+          ),
+          BlocListener<MissionUserBloc, MissionUserState>(
+              listener: (context, state) {
+                print(state);
+                if (state is MissionUserLoaded) {
+                  missionUser = MissionUser(
+                      uId: state.mission.uId,
+                      times: state.mission.times! + 1,
+                      missionId: state.mission.missionId,
+                      status: true,
+                      id: state.mission.id
+                  );
+                } else if (state is MissionUserError) {
+                }
+              })
         ],
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 50),
@@ -140,6 +180,9 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             BlocProvider.of<ChaptersBloc>(context)
                                 .add(LoadChapters(widget.book.id ?? ''));
                             if (widget.book.price == 0 || inHis == true) {
+                              missionUserBloc.add(
+                                  EditMissionUsers(
+                                      mission: missionUser));
                               Navigator.pushNamed(context, BookScreen.routeName,
                                   arguments: {
                                     'book': widget.book,
@@ -151,7 +194,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             else {
                               if (coins >= widget.book.price!) {
                                 final int newCoins = coins - widget.book.price!;
-                                _coinsBloc.add(EditCoinsEvent(
+                                coinsBloc.add(EditCoinsEvent(
                                     quantity: newCoins,
                                     uId: SharedService.getUserId() ?? '',
                                     coinsId: coinsId));

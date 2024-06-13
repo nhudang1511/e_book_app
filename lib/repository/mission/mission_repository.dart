@@ -39,7 +39,6 @@ class MissionRepository extends BaseMissionRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('mission')
-          .orderBy("times", descending: true)
           .where('type', isEqualTo: type)
           .get();
       return querySnapshot.docs.map((doc) {

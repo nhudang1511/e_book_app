@@ -16,7 +16,7 @@ class BookRepository extends BaseBookRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('book')
-          .where('status', isEqualTo: true)
+          .where('status', isEqualTo: true).orderBy("update_at", descending: true)
           .get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();

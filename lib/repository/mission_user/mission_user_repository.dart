@@ -22,7 +22,6 @@ class MissionUserRepository extends BaseMissionUserRepository {
       var querySnapshot = await _firebaseFirestore
           .collection('mission_user')
           .where('uId', isEqualTo: uId)
-          .orderBy("times", descending: false)
           .where('status', isEqualTo: true)
           .get();
       return querySnapshot.docs.map((doc) {
