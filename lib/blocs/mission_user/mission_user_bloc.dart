@@ -49,7 +49,7 @@ class MissionUserBloc extends Bloc<MissionUserEvent, MissionUserState> {
         }
       }
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       emit(MissionUserError(e.toString()));
     }
   }
