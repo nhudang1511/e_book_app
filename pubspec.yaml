@@ -66,6 +66,8 @@ dependencies:
   custom_radio_grouped_button: ^2.2.1
   flutter_paypal_checkout: ^1.0.1
   elegant_notification: ^2.1.0
+  firebase_ui_firestore: ^1.6.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

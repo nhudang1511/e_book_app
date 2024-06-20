@@ -22,7 +22,7 @@ class ListBookMain extends StatelessWidget {
           scrollDirection: scrollDirection,
           itemCount: books.length,
           itemBuilder: (context, index) {
-            return BookCardMain(book: books[index], inLibrary: inLibrary);
+            return BookCardMain(book: books[index], inLibrary: inLibrary, authorName: '',);
           }),
     );
   }

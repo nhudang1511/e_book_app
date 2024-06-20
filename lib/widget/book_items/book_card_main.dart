@@ -13,11 +13,12 @@ import '../widget.dart';
 class BookCardMain extends StatefulWidget {
   final Book book;
   bool inLibrary;
+  final String authorName;
 
   BookCardMain({
     super.key,
     required this.book,
-    required this.inLibrary,
+    required this.inLibrary, required this.authorName,
   });
 
   @override
@@ -38,10 +39,6 @@ class _BookCardMainState extends State<BookCardMain> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-            create: (_) => AuthorBloc(
-                  AuthorRepository(),
-                )..add(LoadedAuthor(widget.book.authodId ?? ''))),
         BlocProvider(
             create: (_) => CategoryBloc(
                   CategoryRepository(),
@@ -105,26 +102,18 @@ class _BookCardMainState extends State<BookCardMain> {
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        BlocBuilder<AuthorBloc, AuthorState>(
-                                          builder: (context, state) {
-                                            Author author = Author();
-                                            if (state is AuthorLoaded) {
-                                              author = state.author;
-                                            }
-                                            return Text(
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              author.fullName ?? '',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall!
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xFFC7C7C7),
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                            );
-                                          },
+                                        Text(
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          widget.authorName ?? '',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall!
+                                              .copyWith(
+                                              color: const Color(
+                                                  0xFFC7C7C7),
+                                              fontWeight:
+                                              FontWeight.normal),
                                         ),
                                       ],
                                     ),

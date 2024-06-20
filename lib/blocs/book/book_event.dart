@@ -9,13 +9,3 @@ class LoadBooksByCateId extends BookEvent{
   final String cateId;
   LoadBooksByCateId(this.cateId);
 }
-
-class LoadBooksByLibrary extends BookEvent{
-  final List<Library> libraries;
-  LoadBooksByLibrary(this.libraries);
-}
-
-class LoadBooksById extends BookEvent{
-  final String id;
-  LoadBooksById(this.id);
-}

@@ -59,7 +59,21 @@ class Book extends CustomModel {
 
   @override
   Map<String, dynamic> toJson() {
-    // TODO: implement toJson
-    throw UnimplementedError();
+    return {
+      'authodId': authodId,
+      'categoryId' : categoryId,
+      'description': description,
+      'imageUrl': imageUrl,
+      'language': language,
+      'price': price,
+      'publishDate': publishDate,
+      'status': status,
+      'title': title,
+      'bookPreview': bookPreview,
+      'country': country,
+      'chapters': chapters,
+      'create_at': createAt,
+      'update_at': updateAt
+    };
   }
 }

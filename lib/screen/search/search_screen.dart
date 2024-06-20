@@ -118,7 +118,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const CircularProgressIndicator();
                 }
                 if (state is BookLoaded) {
-                  List<Book> book = state.books;
+                   List<Book> book = state.books;
                   return BlocBuilder<AuthorBloc, AuthorState>(
                     builder: (context, state) {
                       if (state is AuthorAllLoaded) {
@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               itemBuilder: (context, index) {
                                 return BookCardMain(
                                   book: searchResults[index],
-                                  inLibrary: false,
+                                  inLibrary: false, authorName: '',
                                 );
                               }),
                         )

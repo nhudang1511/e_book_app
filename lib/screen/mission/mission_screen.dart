@@ -58,7 +58,7 @@ class _MissionScreenState extends State<MissionScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         leading: CircleAvatar(
-                          backgroundColor: const Color(0xff6ae792),
+                          backgroundColor: const Color(0xffafa4f8),
                           child: Text(index.toString(),
                               style: TextStyle(
                                   color: Theme.of(context)
@@ -66,7 +66,7 @@ class _MissionScreenState extends State<MissionScreen> {
                                       .background)),
                         ),
                         title: Text(
-                          'Title ${missions[index].name}',
+                          'Title: ${missions[index].name}',
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

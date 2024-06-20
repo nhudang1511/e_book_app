@@ -14,6 +14,13 @@ class SharedService {
   static void setUserId(String userId) {
     _pref.setString("userId", userId);
   }
+  static bool? getTheme() {
+    return _pref.getBool("is_dark");
+  }
+
+  static void setTheme(bool isDark) {
+    _pref.setBool("is_dark", isDark);
+  }
   static void clear(){
     _pref.clear();
   }

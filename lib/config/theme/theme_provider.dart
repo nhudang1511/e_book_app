@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:e_book_app/config/theme/theme.dart';
 
-class ThemeProvider with ChangeNotifier {
+import '../shared_preferences.dart';
+
+class ThemeProvider extends ChangeNotifier {
   ThemeData _themeData = lightTheme;
 
   ThemeData get themeData => _themeData;
 
-  set themeData(ThemeData themeData) {
-    _themeData = themeData;
-    notifyListeners();
-  }
-  void toggleTheme() {
-    if (_themeData == lightTheme) {
-      themeData = darkTheme;
-    } else {
-      themeData = lightTheme;
+  ThemeProvider(bool isDark){
+    if(isDark){
+      _themeData = darkTheme;
     }
+    else{
+      _themeData = lightTheme;
+    }
+  }
+
+  void toggleTheme() async {
+    if (_themeData == lightTheme) {
+      _themeData = darkTheme;
+      SharedService.setTheme(true);
+    } else {
+      _themeData = lightTheme;
+      SharedService.setTheme(false);
+    }
+    notifyListeners();
   }
 }

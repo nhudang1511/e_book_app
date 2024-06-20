@@ -11,37 +11,22 @@ import 'firebase_options.dart';
 import 'repository/repository.dart';
 import 'screen/screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //Bloc.observer = const AppObserver();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await SharedService.init();
-  // final firebaseMessaging = FirebaseMessaging.instance;
-  // await firebaseMessaging.requestPermission();
-  // final token = await firebaseMessaging.getToken();
-  // print('token: $token');
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(ChangeNotifierProvider(
-    create: (context) => ThemeProvider(),
-    child: const MyApp(),
-  ));
+  final bool? isDark = SharedService.getTheme();
+  runApp(MyApp(isDark: isDark ?? false));
 }
-
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print('Handling a background message ${message.messageId}');
-// }
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  // static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  // static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
-
+  const MyApp({super.key, required this.isDark});
   @override
   State<MyApp> createState() => _MyAppState();
+
+  final bool isDark;
 }
 
 class _MyAppState extends State<MyApp> {
@@ -105,16 +90,22 @@ class _MyAppState extends State<MyApp> {
             NoteRepository(),),
         ),
       ],
-      child: MaterialApp(
-        title: 'E Book App',
-        debugShowCheckedModeBanner: false,
-        theme: Provider.of<ThemeProvider>(context).themeData,
-        // darkTheme: darkTheme,
-        // themeMode: ThemeMode.system,
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: SplashScreen.routeName,
-        navigatorKey: navigatorKey,
-        // navigatorObservers: <NavigatorObserver>[MyApp.observer],
+      child: ChangeNotifierProvider(
+        create: (BuildContext context) => ThemeProvider(widget.isDark),
+        builder: (context, snapshot){
+          final settings = Provider.of<ThemeProvider>(context);
+          return MaterialApp(
+            title: 'E Book App',
+            debugShowCheckedModeBanner: false,
+            theme: settings.themeData,
+            // darkTheme: darkTheme,
+            // themeMode: ThemeMode.system,
+            onGenerateRoute: AppRouter.onGenerateRoute,
+            initialRoute: SplashScreen.routeName,
+            navigatorKey: navigatorKey,
+            // navigatorObservers: <NavigatorObserver>[MyApp.observer],
+          );
+        }
       ),
     );
   }

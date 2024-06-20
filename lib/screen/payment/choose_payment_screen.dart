@@ -30,6 +30,11 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   String coinsId = '';
   List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
+  var listMoneysToCoins  = {
+    1: 300,
+    5: 2000,
+    10: 5000,
+  };
 
   @override
   void initState() {
@@ -118,16 +123,10 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                           Theme.of(context).colorScheme.secondaryContainer,
                       selectedBorderColor:
                           Theme.of(context).colorScheme.background,
-                      buttonLables: const [
-                        '1\$ = 300 coins',
-                        '5\$ = 2000 coins',
-                        '10\$ = 5000 coins',
-                      ],
-                      buttonValues: const [
-                        "1",
-                        "5",
-                        "10",
-                      ],
+                      buttonLables:  listMoneysToCoins.entries.map((entry) {
+                        return '${entry.key} \$ = ${entry.value} coins';
+                      }).toList(),
+                      buttonValues: listMoneysToCoins.keys.toList(),
                       buttonTextStyle: const ButtonTextStyle(
                           selectedColor: Colors.white,
                           unSelectedColor: Colors.black,
@@ -136,7 +135,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                       horizontal: true,
                       radioButtonValue: (value) {
                         setState(() {
-                          money = int.parse(value);
+                          money = value;
                         });
                       },
                       selectedColor: Theme.of(context)
@@ -178,12 +177,12 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     "Contact us for any questions on your order.",
                                 onSuccess: (Map params) async {
                                   print("onSuccess: $params");
-                                  if (money == 1) {
-                                    coins = coins + 300;
-                                  } else if (money == 5) {
-                                    coins = coins + 2000;
-                                  } else if (money == 10) {
-                                    coins = coins + 5000;
+                                  if (money == listMoneysToCoins.keys.elementAt(0)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(0);
+                                  } else if (money == listMoneysToCoins.keys.elementAt(1)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(1);
+                                  } else if (money == listMoneysToCoins.keys.elementAt(2)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(2);
                                   }
                                  if (uId == SharedService.getUserId()) {
                                     _coinsBloc.add(EditCoinsEvent(

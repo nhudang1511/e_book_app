@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
+import '../../../widget/book_items/book_card_main.dart';
 import '../../../widget/book_items/list_book_main.dart';
 
 class FavouritesTab extends StatefulWidget {
@@ -33,11 +34,18 @@ class _FavouritesTabState extends State<FavouritesTab> {
           return matchingBooks.isNotEmpty
               ? Column(
                   children: [
-                    ListBookMain(
-                        books: matchingBooks,
-                        scrollDirection: Axis.vertical,
-                        height: MediaQuery.of(context).size.height - 50,
-                        inLibrary: true),
+                    Expanded(
+                      child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: matchingBooks.length,
+                          itemBuilder: (context, index) {
+                            return BookCardMain(
+                              book: matchingBooks[index],
+                              inLibrary: true,
+                              authorName: '',
+                            );
+                          }),
+                    )
                   ],
                 )
               : const SizedBox();

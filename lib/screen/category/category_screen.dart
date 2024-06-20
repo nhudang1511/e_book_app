@@ -80,7 +80,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               itemBuilder: (context, index) {
                                 return BookCardMain(
                                   book: listBookInCategory[index],
-                                  inLibrary: false,
+                                  inLibrary: false, authorName: '',
                                 );
                               }),
                         )
