@@ -30,86 +30,51 @@ class _BookCardHistoryState extends State<BookCardHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (_) => AuthorBloc(
-                  AuthorRepository(),
-                )..add(LoadedAuthor(widget.book.authodId ?? ''))),
-        BlocProvider(
-            create: (_) => CategoryBloc(
-                  CategoryRepository(),
-                )..add(LoadCategory())),
-      ],
-      child: GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              BookDetailScreen.routeName,
-              arguments: {'book': widget.book, 'inLibrary': widget.inLibrary},
-            );
-          },
-          child: Container(
-            width: (MediaQuery.of(context).size.width - 10) / 2,
-            height: 150,
-            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-            child: BlocBuilder<CategoryBloc, CategoryState>(
-              builder: (context, state) {
-                if (state is CategoryLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is CategoryLoaded) {
-                  // Tạo danh sách tên danh mục từ categoryId trong book
-                  if (widget.book.categoryId != null) {
-                    List<String> categoryNames = [];
-                    for (String categoryId in widget.book.categoryId!) {
-                      Category? category = state.categories.firstWhere(
-                        (cat) => cat.id == categoryId,
-                      );
-                      categoryNames.add(category.name ?? '');
-                    }
-                  }
-                  return Column(
-                    children: [
-                      Expanded(
-                          flex: 2,
-                          child: Image.network(widget.book.imageUrl ?? '')),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        flex: 1,
-                        child:
-                            (widget.percent.isNaN || widget.percent.isInfinite)
-                                ? LinearPercentIndicator(
-                                    animation: true,
-                                    lineHeight: 4.0,
-                                    animationDuration: 2500,
-                                    percent: 0,
-                                    center: const Text(
-                                      "",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    progressColor: const Color(0xFF8C2EEE),
-                                  )
-                                : LinearPercentIndicator(
-                                    animation: true,
-                                    lineHeight: 4.0,
-                                    animationDuration: 2500,
-                                    percent: widget.percent / 100,
-                                    center: const Text(
-                                      "",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    progressColor: const Color(0xFF8C2EEE),
-                                  ),
+    return GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            BookDetailScreen.routeName,
+            arguments: {'book': widget.book, 'inLibrary': widget.inLibrary},
+          );
+        },
+        child: Container(
+          width: (MediaQuery.of(context).size.width - 10) / 2,
+          height: 150,
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+          child: Column(
+            children: [
+              Expanded(
+                  flex: 2, child: Image.network(widget.book.imageUrl ?? '')),
+              const SizedBox(width: 5),
+              Expanded(
+                flex: 1,
+                child: (widget.percent.isNaN || widget.percent.isInfinite)
+                    ? LinearPercentIndicator(
+                        animation: true,
+                        lineHeight: 4.0,
+                        animationDuration: 2500,
+                        percent: 0,
+                        center: const Text(
+                          "",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        progressColor: const Color(0xFF8C2EEE),
                       )
-                    ],
-                  );
-                } else {
-                  return const Text("Something went wrong");
-                }
-              },
-            ),
-          )),
-    );
+                    : LinearPercentIndicator(
+                        animation: true,
+                        lineHeight: 4.0,
+                        animationDuration: 2500,
+                        percent: widget.percent / 100,
+                        center: const Text(
+                          "",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        progressColor: const Color(0xFF8C2EEE),
+                      ),
+              )
+            ],
+          ),
+        ));
   }
 }

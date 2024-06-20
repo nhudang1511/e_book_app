@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 import '../../repository/repository.dart';
@@ -80,7 +79,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               itemBuilder: (context, index) {
                                 return BookCardMain(
                                   book: listBookInCategory[index],
-                                  inLibrary: false, authorName: '',
+                                  inLibrary: false
                                 );
                               }),
                         )

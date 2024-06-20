@@ -89,6 +89,8 @@ class _MyAppState extends State<MyApp> {
           create: (_) => NoteBloc(
             NoteRepository(),),
         ),
+        BlocProvider(create: (_) => MissionBloc(MissionRepository())..add(LoadedMissions())),
+        BlocProvider(create: (_) => CategoryBloc(CategoryRepository())..add(LoadCategory()))
       ],
       child: ChangeNotifierProvider(
         create: (BuildContext context) => ThemeProvider(widget.isDark),

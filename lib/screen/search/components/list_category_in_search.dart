@@ -16,80 +16,74 @@ class ListCategoryInSearch extends StatefulWidget {
 }
 
 class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
-  CategoryBloc categoryBloc = CategoryBloc(CategoryRepository());
 
   @override
   void initState() {
     super.initState();
-    categoryBloc.add(LoadCategory());
   }
 
 
   @override
   void dispose() {
     super.dispose();
-    categoryBloc.close();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => categoryBloc,
-      child: Column(
-        children: [
-          const SizedBox(height: 10),
-          const SectionTitle(title: 'Genres: '),
-          BlocBuilder<CategoryBloc, CategoryState>(
-            builder: (context, state) {
-              if (state is CategoryLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state is CategoryLoaded) {
-                final List<Category> allCategories = state.categories;
-                return BlocBuilder<BookBloc, BookState>(
-                  builder: (context, state) {
-                    if (state is BookLoaded) {
-                      final List<Book> books = state.books;
-                      final List<Category> filteredCategories =
-                      allCategories.where((category) {
-                        // Check if any book has this category id
-                        return books
-                            .any((book) =>
-                            book.categoryId!.contains(category.id));
-                      }).toList();
-                      if (filteredCategories.isNotEmpty) {
-                        return Expanded(
-                          child: GridView.count(
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 10),
-                            // Create a grid with 2 columns. If you change the scrollDirection to
-                            // horizontal, this produces 2 rows.
-                            crossAxisCount: 2,
-                            // Generate 100 widgets that display their index in the List.
-                            children:
-                            List.generate(filteredCategories.length, (index) {
-                              return CategoryCard(
-                                  category: filteredCategories[index]);
-                            }),
-                          ),
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        const SectionTitle(title: 'Genres: '),
+        BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, state) {
+            if (state is CategoryLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is CategoryLoaded) {
+              final List<Category> allCategories = state.categories;
+              return BlocBuilder<BookBloc, BookState>(
+                builder: (context, state) {
+                  if (state is BookLoaded) {
+                    final List<Book> books = state.books;
+                    final List<Category> filteredCategories =
+                    allCategories.where((category) {
+                      // Check if any book has this category id
+                      return books
+                          .any((book) =>
+                          book.categoryId!.contains(category.id));
+                    }).toList();
+                    if (filteredCategories.isNotEmpty) {
+                      return Expanded(
+                        child: GridView.count(
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 10),
+                          // Create a grid with 2 columns. If you change the scrollDirection to
+                          // horizontal, this produces 2 rows.
+                          crossAxisCount: 2,
+                          // Generate 100 widgets that display their index in the List.
+                          children:
+                          List.generate(filteredCategories.length, (index) {
+                            return CategoryCard(
+                                category: filteredCategories[index]);
+                          }),
+                        ),
+                      );
                     } else {
-                      return const CircularProgressIndicator();
+                      return const SizedBox();
                     }
-                  },
-                );
-              } else {
-                return const Text('Something went wrong');
-              }
-            },
-          ),
-        ],
-      ),
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              );
+            } else {
+              return const Text('Something went wrong');
+            }
+          },
+        ),
+      ],
     );
   }
 }

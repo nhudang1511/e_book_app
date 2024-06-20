@@ -18,6 +18,8 @@ class Book extends CustomModel {
   final String? country;
   final DateTime? createAt;
   final DateTime? updateAt;
+  final String? authorName;
+  final List<String>? categoryName;
 
   Book(
       {this.id,
@@ -34,26 +36,31 @@ class Book extends CustomModel {
       this.chapters,
       this.country,
       this.createAt,
-      this.updateAt});
+      this.updateAt,
+      this.authorName,
+      this.categoryName});
 
   @override
   Book fromJson(Map<String, dynamic> json) {
     Book book = Book(
-        id: json['id'],
-        authodId: json['authodId'],
-        categoryId: List<String>.from(json['categoryId']),
-        description: json['description'],
-        imageUrl: json['imageUrl'],
-        language: json['language'],
-        price: json['price'],
-        publishDate: (json['publishDate'] as Timestamp).toDate(),
-        status: json['status'],
-        title: json['title'],
-        bookPreview: List<String>.from(json['bookPreview']),
-        country: json['country'],
-        chapters: json['chapters'],
-        createAt: (json['create_at'] as Timestamp).toDate(),
-        updateAt: (json['update_at'] as Timestamp).toDate());
+      id: json['id'],
+      authodId: json['authodId'],
+      categoryId: List<String>.from(json['categoryId']),
+      description: json['description'],
+      imageUrl: json['imageUrl'],
+      language: json['language'],
+      price: json['price'],
+      publishDate: (json['publishDate'] as Timestamp).toDate(),
+      status: json['status'],
+      title: json['title'],
+      bookPreview: List<String>.from(json['bookPreview']),
+      country: json['country'],
+      chapters: json['chapters'],
+      createAt: (json['create_at'] as Timestamp).toDate(),
+      updateAt: (json['update_at'] as Timestamp).toDate(),
+      authorName: json['authorName'],
+      categoryName: List<String>.from(json['categoryName'] ?? []),
+    );
     return book;
   }
 
@@ -61,7 +68,7 @@ class Book extends CustomModel {
   Map<String, dynamic> toJson() {
     return {
       'authodId': authodId,
-      'categoryId' : categoryId,
+      'categoryId': categoryId,
       'description': description,
       'imageUrl': imageUrl,
       'language': language,

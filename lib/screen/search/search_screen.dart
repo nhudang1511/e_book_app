@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               itemBuilder: (context, index) {
                                 return BookCardMain(
                                   book: searchResults[index],
-                                  inLibrary: false, authorName: '',
+                                  inLibrary: false,
                                 );
                               }),
                         )
