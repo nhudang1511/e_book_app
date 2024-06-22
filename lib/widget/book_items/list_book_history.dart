@@ -38,8 +38,8 @@ class ListBookHistory extends StatelessWidget {
             child: GridView.builder(
             padding: const EdgeInsets.all(5),
             itemCount: books.length,
-            gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
             itemBuilder: (context, index) => BookCardHistory(
                 book: books[index],
                 inLibrary: inLibrary,

@@ -9,3 +9,6 @@ class LoadBooksByCateId extends BookEvent{
   final String cateId;
   LoadBooksByCateId(this.cateId);
 }
+class LoadBooksPaginating extends BookEvent{
+  LoadBooksPaginating();
+}

@@ -1,14 +1,11 @@
 import 'dart:async';
-
 import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/repository/note/note_repository.dart';
 import 'package:e_book_app/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
-import '../../repository/book/book_repository.dart';
 
 class TextNotesScreen extends StatefulWidget {
   const TextNotesScreen({super.key});
@@ -26,7 +23,6 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
   late Timer _timer;
   TextEditingController titleContentController = TextEditingController();
   TextEditingController contentController = TextEditingController();
-  BookBloc bookBloc = BookBloc(BookRepository());
 
   @override
   void initState() {

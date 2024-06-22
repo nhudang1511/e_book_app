@@ -69,10 +69,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ))
       .toList();
+  ScrollController controller = ScrollController();
+  bool isPaginating = false;
+
+  void _scrollListener() {
+    if (controller.offset >= controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
+      isPaginating = true;
+      context.read<BookBloc>().add(LoadBooksPaginating());
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    controller.addListener(_scrollListener);
   }
 
   @override
@@ -88,9 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         if (state is BookLoading) {
           return const Center(child: CircularProgressIndicator());
-        }
-        if (state is BookLoaded) {
-          //print(state.books.length);
+        } else if (state is BookLoaded) {
+          isPaginating = false;
           books = state.books;
           newBooks.clear();
           for (var b in books) {
@@ -105,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
         return CustomScrollView(
+          controller: controller,
           slivers: <Widget>[
             CustomAppBarHome(title: period),
             // const SectionTitle(title: 'New reals'),
@@ -186,8 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
                 return Column(
                   children: [
                     const SectionTitle(title: 'All Books'),
@@ -201,6 +212,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             inLibrary: false,
                           );
                         }),
+                    isPaginating
+                        ? Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ))
+                        : const SizedBox()
                   ],
                 );
               }, childCount: 1),

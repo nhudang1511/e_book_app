@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
+import '../../../repository/repository.dart';
 import '../../../widget/book_items/list_book_history.dart';
 import '../../../widget/widget.dart';
 
@@ -16,7 +18,8 @@ class HistoriesTab extends StatelessWidget {
       uId: uId,
       scrollDirection: Axis.vertical,
       height: MediaQuery.of(context).size.height,
-      inHistory: false, book: book,
+      inHistory: false,
+      book: book,
     );
   }
 }
@@ -27,7 +30,8 @@ class DisplayHistories extends StatefulWidget {
     required this.uId,
     required this.scrollDirection,
     required this.height,
-    required this.inHistory, required this.book,
+    required this.inHistory,
+    required this.book,
   });
 
   final String? uId;
@@ -43,6 +47,12 @@ class DisplayHistories extends StatefulWidget {
 class _DisplayHistoriesState extends State<DisplayHistories> {
   List<Book> matchingBooks = [];
   List<num> percent = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -56,41 +66,43 @@ class _DisplayHistoriesState extends State<DisplayHistories> {
             return History.fromSnapshot(doc);
           }).toList();
           matchingBooks = widget.book
-              .where((book) =>
-              histories.any((item) => item.chapters == book.id))
+              .where(
+                  (book) => histories.any((item) => item.chapters == book.id))
               .toList();
           if (matchingBooks.isNotEmpty) {
             percent = [];
             for (var book in matchingBooks) {
-              List<History> matchedHistories = histories
-                  .where((item) => item.chapters == book.id)
-                  .toList();
+              List<History> matchedHistories =
+                  histories.where((item) => item.chapters == book.id).toList();
               for (var history in matchedHistories) {
-                //print('Book ID: ${book.id}, Percent: ${history.percent}');
-                // Do something with history.percent here
                 percent.add(history.percent!);
               }
             }
           }
-          return matchingBooks.isNotEmpty ? Column(
-            children: [
-              widget.inHistory ? const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SectionTitle(title: 'Continue Reading'),
-                ],
-              ) : const SizedBox(),
-              ListBookHistory(
-                books: matchingBooks,
-                scrollDirection: widget.scrollDirection,
-                height: widget.height,
-                inLibrary: false,
-                percent: percent, inHistory: widget.inHistory,
-              ),
-            ],
-          ) : const SizedBox();
+          return matchingBooks.isNotEmpty
+              ? Column(
+                  children: [
+                    widget.inHistory
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SectionTitle(title: 'Continue Reading'),
+                            ],
+                          )
+                        : const SizedBox(),
+                    ListBookHistory(
+                      books: matchingBooks,
+                      scrollDirection: widget.scrollDirection,
+                      height: widget.height,
+                      inLibrary: false,
+                      percent: percent,
+                      inHistory: widget.inHistory,
+                    ),
+                  ],
+                )
+              : const SizedBox();
         } else {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );

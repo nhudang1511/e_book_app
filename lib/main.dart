@@ -81,9 +81,6 @@ class _MyAppState extends State<MyApp> {
                   ChaptersRepository(),
                 )),
         BlocProvider(
-          create: (_) => HistoryBloc(HistoryRepository())..add(LoadHistory()),
-        ),
-        BlocProvider(
           create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
         BlocProvider(
           create: (_) => NoteBloc(

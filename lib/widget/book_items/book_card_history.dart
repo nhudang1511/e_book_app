@@ -1,10 +1,7 @@
 import 'package:e_book_app/screen/book_detail/book_detail_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import '../../blocs/blocs.dart';
 import '../../model/models.dart';
-import '../../repository/repository.dart';
 
 class BookCardHistory extends StatefulWidget {
   final Book book;

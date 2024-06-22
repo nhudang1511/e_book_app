@@ -7,7 +7,13 @@ class BookLoading extends BookState{
 }
 class BookLoaded extends BookState{
   final List<Book> books;
-  const BookLoaded({this.books = const <Book>[]});
+  DocumentSnapshot? lastDoc;
+  BookLoaded({this.books = const <Book>[], this.lastDoc});
+}
+class BookPaginating extends BookState{
+  final List<Book> books;
+  DocumentSnapshot? lastDoc;
+  BookPaginating({required this.books, this.lastDoc});
 }
 class BookFailure extends BookState{
 }
