@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../model/models.dart';
 abstract class BaseBookRepository{
-  Future<List<Book>> getBookByCategory(String cateId);
-  Future<(List<Book>, DocumentSnapshot?)> readPosts({
+  Future<List<Book>> getAllBooks();
+  Future<(List<Book>, DocumentSnapshot?)> readBooks({
     int limit = 5,
-    DocumentSnapshot<Object?>? startAfterDoc,
-    String? cateId
+    DocumentSnapshot<Object?>? startAfterDoc
   });
   Future<void> fetchAuthorAndCategoryNames(Map<String, dynamic> data);
 }

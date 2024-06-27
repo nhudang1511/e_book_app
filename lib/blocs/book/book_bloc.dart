@@ -12,29 +12,21 @@ class BookBloc extends Bloc<BookEvent, BookState> {
 
   BookBloc(this._bookRepository) : super(BookLoading()) {
     on<LoadBooks>(_onLoadBook);
-    on<LoadBooksByCateId>(_onLoadBookByCateId);
     on<LoadBooksPaginating>(_onLoadBooksPaginating);
+    on<LoadAllBooks>(_onLoadAllBooks);
   }
 
   void _onLoadBook(event, Emitter<BookState> emit) async {
     try {
       // Not paginating.
       emit(BookLoading());
-      final book = await _bookRepository.readPosts();
+      final book = await _bookRepository.readBooks();
       emit(BookLoaded(books: book.$1, lastDoc: book.$2));
-    } on Exception catch (e) {
-      emit(BookFailure());
-    }
-  }
-
-  void _onLoadBookByCateId(event, Emitter<BookState> emit) async {
-    try {
-      List<Book> books = await _bookRepository.getBookByCategory(event.cateId);
-      emit(BookLoaded(books: books));
     } catch (e) {
       emit(BookFailure());
     }
   }
+
 
   void _onLoadBooksPaginating(event, Emitter<BookState> emit) async {
     try {
@@ -43,14 +35,24 @@ class BookBloc extends Bloc<BookEvent, BookState> {
         if (currentState.lastDoc != null) {
           emit(BookPaginating(
               books: currentState.books, lastDoc: currentState.lastDoc));
-          final books = await _bookRepository.readPosts(
+          final books = await _bookRepository.readBooks(
               startAfterDoc: currentState.lastDoc);
           emit(BookLoaded(
               books: currentState.books + books.$1, lastDoc: books.$2));
         }
       }
     } catch (e) {
-      print(e.toString());
+      emit(BookFailure());
+    }
+  }
+
+  void _onLoadAllBooks(event, Emitter<BookState> emit) async {
+    try {
+      // Not paginating.
+      emit(BookLoading());
+      final book = await _bookRepository.getAllBooks();
+      emit(BooksLoadAll(books: book));
+    } catch (e) {
       emit(BookFailure());
     }
   }

@@ -75,7 +75,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-            print(state);
+            //print(state);
             if (state is MissionUserLoaded) {
               missionUser = MissionUser(
                 uId: state.mission.uId,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/models.dart';
@@ -10,12 +11,12 @@ part 'history_state.dart';
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryRepository _historyRepository;
 
-  HistoryBloc(this._historyRepository)
-      : super(HistoryInitial()) {
+  HistoryBloc(this._historyRepository) : super(HistoryInitial()) {
     on<AddToHistoryEvent>(_onAddToHistory);
     on<LoadHistory>(_onLoadHistory);
     on<LoadHistoryByBookId>(_onLoadHistoryByBookId);
     on<LoadedHistoryByUId>(_onLoadHistoryByUId);
+    on<LoadHistoryPaginating>(_onLoadHistoryPaginating);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -36,10 +37,29 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 
+  void _onLoadHistoryPaginating(event, Emitter<HistoryState> emit) async {
+    try {
+      if (state is! HistoryPaginating) {
+        final currentState = state as HistoryLoaded;
+        if (currentState.lastDoc != null) {
+          emit(HistoryPaginating(histories: currentState.histories,
+              books: currentState.books, lastDoc: currentState.lastDoc));
+          final books = await _historyRepository.getBooksInHistories(
+              startAfterDoc: currentState.lastDoc);
+          emit(HistoryLoaded(histories: currentState.histories + books.$1,
+              books: currentState.books + books.$2, lastDoc: books.$3));
+        }
+      }
+    } catch (e) {
+      emit(HistoryError(e.toString()));
+    }
+  }
+
   void _onLoadHistory(event, Emitter<HistoryState> emit) async {
     try {
-      List<History> history = await _historyRepository.getAllHistories();
-      emit(HistoryLoaded(histories: history));
+      emit(HistoryLoading());
+      final data = await _historyRepository.getBooksInHistories();
+      emit(HistoryLoaded(histories: data.$1, books: data.$2, lastDoc: data.$3));
     } catch (e) {
       emit(HistoryError(e.toString()));
     }
@@ -47,7 +67,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
   void _onLoadHistoryByBookId(event, Emitter<HistoryState> emit) async {
     try {
-      List<History> history = await _historyRepository.getHistories(event.bookId, event.uId);
+      List<History> history =
+          await _historyRepository.getHistories(event.bookId, event.uId);
       emit(HistoryLoadedById(histories: history));
     } catch (e) {
       emit(HistoryError(e.toString()));
@@ -56,7 +77,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
   void _onLoadHistoryByUId(event, Emitter<HistoryState> emit) async {
     try {
-      History history = await _historyRepository.getHistoryByUId(event.uId, event.bookId);
+      History history =
+          await _historyRepository.getHistoryByUId(event.uId, event.bookId);
       emit(HistoryLoadedByUId(history: history));
     } catch (e) {
       emit(HistoryError(e.toString()));

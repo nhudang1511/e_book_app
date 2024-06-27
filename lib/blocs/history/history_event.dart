@@ -6,6 +6,8 @@ abstract class HistoryEvent{
 
 class LoadHistory extends HistoryEvent {
 }
+class LoadHistoryPaginating extends HistoryEvent{
+}
 class AddToHistoryEvent extends HistoryEvent {
   final String uId;
   final String chapters;

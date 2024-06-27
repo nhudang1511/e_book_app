@@ -18,6 +18,23 @@ class FavouritesTab extends StatefulWidget {
 class _FavouritesTabState extends State<FavouritesTab> {
   List<Library> libraries = [];
   List<Book> matchingBooks = [];
+  ScrollController controller = ScrollController();
+
+  bool isPaginating = false;
+
+  void _scrollListener() {
+    if (controller.offset >= controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
+      isPaginating = true;
+      context.read<BookBloc>().add(LoadBooksPaginating());
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_scrollListener);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +48,39 @@ class _FavouritesTabState extends State<FavouritesTab> {
                   library.userId == SharedService.getUserId()))
               .toList();
           return matchingBooks.isNotEmpty
-              ? Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: matchingBooks.length,
-                          itemBuilder: (context, index) {
-                            return BookCardMain(
-                              book: matchingBooks[index],
-                              inLibrary: true,
-                            );
-                          }),
-                    )
-                  ],
+              ? BlocBuilder<BookBloc, BookState>(
+                  builder: (context, state) {
+                    if (state is BookLoaded) {
+                      isPaginating = false;
+                      if(state.lastDoc != null && matchingBooks.length <= 4){
+                        isPaginating = true;
+                        context.read<BookBloc>().add(LoadBooksPaginating());
+                      }
+                    }
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                              controller: controller,
+                              scrollDirection: Axis.vertical,
+                              itemCount: matchingBooks.length,
+                              itemBuilder: (context, index) {
+                                return BookCardMain(
+                                  book: matchingBooks[index],
+                                  inLibrary: true,
+                                );
+                              }),
+                        ),
+                        isPaginating
+                            ? Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ))
+                            : const SizedBox()
+                      ],
+                    );
+                  },
                 )
               : const SizedBox();
         } else {

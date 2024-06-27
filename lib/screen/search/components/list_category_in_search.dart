@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
-import '../../../repository/category/category_repository.dart';
 import '../../../widget/category_items/category_card.dart';
 import '../../../widget/widget.dart';
 
@@ -17,10 +16,24 @@ class ListCategoryInSearch extends StatefulWidget {
 
 class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
 
+  ScrollController controller = ScrollController();
+  bool isPaginating = false;
+  List<Category> filteredCategories = [];
+
+  void _scrollListener() {
+    if (controller.offset >= controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
+      isPaginating = true;
+      context.read<BookBloc>().add(LoadBooksPaginating());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    controller.addListener(_scrollListener);
   }
+
 
 
   @override
@@ -44,38 +57,38 @@ class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
               return BlocBuilder<BookBloc, BookState>(
                 builder: (context, state) {
                   if (state is BookLoaded) {
+                    isPaginating = false;
                     final List<Book> books = state.books;
-                    final List<Category> filteredCategories =
+                    filteredCategories =
                     allCategories.where((category) {
                       // Check if any book has this category id
                       return books
                           .any((book) =>
                           book.categoryId!.contains(category.id));
                     }).toList();
-                    if (filteredCategories.isNotEmpty) {
-                      return Expanded(
-                        child: GridView.count(
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 10),
-                          // Create a grid with 2 columns. If you change the scrollDirection to
-                          // horizontal, this produces 2 rows.
-                          crossAxisCount: 2,
-                          // Generate 100 widgets that display their index in the List.
-                          children:
-                          List.generate(filteredCategories.length, (index) {
-                            return CategoryCard(
-                                category: filteredCategories[index]);
-                          }),
-                        ),
-                      );
-                    } else {
-                      return const SizedBox();
+                    if(state.lastDoc != null && filteredCategories.length <= 6){
+                      isPaginating = true;
+                      context.read<BookBloc>().add(LoadBooksPaginating());
                     }
-                  } else {
-                    return const CircularProgressIndicator();
                   }
+                  return Expanded(
+                    child: GridView.count(
+                      controller: controller,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 10),
+                      // Create a grid with 2 columns. If you change the scrollDirection to
+                      // horizontal, this produces 2 rows.
+                      crossAxisCount: 2,
+                      // Generate 100 widgets that display their index in the List.
+                      children:
+                      List.generate(filteredCategories.length, (index) {
+                        return CategoryCard(
+                            category: filteredCategories[index]);
+                      }),
+                    ),
+                  );
                 },
               );
             } else {
@@ -83,6 +96,13 @@ class _ListCategoryInSearchState extends State<ListCategoryInSearch> {
             }
           },
         ),
+        isPaginating
+            ? Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ))
+            : const SizedBox()
       ],
     );
   }

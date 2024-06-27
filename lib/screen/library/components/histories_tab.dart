@@ -4,7 +4,6 @@ import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
 import '../../../repository/repository.dart';
 import '../../../widget/book_items/list_book_history.dart';
-import '../../../widget/widget.dart';
 
 class HistoriesTab extends StatelessWidget {
   const HistoriesTab({super.key, required this.uId, required this.book});
@@ -80,25 +79,13 @@ class _DisplayHistoriesState extends State<DisplayHistories> {
             }
           }
           return matchingBooks.isNotEmpty
-              ? Column(
-                  children: [
-                    widget.inHistory
-                        ? const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SectionTitle(title: 'Continue Reading'),
-                            ],
-                          )
-                        : const SizedBox(),
-                    ListBookHistory(
-                      books: matchingBooks,
-                      scrollDirection: widget.scrollDirection,
-                      height: widget.height,
-                      inLibrary: false,
-                      percent: percent,
-                      inHistory: widget.inHistory,
-                    ),
-                  ],
+              ? ListBookHistory(
+                  books: matchingBooks,
+                  scrollDirection: widget.scrollDirection,
+                  height: widget.height,
+                  inLibrary: false,
+                  percent: percent,
+                  inHistory: widget.inHistory,
                 )
               : const SizedBox();
         } else {

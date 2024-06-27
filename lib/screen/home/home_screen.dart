@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/widget/book_items/list_book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,48 +27,49 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Book> recommendBooks = [];
   Author author = Author();
   final List<Widget> imageSliders = listQuote
-      .map((item) => Container(
-            margin: const EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-                color: item.color, borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: 10,
-                ),
-                Flexible(
-                  child: ClipRRect(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(5.0)),
-                      child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
-                ),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        item.quote,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                        maxLines: 5,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(item.name,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal))
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                )
-              ],
+      .map((item) =>
+      Container(
+        margin: const EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+            color: item.color, borderRadius: BorderRadius.circular(10)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              width: 10,
             ),
-          ))
+            Flexible(
+              child: ClipRRect(
+                  borderRadius:
+                  const BorderRadius.all(Radius.circular(5.0)),
+                  child: Image.asset(item.imageUrl, fit: BoxFit.fill)),
+            ),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    item.quote,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 5,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(item.name,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.normal))
+                ],
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            )
+          ],
+        ),
+      ))
       .toList();
   ScrollController controller = ScrollController();
   bool isPaginating = false;
@@ -107,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
             DateTime currentDate = DateTime.now();
             // Trừ 3 ngày từ ngày hiện tại
             DateTime dateBeforeThreeDays =
-                currentDate.subtract(const Duration(days: 3));
+            currentDate.subtract(const Duration(days: 3));
             if (b.createAt!.isAfter(dateBeforeThreeDays) ||
                 b.updateAt!.isAfter(dateBeforeThreeDays)) {
               newBooks.add(b);
@@ -139,7 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: listQuote.asMap().entries.map((entry) {
+                    children: listQuote
+                        .asMap()
+                        .entries
+                        .map((entry) {
                       return GestureDetector(
                         onTap: () => _controller.animateToPage(entry.key),
                         child: Container(
@@ -149,12 +154,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               vertical: 8.0, horizontal: 4.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: (Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black)
+                              color: (Theme
+                                  .of(context)
+                                  .brightness ==
+                                  Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black)
                                   .withOpacity(
-                                      _current == entry.key ? 0.9 : 0.4)),
+                                  _current == entry.key ? 0.9 : 0.4)),
                         ),
                       );
                     }).toList(),
@@ -198,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SliverList(
               delegate:
-                  SliverChildBuilderDelegate((BuildContext context, int index) {
+              SliverChildBuilderDelegate((BuildContext context, int index) {
                 return Column(
                   children: [
                     const SectionTitle(title: 'All Books'),
@@ -214,10 +221,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         }),
                     isPaginating
                         ? Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ))
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ))
                         : const SizedBox()
                   ],
                 );

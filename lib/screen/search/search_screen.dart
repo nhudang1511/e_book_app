@@ -1,8 +1,10 @@
+import 'dart:async'; // Add this import for Timer
+
 import 'package:e_book_app/model/models.dart';
+import 'package:e_book_app/repository/book/book_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
-import '../../repository/repository.dart';
 import '../../widget/widget.dart';
 import 'components/list_category_in_search.dart';
 
@@ -16,56 +18,43 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  String _searchText = "";
   String _selectedSearchOption = "Name of book"; // Default search option
   bool _hasSearched = false;
   List<Book> searchResults = [];
+  late SearchBloc searchBloc;
+  Timer? _debounce; // Add this Timer variable
 
   void _onSearchTextChanged(String newText) {
-    setState(() {
-      _searchText = newText;
-      _hasSearched = false;
+    if (_debounce?.isActive ?? false) _debounce?.cancel(); // Cancel the previous timer if it's still active
+    _debounce = Timer(const Duration(milliseconds: 5), () { // Set the debounce duration
+      setState(() {
+        _hasSearched = false;
+      });
+      if(_selectedSearchOption == "Name of book"){
+        searchBloc.add(LoadSearchByTitle(words: newText));
+      }
+      else if(_selectedSearchOption == "Author"){
+        searchBloc.add(LoadSearchByAuthor(words: newText));
+      }
     });
   }
 
-  List<Book> _performSearch(List<Book> books, List<Author> authors) {
-    List<Book> results = [];
-    if (_searchText.isEmpty) {
-      return results;
-    }
-    if (_selectedSearchOption == "Name of book") {
-      results = books
-          .where((book) =>
-              book.title!.toLowerCase().contains(_searchText.toLowerCase()) &&
-              book.status == true)
-          .toList();
-    } else if (_selectedSearchOption == "Author") {
-      results = books.where((book) {
-        // Tìm tác giả dựa trên fullName
-        Author? author = authors.firstWhere(
-            (author) => author.id?.toLowerCase() == book.authodId?.toLowerCase());
-        return author.fullName
-            !.toLowerCase()
-            .contains(_searchText.toLowerCase());
-      }).toList();
-    }
-    // else if (_selectedSearchOption == "Tags") {
-    //   results = books
-    //       .where((book) => book.categoryId.contains(_searchText.toLowerCase()))
-    //       .toList();
-    // }
-    _hasSearched = true;
-    return results;
+  @override
+  void initState() {
+    super.initState();
+    searchBloc = SearchBloc(BookRepository());
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel(); // Cancel the debounce timer when the widget is disposed
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (_) => AuthorBloc(AuthorRepository(),
-            )..add(LoadedAllAuthor())),
-      ],
+    return BlocProvider(
+      create: (context) => searchBloc,
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: const CustomAppBar(title: 'Search'),
@@ -112,42 +101,38 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
-            BlocBuilder<BookBloc, BookState>(
+            BlocBuilder<SearchBloc, SearchState>(
               builder: (context, state) {
-                if (state is BookLoading) {
-                  return const CircularProgressIndicator();
+                if(state is SearchLoading){
+                  return const Center(child: CircularProgressIndicator());
                 }
-                if (state is BookLoaded) {
-                   List<Book> book = state.books;
-                  return BlocBuilder<AuthorBloc, AuthorState>(
-                    builder: (context, state) {
-                      if (state is AuthorAllLoaded) {
-                        searchResults =
-                            _performSearch(book, state.authors);
-                      }
-                      return Expanded(
-                        child: _hasSearched == true
-                            ? SizedBox(
-                          height: 180,
-                          child: ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              itemCount: searchResults.length,
-                              itemBuilder: (context, index) {
-                                return BookCardMain(
-                                  book: searchResults[index],
-                                  inLibrary: false,
-                                );
-                              }),
-                        )
-                            : const ListCategoryInSearch(),
-                      );
-                    },
-                  );
-                } else {
-                  return const Text('Something went wrong');
+                else if (state is SearchLoaded) {
+                  if (state.searchedBook.isNotEmpty) {
+                    _hasSearched = true;
+                    searchResults = state.searchedBook;
+                  }
                 }
+                else if(state is SearchFailure){
+                  return const SizedBox();
+                }
+                return Expanded(
+                  child: _hasSearched == true
+                      ? SizedBox(
+                    height: 180,
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: searchResults.length,
+                        itemBuilder: (context, index) {
+                          return BookCardMain(
+                            book: searchResults[index],
+                            inLibrary: false,
+                          );
+                        }),
+                  )
+                      : const ListCategoryInSearch(),
+                );
               },
-            ),
+            )
           ],
         ),
       ),
@@ -164,10 +149,11 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         },
         style: ElevatedButton.styleFrom(
-            backgroundColor: _selectedSearchOption == option ? Colors.white : Colors.grey,
+            backgroundColor:
+            _selectedSearchOption == option ? Colors.white : Colors.grey,
             side: _selectedSearchOption == option
                 ? BorderSide(
-                    width: 1, color: Theme.of(context).colorScheme.primary)
+                width: 1, color: Theme.of(context).colorScheme.primary)
                 : null),
         child: Text(
           option,

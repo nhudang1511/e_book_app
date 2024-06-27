@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 import 'base_history_repository.dart';
 
@@ -30,9 +31,9 @@ class HistoryRepository extends BaseHistoryRepository {
         var existingData = doc.data();
         // Lấy giá trị chapterScrollPositions từ Firebase
         var existingChapterScrollPositions =
-        existingData['chapterScrollPositions'] as Map<String, dynamic>;
+            existingData['chapterScrollPositions'] as Map<String, dynamic>;
         var existingChapterScrollPercentages =
-        existingData['chapterScrollPercentages'] as Map<String, dynamic>;
+            existingData['chapterScrollPercentages'] as Map<String, dynamic>;
         // Cập nhật giá trị chapterScrollPositions, times và percent mới
         var updatedData = {
           'percent': history.percent,
@@ -70,11 +71,11 @@ class HistoryRepository extends BaseHistoryRepository {
     }
   }
 
-
   @override
   Future<List<History>> getAllHistories() async {
     try {
-      var querySnapshot = await _firebaseFirestore.collection('histories').get();
+      var querySnapshot =
+          await _firebaseFirestore.collection('histories').get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();
         data['id'] = doc.id;
@@ -95,7 +96,8 @@ class HistoryRepository extends BaseHistoryRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('histories')
-          .where('chapters', isEqualTo: bookId).where('uId', isEqualTo: uId)
+          .where('chapters', isEqualTo: bookId)
+          .where('uId', isEqualTo: uId)
           .get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();
@@ -113,15 +115,15 @@ class HistoryRepository extends BaseHistoryRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('histories')
-          .where('uId', isEqualTo: uId).where('chapters', isEqualTo: bookId)
+          .where('uId', isEqualTo: uId)
+          .where('chapters', isEqualTo: bookId)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         var data = querySnapshot.docs.first.data();
         data['id'] = querySnapshot.docs.first.id;
         return History().fromJson(data);
-      }
-      else{
+      } else {
         return History();
       }
     } catch (e) {
@@ -129,4 +131,63 @@ class HistoryRepository extends BaseHistoryRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<(List<History>, List<Book>, DocumentSnapshot<Object?>?)> getBooksInHistories({
+    int limit = 5,
+    DocumentSnapshot<Object?>? startAfterDoc
+  }) async {
+    try {
+      // 1) Query for documents with a limit.
+      var query = _firebaseFirestore
+          .collection("book")
+          .where('status', isEqualTo: true)
+          .orderBy("update_at", descending: true)
+          .limit(limit);
+
+      // 2) If paginating, then use the passed
+      //    in document as the query cursor.
+      final querySnapshot = startAfterDoc != null
+          ? await query.startAfterDocument(startAfterDoc).get()
+          : await query.get();
+
+      // 3) If the number of fetched documents is equal to our limit,
+      //    then we define the last document as the query cursor.
+      final finalDoc =
+      querySnapshot.docs.length == limit ? querySnapshot.docs.last : null;
+
+      // 4) Return the fetched documents and query cursor.
+      List<Book> books = [];
+      List<History> histories = [];
+
+      for (var doc in querySnapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+
+        // Check if this category is referenced by any book
+        var historyQuery = await _firebaseFirestore
+            .collection('histories')
+            .where('chapters', isEqualTo: data['id'])
+            .where('uId', isEqualTo: SharedService.getUserId())
+            .get();
+
+        if (historyQuery.docs.isNotEmpty) {
+          books.add(Book().fromJson(data));
+
+          // Fetch corresponding histories
+          for (var historyDoc in historyQuery.docs) {
+            var historyData = historyDoc.data();
+            historyData['id'] = historyDoc.id;
+            histories.add(History().fromJson(historyData));
+          }
+        }
+      }
+
+      return (histories, books, finalDoc);
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
 }

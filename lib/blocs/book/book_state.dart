@@ -15,5 +15,9 @@ class BookPaginating extends BookState{
   DocumentSnapshot? lastDoc;
   BookPaginating({required this.books, this.lastDoc});
 }
+class BooksLoadAll extends BookState{
+  final List<Book> books;
+  BooksLoadAll({required this.books});
+}
 class BookFailure extends BookState{
 }

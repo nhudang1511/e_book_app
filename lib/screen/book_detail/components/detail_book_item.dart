@@ -70,7 +70,6 @@ class _DetailBookItemState extends State<DetailBookItem> {
             }
           }),
           BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
-            //print(state);
             if (state is HistoryLoadedByUId) {
               if(state.history.id != null){
                 inHis = true;
@@ -95,7 +94,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                print(state);
+                //print(state);
                 if (state is MissionUserLoaded) {
                   missionUser = MissionUser(
                       uId: state.mission.uId,

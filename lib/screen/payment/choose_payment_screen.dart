@@ -60,7 +60,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
         listeners: [
           BlocListener<CoinsBloc, CoinsState>(
             listener: (context, state) {
-              print(state);
+              // print(state);
               if (state is AddCoins) {
                 Navigator.pop(context);
               } else if (state is CoinsLoaded) {
@@ -77,7 +77,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                 mission = state.mission;
                 mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
                 for(var m in mission){
-                  print(m.id);
+                  // print(m.id);
                   missionUserBloc.add(LoadedMissionsUserById(
                       missionId: m.id ?? '',
                       uId: SharedService.getUserId() ?? ''));
@@ -87,7 +87,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                print(state);
+                // print(state);
                 if (state is MissionUserLoaded) {
                   missionUser = MissionUser(
                       uId: state.mission.uId,

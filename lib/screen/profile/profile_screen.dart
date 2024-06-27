@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-            print(state);
+            // print(state);
             if (state is MissionUserListLoaded) {
               coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
             }
