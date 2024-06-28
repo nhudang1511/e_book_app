@@ -16,7 +16,6 @@ export 'profile/text_notes_screen.dart';
 export 'book/book_screen.dart';
 export 'reviews/reviews_screen.dart';
 export 'payment/choose_payment_screen.dart';
-export 'payment/bank_transfer_screen.dart';
 export 'signup/verify_email_screen.dart';
 export 'login/verify_email_login_screen.dart';
 export 'forgot_password/reset_password_screen.dart';

@@ -65,7 +65,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 mission = state.mission;
                 mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
                 for(var m in mission){
-                  print(m.id);
+                  //print(m.id);
                   missionUserBloc.add(LoadedMissionsUserById(
                       missionId: m.id ?? '',
                       uId: SharedService.getUserId() ?? ''));

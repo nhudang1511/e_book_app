@@ -1,5 +1,5 @@
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-import 'package:e_book_app/screen/payment/bank_transfer_screen.dart';
+import 'package:e_book_app/screen/payment/vnpay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_dialogs/dialogs.dart';
@@ -229,10 +229,68 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 12.0),
                       child: CustomButton(
-                        title: "Bank Transfer",
+                        title: "VNPay",
                         onPressed: () {
-                          Navigator.pushNamed(
-                              context, BankTransferScreen.routeName);
+                          if (money != 0){
+                            final paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
+                              url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html', //vnpay url, default is https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+                              version: '2.0.1', //version of VNPAY, default is 2.0.1
+                              tmnCode: 'FMJEVP1P', //vnpay tmn code, get from vnpay
+                              txnRef: DateTime.now().millisecondsSinceEpoch.toString(), //ref code, default is timestamp
+                              orderInfo: 'Pay ${money*23000} VND', //order info, default is Pay Order
+                              amount: money * 23000, //amount
+                              returnUrl: 'https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl', //https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl
+                              ipAdress: '192.168.10.10', //Your IP address
+                              vnpayHashKey: '13NZGTEYJKQ36F2BPFB5RWWYCCR0QRP1', //vnpay hash key, get from vnpay
+                              vnPayHashType: 'HmacSHA512', //hash type. Default is HmacSHA512, you can chang it in: https://sandbox.vnpayment.vn/merchantv2
+                            );
+                            VNPAYFlutter.instance.show(
+                                paymentUrl: paymentUrl,
+                                onPaymentSuccess: (params) {
+                                  print('Success');
+                                  if (money == listMoneysToCoins.keys.elementAt(0)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(0);
+                                  } else if (money == listMoneysToCoins.keys.elementAt(1)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(1);
+                                  } else if (money == listMoneysToCoins.keys.elementAt(2)) {
+                                    coins = coins + listMoneysToCoins.values.elementAt(2);
+                                  }
+                                  if (uId == SharedService.getUserId()) {
+                                    _coinsBloc.add(EditCoinsEvent(
+                                        quantity: coins,
+                                        uId: SharedService.getUserId() ?? '',
+                                        coinsId: coinsId));
+                                    missionUserBloc.add(
+                                        EditMissionUsers(
+                                            mission: missionUser));
+                                  }
+                                }, //on mobile transaction success
+                                onPaymentError: (params) {
+                                  print('error');
+                                }, //on mobile transaction error
+                                onWebPaymentComplete: (){} //only use in web
+                            );
+                          }
+                          else {
+                            Dialogs.materialDialog(
+                                msg: 'Please select coins to continue!',
+                                title: "Warning",
+                                color: Colors.white,
+                                context: context,
+                                actions: [
+                                  IconsButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    text: "Ok",
+                                    iconData: Icons.cancel,
+                                    color: Colors.greenAccent,
+                                    textStyle:
+                                    const TextStyle(color: Colors.white),
+                                    iconColor: Colors.white,
+                                  ),
+                                ]);
+                          }
                         },
                       ),
                     ),
@@ -244,3 +302,5 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
     );
   }
 }
+
+

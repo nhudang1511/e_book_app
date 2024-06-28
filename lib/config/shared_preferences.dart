@@ -21,6 +21,12 @@ class SharedService {
   static void setTheme(bool isDark) {
     _pref.setBool("is_dark", isDark);
   }
+  static void setFont(int fontSize){
+    _pref.setInt('font', fontSize);
+  }
+  static int? getFont(){
+    return _pref.getInt("font");
+  }
   static void clear(){
     _pref.clear();
   }

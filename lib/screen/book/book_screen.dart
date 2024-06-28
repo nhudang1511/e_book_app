@@ -53,6 +53,12 @@ class _BookScreenState extends State<BookScreen> {
     _scrollController.addListener(_scrollListener);
     historyBloc = HistoryBloc(HistoryRepository())
       ..add(LoadHistoryByBookId(widget.book.id ?? '', widget.uId));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        isTickedWhite = Theme.of(context).appBarTheme.backgroundColor == Colors.white;
+        isTickedBlack = !isTickedWhite;
+      });
+    });
   }
 
   @override
@@ -116,9 +122,6 @@ class _BookScreenState extends State<BookScreen> {
       ],
       child: WillPopScope(
         onWillPop: () async {
-          // if (overallPercentage < percent) {
-          //   overallPercentage = percent;
-          // }
           if (overallPercentage.isNaN) {
             overallPercentage = 0;
           }
