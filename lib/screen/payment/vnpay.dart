@@ -47,7 +47,7 @@ class VNPAYFlutter {
       'vnp_CreateDate': createAt ??
           DateFormat('yyyyMMddHHmmss').format(DateTime.now()).toString(),
       'vnp_OrderType': 'other',
-      'vnp_ExpireDate': DateFormat('yyyyMMddHHmmss').format(DateTime.now().add(Duration(minutes: 3))).toString(),
+      'vnp_ExpireDate': DateFormat('yyyyMMddHHmmss').format(DateTime.now().add(const Duration(minutes: 3))).toString(),
 
     };
     var sortedParam = _sortParams(params);

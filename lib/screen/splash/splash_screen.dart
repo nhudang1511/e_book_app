@@ -15,10 +15,10 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _isBookLoaded = false;
-  bool _isCategoryLoaded = false;
+  bool _isMissionLoaded = false;
 
   void _checkIfDataLoaded() {
-    if (_isBookLoaded && _isCategoryLoaded) {
+    if (_isBookLoaded && _isMissionLoaded) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainScreen.routeName,
@@ -37,9 +37,9 @@ class _SplashScreenState extends State<SplashScreen> {
             _checkIfDataLoaded();
           }
         }),
-        BlocListener<CategoryBloc, CategoryState>(listener: (context, state) {
-          if (state is CategoryLoaded) {
-            _isCategoryLoaded = true;
+        BlocListener<MissionBloc, MissionState>(listener: (context, state) {
+          if (state is MissionLoaded) {
+            _isMissionLoaded = true;
             _checkIfDataLoaded();
           }
         }),

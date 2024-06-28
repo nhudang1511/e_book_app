@@ -1,9 +1,13 @@
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:material_dialogs/dialogs.dart';
 import '../../blocs/blocs.dart';
+import '../../config/theme/theme_provider.dart';
 import '../../model/models.dart';
 import '../../repository/repository.dart';
 import 'components/normal_void.dart';
@@ -33,7 +37,7 @@ class _BookScreenState extends State<BookScreen> {
   bool isTickedWhite = true;
   bool isTickedBlack = false;
   var isToolbar = false;
-  double fontSize = 16.0;
+  double fontSize = SharedService.getFont() ?? 16.0;
   String selectedChapterId = 'Chương 1';
   final ScrollController _scrollController = ScrollController();
   var totalChapters = 0;
@@ -125,6 +129,52 @@ class _BookScreenState extends State<BookScreen> {
           if (overallPercentage.isNaN) {
             overallPercentage = 0;
           }
+          if( isTickedWhite && Theme.of(context).appBarTheme.backgroundColor != Colors.white){
+            Dialogs.materialDialog(
+                msg: 'Do you want to save theme change?',
+                title: "Warning",
+                color: Colors.black,
+                context: context,
+                actions: [
+                  IconsButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .toggleTheme();
+                      Navigator.pop(context, true);
+                    },
+                    text: "Ok",
+                    iconData: Icons.cancel,
+                    color: Colors.greenAccent,
+                    textStyle:
+                    const TextStyle(color: Colors.white),
+                    iconColor: Colors.white,
+                  ),
+                ]);
+            return false;
+          }
+          else if(isTickedBlack && Theme.of(context).appBarTheme.backgroundColor != Colors.black){
+            Dialogs.materialDialog(
+                msg: 'Do you want to save theme change?',
+                title: "Warning",
+                color: Colors.white,
+                context: context,
+                actions: [
+                  IconsButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .toggleTheme();
+                      Navigator.pop(context, true);
+                    },
+                    text: "Ok",
+                    iconData: Icons.cancel,
+                    color: Colors.greenAccent,
+                    textStyle:
+                    const TextStyle(color: Colors.white),
+                    iconColor: Colors.white,
+                  ),
+                ]);
+            return false;
+          }
           historyBloc.add(AddToHistoryEvent(
               uId: widget.uId,
               chapters: widget.book.id ?? '',
@@ -138,7 +188,7 @@ class _BookScreenState extends State<BookScreen> {
           appBar: AppBar(
             backgroundColor: isTickedBlack
                 ? Colors.black
-                : Theme.of(context).appBarTheme.backgroundColor,
+                : Colors.white,
             elevation: 0,
             iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
             actions: [
@@ -415,79 +465,79 @@ class _BookScreenState extends State<BookScreen> {
                       ],
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.color_lens, color: Colors.white),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text(
-                          'Backgrounds',
-                          style: TextStyle(fontSize: 17, color: Colors.white),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isTickedWhite = !isTickedWhite;
-                              isTickedBlack = !isTickedBlack;
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            width: 20.0,
-                            height: 20.0,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                            ),
-                            child: isTickedWhite
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.black,
-                                    size: 10.0,
-                                  )
-                                : null,
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Icon(Icons.color_lens, color: Colors.white),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text(
+                        'Backgrounds',
+                        style: TextStyle(fontSize: 17, color: Colors.white),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            isTickedWhite = !isTickedWhite;
+                            isTickedBlack = !isTickedBlack;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 20.0,
+                          height: 20.0,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
                           ),
+                          child: isTickedWhite
+                              ? const Icon(
+                            Icons.check,
+                            color: Colors.black,
+                            size: 10.0,
+                          )
+                              : null,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isTickedWhite = !isTickedWhite;
-                              isTickedBlack = !isTickedBlack;
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            width: 20.0,
-                            height: 20.0,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.black,
-                            ),
-                            child: isTickedBlack
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 10.0,
-                                  )
-                                : null,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            isTickedWhite = !isTickedWhite;
+                            isTickedBlack = !isTickedBlack;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 20.0,
+                          height: 20.0,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black,
                           ),
-                        )
-                      ],
-                    ),
+                          child: isTickedBlack
+                              ? const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 10.0,
+                          )
+                              : null,
+                        ),
+                      )
+                    ],
                   ),
                   TextButton(
                     onPressed: () {
                       increaseFontSize();
+                      SharedService.setFont(fontSize);
                     },
                     child: const Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -506,6 +556,7 @@ class _BookScreenState extends State<BookScreen> {
                   TextButton(
                     onPressed: () {
                       decreaseFontSize();
+                      SharedService.setFont(fontSize);
                     },
                     child: const Row(
                       crossAxisAlignment: CrossAxisAlignment.center,

@@ -239,7 +239,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                               txnRef: DateTime.now().millisecondsSinceEpoch.toString(), //ref code, default is timestamp
                               orderInfo: 'Pay ${money*23000} VND', //order info, default is Pay Order
                               amount: money * 23000, //amount
-                              returnUrl: 'https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl', //https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl
+                              returnUrl: 'https://e-book-app-backend.onrender.com', //https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl
                               ipAdress: '192.168.10.10', //Your IP address
                               vnpayHashKey: '13NZGTEYJKQ36F2BPFB5RWWYCCR0QRP1', //vnpay hash key, get from vnpay
                               vnPayHashType: 'HmacSHA512', //hash type. Default is HmacSHA512, you can chang it in: https://sandbox.vnpayment.vn/merchantv2
@@ -266,7 +266,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                   }
                                 }, //on mobile transaction success
                                 onPaymentError: (params) {
-                                  print('error');
+                                  print('error ${params.toString()}');
                                 }, //on mobile transaction error
                                 onWebPaymentComplete: (){} //only use in web
                             );
