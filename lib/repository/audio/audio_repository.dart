@@ -2,27 +2,27 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/models.dart';
-import 'base_chapters_repository.dart';
+import 'base_audio_repository.dart';
 
-class ChaptersRepository extends BaseChaptersRepository {
+class AudioRepository extends BaseAudioRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  ChaptersRepository();
+  AudioRepository();
 
   @override
-  Future<Chapters> getChapters(String bookId) async {
+  Future<Audio> getChaptersAudio(String bookId) async {
     try {
       var querySnapshot = await _firebaseFirestore
-          .collection('chapters')
+          .collection('audio')
           .where('bookId', isEqualTo: bookId)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         var data = querySnapshot.docs.first.data();
         data['id'] = querySnapshot.docs.first.id;
-        return Chapters().fromJson(data);
+        return Audio().fromJson(data);
       } else {
         // Trả về một giá trị mặc định nào đó hoặc null
-        return Chapters(); // Hoặc trả về một đối tượng Chapters mặc định
+        return Audio(); // Hoặc trả về một đối tượng Audio mặc định
       }
     } catch (e) {
       log(e.toString());

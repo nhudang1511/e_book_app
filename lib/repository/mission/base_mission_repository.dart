@@ -4,6 +4,5 @@ abstract class BaseMissionRepository{
   Future<List<Mission>> getAllMission();
   Future<void> editMission(Mission mission);
   Future<List<Mission>>? getMissionByType(String type);
-  Future<Mission?> getMissionByTypeExcludingId(String type, String excludeId);
   Future<Mission?> getMissionById(String missionId);
 }

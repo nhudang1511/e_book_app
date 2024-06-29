@@ -50,6 +50,7 @@ class _BookScreenState extends State<BookScreen> {
   num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
   late HistoryBloc historyBloc;
+  late ChaptersBloc chaptersBloc;
 
   @override
   void initState() {
@@ -59,10 +60,13 @@ class _BookScreenState extends State<BookScreen> {
       ..add(LoadHistoryByBookId(widget.book.id ?? '', widget.uId));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        isTickedWhite = Theme.of(context).appBarTheme.backgroundColor == Colors.white;
+        isTickedWhite =
+            Theme.of(context).appBarTheme.backgroundColor == Colors.white;
         isTickedBlack = !isTickedWhite;
       });
     });
+    chaptersBloc = ChaptersBloc(ChaptersRepository())
+      ..add(LoadChapters(widget.book.id ?? ''));
   }
 
   @override
@@ -123,13 +127,17 @@ class _BookScreenState extends State<BookScreen> {
         BlocProvider<HistoryBloc>(
           create: (BuildContext context) => historyBloc,
         ),
+        BlocProvider<ChaptersBloc>(
+          create: (BuildContext context) => chaptersBloc,
+        ),
       ],
       child: WillPopScope(
         onWillPop: () async {
           if (overallPercentage.isNaN) {
             overallPercentage = 0;
           }
-          if( isTickedWhite && Theme.of(context).appBarTheme.backgroundColor != Colors.white){
+          if (isTickedWhite &&
+              Theme.of(context).appBarTheme.backgroundColor != Colors.white) {
             Dialogs.materialDialog(
                 msg: 'Do you want to save theme change?',
                 title: "Warning",
@@ -145,14 +153,13 @@ class _BookScreenState extends State<BookScreen> {
                     text: "Ok",
                     iconData: Icons.cancel,
                     color: Colors.greenAccent,
-                    textStyle:
-                    const TextStyle(color: Colors.white),
+                    textStyle: const TextStyle(color: Colors.white),
                     iconColor: Colors.white,
                   ),
                 ]);
             return false;
-          }
-          else if(isTickedBlack && Theme.of(context).appBarTheme.backgroundColor != Colors.black){
+          } else if (isTickedBlack &&
+              Theme.of(context).appBarTheme.backgroundColor != Colors.black) {
             Dialogs.materialDialog(
                 msg: 'Do you want to save theme change?',
                 title: "Warning",
@@ -168,8 +175,7 @@ class _BookScreenState extends State<BookScreen> {
                     text: "Ok",
                     iconData: Icons.cancel,
                     color: Colors.greenAccent,
-                    textStyle:
-                    const TextStyle(color: Colors.white),
+                    textStyle: const TextStyle(color: Colors.white),
                     iconColor: Colors.white,
                   ),
                 ]);
@@ -186,9 +192,7 @@ class _BookScreenState extends State<BookScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: isTickedBlack
-                ? Colors.black
-                : Colors.white,
+            backgroundColor: isTickedBlack ? Colors.black : Colors.white,
             elevation: 0,
             iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
             actions: [
@@ -212,7 +216,8 @@ class _BookScreenState extends State<BookScreen> {
                               final chapter;
                               final chapterList = state.chapters.chapterList;
                               // Convert the chapterList to a list of Map<String, dynamic>.
-                              chapterListMap = chapterList?.entries.map((entry) {
+                              chapterListMap =
+                                  chapterList?.entries.map((entry) {
                                 return {
                                   'id': entry.key,
                                   'title': entry.value,
@@ -253,9 +258,11 @@ class _BookScreenState extends State<BookScreen> {
                                       if (historyListMap.isNotEmpty) {
                                         historyListMap.sort((a, b) {
                                           int aNumber = int.parse(a['id']
-                                              .replaceAll(RegExp(r'[^0-9]'), ''));
+                                              .replaceAll(
+                                                  RegExp(r'[^0-9]'), ''));
                                           int bNumber = int.parse(b['id']
-                                              .replaceAll(RegExp(r'[^0-9]'), ''));
+                                              .replaceAll(
+                                                  RegExp(r'[^0-9]'), ''));
                                           return aNumber.compareTo(bNumber);
                                         });
                                         final first = historyListMap.last;
@@ -273,7 +280,8 @@ class _BookScreenState extends State<BookScreen> {
                                           });
                                         }
                                         final percentListMap = histories
-                                            .map((e) => e.chapterScrollPercentages)
+                                            .map((e) =>
+                                                e.chapterScrollPercentages)
                                             .fold<Map<String, dynamic>>({},
                                                 (prev, element) {
                                           prev.addAll(element!);
@@ -282,8 +290,10 @@ class _BookScreenState extends State<BookScreen> {
                                         // print('histories: $percentListMap');
                                         Map<String, dynamic>
                                             newChapterScrollPercentages =
-                                            mergePercentages(percentListMap,
-                                                widget.chapterScrollPercentages);
+                                            mergePercentages(
+                                                percentListMap,
+                                                widget
+                                                    .chapterScrollPercentages);
                                         if (newChapterScrollPercentages
                                             .isNotEmpty) {
                                           percentAllChapters(
@@ -297,123 +307,154 @@ class _BookScreenState extends State<BookScreen> {
                                       percentAllChapters(
                                           widget.chapterScrollPercentages);
                                     }
-                                    return SelectableText(
-                                      isFirst
-                                          ? localSelectedTableText
-                                          : selectedTableText,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .copyWith(
-                                              color: isTickedBlack
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                              fontSize: fontSize),
-                                      showCursor: true,
-                                      contextMenuBuilder:
-                                          (context, editableTextState) {
-                                        return AdaptiveTextSelectionToolbar(
-                                            anchors: editableTextState
-                                                .contextMenuAnchors,
-                                            children: [
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width -
-                                                    120,
-                                                decoration: BoxDecoration(
-                                                    color: const Color(0xFF8C2EEE),
-                                                    borderRadius:
-                                                        BorderRadius.circular(5)),
-                                                child: Row(
-                                                  children: [
-                                                    TextButton(
-                                                      child: const Row(
-                                                        children: [
-                                                          Text(
-                                                            'Copy',
-                                                            style: TextStyle(
-                                                                fontSize: 13,
-                                                                color:
-                                                                    Colors.white),
+                                    return Column(
+                                      children: [
+                                        Text(
+                                          isFirst
+                                              ? localSelectedChapterId
+                                              : selectedChapterId,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(
+                                                  color: isTickedBlack
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  fontSize: fontSize),
+                                        ),
+                                        SelectableText(
+                                          isFirst
+                                              ? localSelectedTableText
+                                              : selectedTableText,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(
+                                                  color: isTickedBlack
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  fontSize: fontSize),
+                                          showCursor: true,
+                                          contextMenuBuilder:
+                                              (context, editableTextState) {
+                                            return AdaptiveTextSelectionToolbar(
+                                                anchors: editableTextState
+                                                    .contextMenuAnchors,
+                                                children: [
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            120,
+                                                    decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xFF8C2EEE),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5)),
+                                                    child: Row(
+                                                      children: [
+                                                        TextButton(
+                                                          child: const Row(
+                                                            children: [
+                                                              Text(
+                                                                'Copy',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                              Icon(Icons.copy,
+                                                                  color: Colors
+                                                                      .white)
+                                                            ],
                                                           ),
-                                                          Icon(Icons.copy,
-                                                              color: Colors.white)
-                                                        ],
-                                                      ),
-                                                      onPressed: () {
-                                                        Clipboard.setData(
-                                                            ClipboardData(
-                                                                text:
-                                                                    selectedText));
-                                                      },
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Clipboard.setData(
-                                                            ClipboardData(
-                                                                text:
-                                                                    selectedText));
-                                                        _showClipboardDialog(
-                                                            context);
-                                                      },
-                                                      child: const Row(
-                                                        children: [
-                                                          Text('Save',
-                                                              style: TextStyle(
-                                                                  fontSize: 13,
-                                                                  color: Colors
-                                                                      .white)),
-                                                          Icon(
-                                                            Icons.save,
-                                                            color: Colors.white,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        final translator =
-                                                            GoogleTranslator();
-                                                        translator
-                                                            .translate(selectedText,
-                                                                to: 'vi')
-                                                            .then((result) =>
-                                                                ScaffoldMessenger
-                                                                        .of(context)
+                                                          onPressed: () {
+                                                            Clipboard.setData(
+                                                                ClipboardData(
+                                                                    text:
+                                                                        selectedText));
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Clipboard.setData(
+                                                                ClipboardData(
+                                                                    text:
+                                                                        selectedText));
+                                                            _showClipboardDialog(
+                                                                context);
+                                                          },
+                                                          child: const Row(
+                                                            children: [
+                                                              Text('Save',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          13,
+                                                                      color: Colors
+                                                                          .white)),
+                                                              Icon(
+                                                                Icons.save,
+                                                                color: Colors
+                                                                    .white,
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () async {
+                                                            final translator =
+                                                                GoogleTranslator();
+                                                            translator
+                                                                .translate(
+                                                                    selectedText,
+                                                                    to: 'vi')
+                                                                .then((result) => ScaffoldMessenger.of(
+                                                                        context)
                                                                     .showSnackBar(SnackBar(
-                                                                        content: Text(
-                                                                            result
-                                                                                .toString()))));
-                                                      },
-                                                      child: const Row(
-                                                        children: [
-                                                          Text('Trans',
-                                                              style: TextStyle(
-                                                                  fontSize: 13,
-                                                                  color: Colors
-                                                                      .white)),
-                                                          Icon(
-                                                            Icons.g_translate,
-                                                            color: Colors.white,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ]);
-                                      },
-                                      onSelectionChanged: (selection, cause) {
-                                        setState(() {
-                                          selectedText = isFirst
-                                              ? localSelectedTableText.substring(
-                                                  selection.start, selection.end)
-                                              : selectedTableText.substring(
-                                                  selection.start, selection.end);
-                                        });
-                                      },
+                                                                        content:
+                                                                            Text(result.toString()))));
+                                                          },
+                                                          child: const Row(
+                                                            children: [
+                                                              Text('Trans',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          13,
+                                                                      color: Colors
+                                                                          .white)),
+                                                              Icon(
+                                                                Icons
+                                                                    .g_translate,
+                                                                color: Colors
+                                                                    .white,
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ]);
+                                          },
+                                          onSelectionChanged:
+                                              (selection, cause) {
+                                            setState(() {
+                                              selectedText = isFirst
+                                                  ? localSelectedTableText
+                                                      .substring(
+                                                          selection.start,
+                                                          selection.end)
+                                                  : selectedTableText.substring(
+                                                      selection.start,
+                                                      selection.end);
+                                            });
+                                          },
+                                        ),
+                                      ],
                                     );
                                   } else {
                                     return const Center(
@@ -443,7 +484,7 @@ class _BookScreenState extends State<BookScreen> {
       onPressed: () {
         Dialogs.bottomMaterialDialog(
             context: context,
-            color: const Color(0xFF122158),
+            color: isTickedBlack ? Colors.white : Colors.black,
             actions: [
               Column(
                 children: [
@@ -451,16 +492,20 @@ class _BookScreenState extends State<BookScreen> {
                     onPressed: () {
                       _showClipboardDialog(context);
                     },
-                    child: const Row(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.add, color: Colors.white),
-                        SizedBox(
+                        Icon(Icons.add,
+                            color: isTickedBlack ? Colors.black : Colors.white),
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
                           'Add Notes',
-                          style: TextStyle(fontSize: 17, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 17,
+                              color:
+                                  isTickedBlack ? Colors.black : Colors.white),
                         ),
                       ],
                     ),
@@ -470,13 +515,16 @@ class _BookScreenState extends State<BookScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      const Icon(Icons.color_lens, color: Colors.white),
+                      Icon(Icons.color_lens,
+                          color: isTickedBlack ? Colors.black : Colors.white),
                       const SizedBox(
                         width: 10,
                       ),
-                      const Text(
+                      Text(
                         'Backgrounds',
-                        style: TextStyle(fontSize: 17, color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: isTickedBlack ? Colors.black : Colors.white),
                       ),
                       const SizedBox(
                         width: 10,
@@ -492,16 +540,16 @@ class _BookScreenState extends State<BookScreen> {
                         child: Container(
                           width: 20.0,
                           height: 20.0,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              border: Border.all(color: Colors.black)),
                           child: isTickedWhite
                               ? const Icon(
-                            Icons.check,
-                            color: Colors.black,
-                            size: 10.0,
-                          )
+                                  Icons.check,
+                                  color: Colors.black,
+                                  size: 10.0,
+                                )
                               : null,
                         ),
                       ),
@@ -519,16 +567,16 @@ class _BookScreenState extends State<BookScreen> {
                         child: Container(
                           width: 20.0,
                           height: 20.0,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                          ),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                              border: Border.all(color: Colors.white)),
                           child: isTickedBlack
                               ? const Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 10.0,
-                          )
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 10.0,
+                                )
                               : null,
                         ),
                       )
@@ -539,16 +587,20 @@ class _BookScreenState extends State<BookScreen> {
                       increaseFontSize();
                       SharedService.setFont(fontSize);
                     },
-                    child: const Row(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.zoom_in, color: Colors.white),
-                        SizedBox(
+                        Icon(Icons.zoom_in,
+                            color: isTickedBlack ? Colors.black : Colors.white),
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
                           'Zoom In',
-                          style: TextStyle(fontSize: 17, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 17,
+                              color:
+                                  isTickedBlack ? Colors.black : Colors.white),
                         ),
                       ],
                     ),
@@ -558,16 +610,20 @@ class _BookScreenState extends State<BookScreen> {
                       decreaseFontSize();
                       SharedService.setFont(fontSize);
                     },
-                    child: const Row(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.zoom_out, color: Colors.white),
-                        SizedBox(
+                        Icon(Icons.zoom_out,
+                            color: isTickedBlack ? Colors.black : Colors.white),
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
                           'Zoom Out',
-                          style: TextStyle(fontSize: 17, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 17,
+                              color:
+                                  isTickedBlack ? Colors.black : Colors.white),
                         ),
                       ],
                     ),
@@ -576,9 +632,10 @@ class _BookScreenState extends State<BookScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text(
+                      child: Text(
                         'Close',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color: isTickedBlack ? Colors.black : Colors.white),
                       ))
                 ],
               ),
@@ -592,97 +649,114 @@ class _BookScreenState extends State<BookScreen> {
     return IconButton(
       onPressed: () {
         Dialogs.bottomMaterialDialog(
-            context: context,
-            color: const Color(0xFF122158),
-            actions: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Chapter',
-                      style: TextStyle(color: Colors.white, fontSize: 20)),
-                  BlocBuilder<ChaptersBloc, ChaptersState>(
-                    builder: (context, state) {
-                      if (state is ChaptersLoaded) {
-                        final chapterList = state.chapters.chapterList;
-                        // Convert the chapterList to a list of Map<String, dynamic>.
-                        final chapterListMap =
-                            chapterList?.entries.map((entry) {
-                          return {
-                            'id': entry.key,
-                            'title': entry.value,
-                          };
-                        }).toList();
-                        // Sắp xếp danh sách theo key (chapter['id'])
-                        chapterListMap?.sort((a, b) {
-                          // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-                          int aNumber = int.parse(
-                              a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                          int bNumber = int.parse(
-                              b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                          return aNumber.compareTo(bNumber);
-                        });
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height / 3,
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: chapterListMap?.length,
-                            itemBuilder: (context, index) {
-                              final chapter = chapterListMap![index];
-                              // Display the chapter.
-                              return ListTile(
-                                  title: TextButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                  (chapter['id'] == selectedChapterId ||
-                                          (isFirst &&
-                                              (chapter['id'] ==
-                                                  localSelectedChapterId)))
-                                      ? const Color(0xFFD9D9D9)
-                                      : Colors.transparent,
-                                )),
-                                onPressed: () {
-                                  Future.delayed(Duration.zero, () {
-                                    _scrollController.jumpTo(0.0);
-                                  });
-                                  if(_scrollController.position.maxScrollExtent == 0.0){
-                                    widget.chapterScrollPercentages[selectedChapterId] = 1;
-                                  }
-                                  if (chapter['id'] != selectedChapterId) {
-                                    setState(() {
-                                      isFirst = false;
-                                      selectedTableText = chapter['title'];
-                                      selectedChapterId = chapter['id'];
-                                      Navigator.pop(context);
-                                    });
-                                  }
+          context: context,
+          color: isTickedBlack ? Colors.white : Colors.black,
+          actions: [
+            Builder(
+              builder: (dialogContext) {
+                return BlocProvider.value(
+                  value: chaptersBloc,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Chapter',
+                          style: TextStyle(
+                              color:
+                                  isTickedBlack ? Colors.black : Colors.white,
+                              fontSize: 20)),
+                      BlocBuilder<ChaptersBloc, ChaptersState>(
+                        builder: (context, state) {
+                          if (state is ChaptersLoaded) {
+                            final chapterList = state.chapters.chapterList;
+                            // Convert the chapterList to a list of Map<String, dynamic>.
+                            final chapterListMap =
+                                chapterList?.entries.map((entry) {
+                              return {
+                                'id': entry.key,
+                                'title': entry.value,
+                              };
+                            }).toList();
+                            // Sắp xếp danh sách theo key (chapter['id'])
+                            chapterListMap?.sort((a, b) {
+                              // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+                              int aNumber = int.parse(
+                                  a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                              int bNumber = int.parse(
+                                  b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                              return aNumber.compareTo(bNumber);
+                            });
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height / 3,
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: chapterListMap?.length,
+                                itemBuilder: (context, index) {
+                                  final chapter = chapterListMap![index];
+                                  // Display the chapter.
+                                  return ListTile(
+                                      title: TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                      (chapter['id'] == selectedChapterId ||
+                                              (isFirst &&
+                                                  (chapter['id'] ==
+                                                      localSelectedChapterId)))
+                                          ? const Color(0xFFD9D9D9)
+                                          : Colors.transparent,
+                                    )),
+                                    onPressed: () {
+                                      Future.delayed(Duration.zero, () {
+                                        _scrollController.jumpTo(0.0);
+                                      });
+                                      if (_scrollController
+                                              .position.maxScrollExtent ==
+                                          0.0) {
+                                        widget.chapterScrollPercentages[
+                                            selectedChapterId] = 1;
+                                      }
+                                      if (chapter['id'] != selectedChapterId) {
+                                        setState(() {
+                                          isFirst = false;
+                                          selectedTableText = chapter['title'];
+                                          selectedChapterId = chapter['id'];
+                                          Navigator.pop(context);
+                                        });
+                                      }
+                                    },
+                                    child: Text(
+                                      chapter['id'],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: isTickedBlack
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ));
                                 },
-                                child: Text(
-                                  chapter['id'],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ));
-                            },
-                          ),
-                        );
-                      } else {
-                        return const Text('Something went wrong');
-                      }
-                    },
+                              ),
+                            );
+                          } else {
+                            return const Text('Something went wrong');
+                          }
+                        },
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Close',
+                            style: TextStyle(color: Colors.white),
+                          ))
+                    ],
                   ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Close',
-                        style: TextStyle(color: Colors.white),
-                      ))
-                ],
-              ),
-            ]);
+                );
+              },
+            ),
+          ],
+        );
       },
       icon: const Icon(Icons.menu, color: Color(0xFFDFE2E0)),
     );
@@ -693,29 +767,34 @@ class _BookScreenState extends State<BookScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF122158),
-          title: const Row(
+          backgroundColor: isTickedBlack ? Colors.white : Colors.black,
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.edit, color: Colors.white),
+              Icon(Icons.edit,
+                  color: isTickedBlack ? Colors.black : Colors.white),
               Text(
                 'Add Notes',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: isTickedBlack ? Colors.black : Colors.white),
               )
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Divider(color: Colors.white, height: 10),
+              Divider(
+                  color: isTickedBlack ? Colors.black : Colors.white,
+                  height: 10),
               const SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Name:',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: isTickedBlack ? Colors.black : Colors.white),
                   ),
                   const SizedBox(
                     width: 10,
@@ -725,16 +804,22 @@ class _BookScreenState extends State<BookScreen> {
                         width: MediaQuery.of(context).size.width / 2,
                         child: TextFormField(
                             controller: noteContentController,
-                            style: const TextStyle(color: Colors.white),
-                            cursorColor: Colors.white,
-                            decoration: const InputDecoration(
+                            style: TextStyle(
+                                color: isTickedBlack
+                                    ? Colors.black
+                                    : Colors.white),
+                            cursorColor:
+                                isTickedBlack ? Colors.black : Colors.white,
+                            decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.white,
+                                    color: isTickedBlack
+                                        ? Colors.black
+                                        : Colors.white,
                                     width:
                                         2), // Màu gạch dưới khi TextFormField được focus
                               ),
-                              enabledBorder: OutlineInputBorder(
+                              enabledBorder: const OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey, width: 2),
                               ),
@@ -747,9 +832,10 @@ class _BookScreenState extends State<BookScreen> {
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Content:',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: isTickedBlack ? Colors.black : Colors.white),
                   ),
                   const SizedBox(
                     width: 10,
@@ -762,24 +848,36 @@ class _BookScreenState extends State<BookScreen> {
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     border: Border.all(
-                                        color: Colors.white, width: 2)),
+                                        color: isTickedBlack
+                                            ? Colors.black
+                                            : Colors.white,
+                                        width: 2)),
                                 child: Text(
                                   selectedText,
                                   maxLines: 5,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: isTickedBlack
+                                          ? Colors.black
+                                          : Colors.white),
                                 ))
                             : TextFormField(
-                                style: const TextStyle(color: Colors.white),
-                                cursorColor: Colors.white,
-                                decoration: const InputDecoration(
+                                style: TextStyle(
+                                    color: isTickedBlack
+                                        ? Colors.black
+                                        : Colors.white),
+                                cursorColor:
+                                    isTickedBlack ? Colors.black : Colors.white,
+                                decoration: InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white,
+                                        color: isTickedBlack
+                                            ? Colors.black
+                                            : Colors.white,
                                         width:
                                             2), // Màu gạch dưới khi TextFormField được focus
                                   ),
-                                  enabledBorder: OutlineInputBorder(
+                                  enabledBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Colors.grey, width: 2),
                                   ),

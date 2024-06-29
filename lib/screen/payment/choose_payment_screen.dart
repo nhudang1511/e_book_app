@@ -30,7 +30,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   String coinsId = '';
   List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
-  var listMoneysToCoins  = {
+  var listMoneysToCoins = {
     1: 300,
     5: 2000,
     10: 5000,
@@ -75,8 +75,11 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
               //print('m: $state');
               if (state is MissionLoadedByType) {
                 mission = state.mission;
-                mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
-                for(var m in mission){
+                mission.sort(
+                  (a, b) => Comparable.compare(
+                      b.times as Comparable, a.times as Comparable),
+                );
+                for (var m in mission) {
                   // print(m.id);
                   missionUserBloc.add(LoadedMissionsUserById(
                       missionId: m.id ?? '',
@@ -87,18 +90,16 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                // print(state);
-                if (state is MissionUserLoaded) {
-                  missionUser = MissionUser(
-                      uId: state.mission.uId,
-                      times: state.mission.times! + 1,
-                      missionId: state.mission.missionId,
-                      status: true,
-                      id: state.mission.id
-                  );
-                } else if (state is MissionUserError) {
-                }
-              })
+            // print(state);
+            if (state is MissionUserLoaded) {
+              missionUser = MissionUser(
+                  uId: state.mission.uId,
+                  times: state.mission.times! + 1,
+                  missionId: state.mission.missionId,
+                  status: true,
+                  id: state.mission.id);
+            } else if (state is MissionUserError) {}
+          })
         ],
         child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -123,14 +124,14 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                           Theme.of(context).colorScheme.secondaryContainer,
                       selectedBorderColor:
                           Theme.of(context).colorScheme.background,
-                      buttonLables:  listMoneysToCoins.entries.map((entry) {
+                      buttonLables: listMoneysToCoins.entries.map((entry) {
                         return '${entry.key} \$ = ${entry.value} coins';
                       }).toList(),
                       buttonValues: listMoneysToCoins.keys.toList(),
-                      buttonTextStyle: const ButtonTextStyle(
+                      buttonTextStyle: ButtonTextStyle(
                           selectedColor: Colors.white,
-                          unSelectedColor: Colors.black,
-                          textStyle: TextStyle(fontSize: 16)),
+                          unSelectedColor: Theme.of(context).colorScheme.secondaryContainer,
+                          textStyle: const TextStyle(fontSize: 16)),
                       height: 50,
                       horizontal: true,
                       radioButtonValue: (value) {
@@ -177,21 +178,26 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     "Contact us for any questions on your order.",
                                 onSuccess: (Map params) async {
                                   print("onSuccess: $params");
-                                  if (money == listMoneysToCoins.keys.elementAt(0)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(0);
-                                  } else if (money == listMoneysToCoins.keys.elementAt(1)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(1);
-                                  } else if (money == listMoneysToCoins.keys.elementAt(2)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(2);
+                                  if (money ==
+                                      listMoneysToCoins.keys.elementAt(0)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(0);
+                                  } else if (money ==
+                                      listMoneysToCoins.keys.elementAt(1)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(1);
+                                  } else if (money ==
+                                      listMoneysToCoins.keys.elementAt(2)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(2);
                                   }
-                                 if (uId == SharedService.getUserId()) {
+                                  if (uId == SharedService.getUserId()) {
                                     _coinsBloc.add(EditCoinsEvent(
                                         quantity: coins,
                                         uId: SharedService.getUserId() ?? '',
                                         coinsId: coinsId));
                                     missionUserBloc.add(
-                                        EditMissionUsers(
-                                            mission: missionUser));
+                                        EditMissionUsers(mission: missionUser));
                                   }
                                 },
                                 onError: (error) {
@@ -231,29 +237,50 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                       child: CustomButton(
                         title: "VNPay",
                         onPressed: () {
-                          if (money != 0){
-                            final paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
-                              url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html', //vnpay url, default is https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-                              version: '2.0.1', //version of VNPAY, default is 2.0.1
-                              tmnCode: 'FMJEVP1P', //vnpay tmn code, get from vnpay
-                              txnRef: DateTime.now().millisecondsSinceEpoch.toString(), //ref code, default is timestamp
-                              orderInfo: 'Pay ${money*23000} VND', //order info, default is Pay Order
-                              amount: money * 23000, //amount
-                              returnUrl: 'https://e-book-app-backend.onrender.com', //https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl
-                              ipAdress: '192.168.10.10', //Your IP address
-                              vnpayHashKey: '13NZGTEYJKQ36F2BPFB5RWWYCCR0QRP1', //vnpay hash key, get from vnpay
-                              vnPayHashType: 'HmacSHA512', //hash type. Default is HmacSHA512, you can chang it in: https://sandbox.vnpayment.vn/merchantv2
+                          if (money != 0) {
+                            final paymentUrl =
+                                VNPAYFlutter.instance.generatePaymentUrl(
+                              url:
+                                  'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+                              //vnpay url, default is https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+                              version: '2.0.1',
+                              //version of VNPAY, default is 2.0.1
+                              tmnCode: 'FMJEVP1P',
+                              //vnpay tmn code, get from vnpay
+                              txnRef: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
+                              //ref code, default is timestamp
+                              orderInfo: 'Pay ${money * 23000} VND',
+                              //order info, default is Pay Order
+                              amount: money * 23000,
+                              //amount
+                              returnUrl:
+                                  'https://e-book-app-backend.onrender.com',
+                              //https://sandbox.vnpayment.vn/apis/docs/huong-dan-tich-hop/#code-returnurl
+                              ipAdress: '192.168.10.10',
+                              //Your IP address
+                              vnpayHashKey: '13NZGTEYJKQ36F2BPFB5RWWYCCR0QRP1',
+                              //vnpay hash key, get from vnpay
+                              vnPayHashType:
+                                  'HmacSHA512', //hash type. Default is HmacSHA512, you can chang it in: https://sandbox.vnpayment.vn/merchantv2
                             );
                             VNPAYFlutter.instance.show(
                                 paymentUrl: paymentUrl,
                                 onPaymentSuccess: (params) {
                                   print('Success');
-                                  if (money == listMoneysToCoins.keys.elementAt(0)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(0);
-                                  } else if (money == listMoneysToCoins.keys.elementAt(1)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(1);
-                                  } else if (money == listMoneysToCoins.keys.elementAt(2)) {
-                                    coins = coins + listMoneysToCoins.values.elementAt(2);
+                                  if (money ==
+                                      listMoneysToCoins.keys.elementAt(0)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(0);
+                                  } else if (money ==
+                                      listMoneysToCoins.keys.elementAt(1)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(1);
+                                  } else if (money ==
+                                      listMoneysToCoins.keys.elementAt(2)) {
+                                    coins = coins +
+                                        listMoneysToCoins.values.elementAt(2);
                                   }
                                   if (uId == SharedService.getUserId()) {
                                     _coinsBloc.add(EditCoinsEvent(
@@ -261,17 +288,15 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                         uId: SharedService.getUserId() ?? '',
                                         coinsId: coinsId));
                                     missionUserBloc.add(
-                                        EditMissionUsers(
-                                            mission: missionUser));
+                                        EditMissionUsers(mission: missionUser));
                                   }
                                 }, //on mobile transaction success
                                 onPaymentError: (params) {
                                   print('error ${params.toString()}');
                                 }, //on mobile transaction error
-                                onWebPaymentComplete: (){} //only use in web
-                            );
-                          }
-                          else {
+                                onWebPaymentComplete: () {} //only use in web
+                                );
+                          } else {
                             Dialogs.materialDialog(
                                 msg: 'Please select coins to continue!',
                                 title: "Warning",
@@ -286,7 +311,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     iconData: Icons.cancel,
                                     color: Colors.greenAccent,
                                     textStyle:
-                                    const TextStyle(color: Colors.white),
+                                        const TextStyle(color: Colors.white),
                                     iconColor: Colors.white,
                                   ),
                                 ]);
@@ -302,5 +327,3 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
     );
   }
 }
-
-

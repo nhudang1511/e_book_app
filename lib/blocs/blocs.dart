@@ -12,3 +12,4 @@ export 'coins/coins_bloc.dart';
 export 'mission/mission_bloc.dart';
 export 'mission_user/mission_user_bloc.dart';
 export 'search/search_bloc.dart';
+export 'audio/audio_bloc.dart';

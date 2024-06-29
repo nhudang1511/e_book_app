@@ -77,16 +77,11 @@ class _MyAppState extends State<MyApp> {
           create: (_) => LibraryBloc(LibraryRepository())..add(LoadLibrary()),
         ),
         BlocProvider(
-            create: (_) => ChaptersBloc(
-                  ChaptersRepository(),
-                )),
-        BlocProvider(
           create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
         BlocProvider(
           create: (_) => NoteBloc(
             NoteRepository(),),
         ),
-        BlocProvider(create: (_) => MissionBloc(MissionRepository())..add(LoadedMissions())),
         BlocProvider(create: (_) => CategoryBloc(CategoryRepository())..add(LoadCategory()))
       ],
       child: ChangeNotifierProvider(

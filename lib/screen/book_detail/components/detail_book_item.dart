@@ -71,7 +71,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
           }),
           BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
             if (state is HistoryLoadedByUId) {
-              if(state.history.id != null){
+              if (state.history.id != null) {
                 inHis = true;
               }
             }
@@ -82,8 +82,11 @@ class _DetailBookItemState extends State<DetailBookItem> {
               //print('m: $state');
               if (state is MissionLoadedByType) {
                 mission = state.mission;
-                mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
-                for(var m in mission){
+                mission.sort(
+                  (a, b) => Comparable.compare(
+                      b.times as Comparable, a.times as Comparable),
+                );
+                for (var m in mission) {
                   //print(m.id);
                   missionUserBloc.add(LoadedMissionsUserById(
                       missionId: m.id ?? '',
@@ -94,18 +97,16 @@ class _DetailBookItemState extends State<DetailBookItem> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                //print(state);
-                if (state is MissionUserLoaded) {
-                  missionUser = MissionUser(
-                      uId: state.mission.uId,
-                      times: state.mission.times! + 1,
-                      missionId: state.mission.missionId,
-                      status: true,
-                      id: state.mission.id
-                  );
-                } else if (state is MissionUserError) {
-                }
-              })
+            //print(state);
+            if (state is MissionUserLoaded) {
+              missionUser = MissionUser(
+                  uId: state.mission.uId,
+                  times: state.mission.times! + 1,
+                  missionId: state.mission.missionId,
+                  status: true,
+                  id: state.mission.id);
+            } else if (state is MissionUserError) {}
+          })
         ],
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 50),
@@ -170,75 +171,104 @@ class _DetailBookItemState extends State<DetailBookItem> {
                 builder: (context, state) {
                   if (state is AuthenticateState) {
                     final uId = state.authUser?.uid;
-                    return SizedBox(
-                        width: MediaQuery.of(context).size.width - 20,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            final Map<String, dynamic> tempPosition = {};
-                            final Map<String, dynamic> tempPercent = {};
-                            BlocProvider.of<ChaptersBloc>(context)
-                                .add(LoadChapters(widget.book.id ?? ''));
-                            if (widget.book.price == 0 || inHis == true) {
-                              missionUserBloc.add(
-                                  EditMissionUsers(
-                                      mission: missionUser));
-                              Navigator.pushNamed(context, BookScreen.routeName,
-                                  arguments: {
-                                    'book': widget.book,
-                                    'uId': uId,
-                                    'chapterScrollPositions': tempPosition,
-                                    'chapterScrollPercentages': tempPercent,
-                                  });
-                            }
-                            else {
-                              if (coins >= widget.book.price!) {
-                                final int newCoins = coins - widget.book.price!;
-                                coinsBloc.add(EditCoinsEvent(
-                                    quantity: newCoins,
-                                    uId: SharedService.getUserId() ?? '',
-                                    coinsId: coinsId));
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                final Map<String, dynamic> tempPosition = {};
+                                final Map<String, dynamic> tempPercent = {};
+                                if (widget.book.price == 0 || inHis == true) {
+                                  missionUserBloc.add(
+                                      EditMissionUsers(mission: missionUser));
+                                  Navigator.pushNamed(
+                                      context, BookScreen.routeName,
+                                      arguments: {
+                                        'book': widget.book,
+                                        'uId': uId,
+                                        'chapterScrollPositions': tempPosition,
+                                        'chapterScrollPercentages': tempPercent,
+                                      });
+                                } else {
+                                  if (coins >= widget.book.price!) {
+                                    final int newCoins =
+                                        coins - widget.book.price!;
+                                    coinsBloc.add(EditCoinsEvent(
+                                        quantity: newCoins,
+                                        uId: SharedService.getUserId() ?? '',
+                                        coinsId: coinsId));
+                                    Navigator.pushNamed(
+                                        context, BookScreen.routeName,
+                                        arguments: {
+                                          'book': widget.book,
+                                          'uId': uId,
+                                          'chapterScrollPositions':
+                                              tempPosition,
+                                          'chapterScrollPercentages':
+                                              tempPercent,
+                                        });
+                                  } else {
+                                    Dialogs.materialDialog(
+                                        msg:
+                                            'Please add coins to read this book',
+                                        title: "Warning",
+                                        color: Colors.white,
+                                        context: context,
+                                        actions: [
+                                          IconsButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            text: "Ok",
+                                            iconData: Icons.cancel,
+                                            color: Colors.greenAccent,
+                                            textStyle: const TextStyle(
+                                                color: Colors.white),
+                                            iconColor: Colors.white,
+                                          ),
+                                        ]);
+                                  }
+                                }
+                              },
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        100), // Adjust the radius as needed
+                                  ),
+                                ),
+                              ),
+                              child: const Text('READ',
+                                  style: TextStyle(color: Colors.white)),
+                            )),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: ElevatedButton(
+                              onPressed: () {
                                 Navigator.pushNamed(
-                                    context, BookScreen.routeName,
+                                    context, BookListenScreen.routeName,
                                     arguments: {
                                       'book': widget.book,
                                       'uId': uId,
-                                      'chapterScrollPositions': tempPosition,
-                                      'chapterScrollPercentages': tempPercent,
                                     });
-                              } else {
-                                Dialogs.materialDialog(
-                                    msg: 'Please add coins to read this book',
-                                    title: "Warning",
-                                    color: Colors.white,
-                                    context: context,
-                                    actions: [
-                                      IconsButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        text: "Ok",
-                                        iconData: Icons.cancel,
-                                        color: Colors.greenAccent,
-                                        textStyle: const TextStyle(
-                                            color: Colors.white),
-                                        iconColor: Colors.white,
-                                      ),
-                                    ]);
-                              }
-                            }
-                          },
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    100), // Adjust the radius as needed
+                              },
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        100), // Adjust the radius as needed
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          child: const Text('READ',
-                              style: TextStyle(color: Colors.white)),
-                        ));
+                              child: const Text('LISTEN',
+                                  style: TextStyle(color: Colors.white)),
+                            )),
+                      ],
+                    );
                   } else {
                     return SizedBox(
                         width: MediaQuery.of(context).size.width - 20,

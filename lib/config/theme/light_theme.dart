@@ -9,7 +9,8 @@ ThemeData lightTheme = ThemeData(
         primary: Color(0xFF8C2EEE),
         secondary: Color(0xFFC7C7C7),
         onBackground: Color(0xFFEEE6F5),
-        secondaryContainer: Colors.black54,
+        secondaryContainer: Colors.black,
+            surface: Color(0xFFECEBEB),
     ),
     textTheme: const TextTheme(
         displayLarge: TextStyle(

@@ -67,6 +67,13 @@ class AppRouter {
         return _route(const ResetPasswordScreen());
       case MissionScreen.routeName:
         return _route(const MissionScreen());
+      case BookListenScreen.routeName:
+        final Map<String, dynamic> arguments =
+        settings.arguments as Map<String, dynamic>;
+        final Book book = arguments['book'] as Book;
+        final String uId = arguments['uId'] as String;
+        return _route(BookListenScreen(book: book,
+          uId: uId));
       default:
         return _errorRoute();
     }

@@ -13,8 +13,6 @@ class MissionBloc extends Bloc<MissionEvent, MissionState> {
     on<LoadedMissions>(_onLoadMissions);
     on<EditMissions>(_onEditMissions);
     on<LoadedMissionsByType>(_onLoadMissionsByType);
-    // on<LoadedMissionsByTypeExcludingId>(_onLoadMissionsByTypeExcludingId);
-    // on<LoadedMissionsById>(_onLoadMissionsById);
   }
 
   void _onLoadMissions(event, Emitter<MissionState> emit) async {
@@ -52,36 +50,4 @@ class MissionBloc extends Bloc<MissionEvent, MissionState> {
     }
   }
 
-  // void _onLoadMissionsByTypeExcludingId(
-  //     event, Emitter<MissionState> emit) async {
-  //   try {
-  //     Mission? mission = await _missionRepository.getMissionByTypeExcludingId(
-  //         event.type, event.missionId);
-  //     if(mission != null){
-  //       emit(MissionLoadedByType(mission: mission));
-  //     }
-  //     else{
-  //       emit(const MissionError(''));
-  //     }
-  //   } catch (e) {
-  //     //print(e.toString());
-  //     emit(MissionError(e.toString()));
-  //   }
-  // }
-
-  // void _onLoadMissionsById(event, Emitter<MissionState> emit) async {
-  //   try {
-  //     Mission? mission =
-  //         await _missionRepository.getMissionById(event.missionId);
-  //     if(mission != null){
-  //       emit(MissionLoadedByType(mission: mission));
-  //     }
-  //     else{
-  //       emit(const MissionError(''));
-  //     }
-  //   } catch (e) {
-  //     //print(e.toString());
-  //     emit(MissionError(e.toString()));
-  //   }
-  // }
 }

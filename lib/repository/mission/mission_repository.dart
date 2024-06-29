@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book_app/config/shared_preferences.dart';
 import '../../model/mission_model.dart';
 import 'base_mission_repository.dart';
 
@@ -13,11 +14,24 @@ class MissionRepository extends BaseMissionRepository {
   Future<List<Mission>> getAllMission() async {
     try {
       var querySnapshot = await _firebaseFirestore.collection('mission').get();
-      return querySnapshot.docs.map((doc) {
+      List<Mission> missions = [];
+
+      for (var doc in querySnapshot.docs) {
         var data = doc.data();
         data['id'] = doc.id;
-        return Mission().fromJson(data);
-      }).toList();
+        var missionUser = await _firebaseFirestore
+            .collection('mission_user')
+            .where('uId', isEqualTo: SharedService.getUserId())
+            .where('missionId', isEqualTo: data['id']).where('status', isEqualTo: false)
+            .get();
+        if (missionUser.size != 0) {
+          data['status'] = false;
+        } else {
+          data['status'] = true;
+        }
+        missions.add(Mission().fromJson(data));
+      }
+      return missions;
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -50,29 +64,6 @@ class MissionRepository extends BaseMissionRepository {
     }
   }
 
-  @override
-  Future<Mission?> getMissionByTypeExcludingId(
-      String type, String excludeId) async {
-    try {
-      var querySnapshot = await _firebaseFirestore
-          .collection('mission')
-          .orderBy("times", descending: false)
-          .where('type', isEqualTo: type)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        if (doc.id != excludeId) {
-          var data = doc.data();
-          data['id'] = doc.id;
-          return Mission().fromJson(data);
-        }
-      }
-      return null;
-    } catch (e) {
-      log(e.toString());
-      rethrow;
-    }
-  }
 
   @override
   Future<Mission?> getMissionById(String missionId) async {

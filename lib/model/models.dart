@@ -10,3 +10,4 @@ export 'note_model.dart';
 export 'coins_model.dart';
 export 'mission_model.dart';
 export 'mission_user_model.dart';
+export 'audio_model.dart';

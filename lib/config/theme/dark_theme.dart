@@ -10,6 +10,7 @@ ThemeData darkTheme = ThemeData(
         secondary: Colors.white,
         onBackground: Color(0xFF122158),
         secondaryContainer: Colors.white,
+      surface: Colors.white30,
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(
