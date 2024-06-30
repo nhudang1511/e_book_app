@@ -25,3 +25,11 @@ Map<String, dynamic> mergePercentages(Map<String, dynamic> percentListMap,
   }
   return mergedPercentages;
 }
+num percentAllChapters(Map<String, dynamic> chapterScrollPercentages, var totalChapters) {
+  double totalPercentage = chapterScrollPercentages.values
+      .fold(0, (sum, percentage) => sum + percentage);
+
+  num overallPercentage =
+  (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
+  return overallPercentage;
+}

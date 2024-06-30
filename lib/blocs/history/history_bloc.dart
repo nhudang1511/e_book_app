@@ -13,10 +13,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
   HistoryBloc(this._historyRepository) : super(HistoryInitial()) {
     on<AddToHistoryEvent>(_onAddToHistory);
-    on<LoadHistory>(_onLoadHistory);
     on<LoadHistoryByBookId>(_onLoadHistoryByBookId);
     on<LoadedHistoryByUId>(_onLoadHistoryByUId);
-    on<LoadHistoryPaginating>(_onLoadHistoryPaginating);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -34,34 +32,6 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       emit(HistoryLoaded(histories: [history]));
     } catch (e) {
       emit(HistoryError('error in add'));
-    }
-  }
-
-  void _onLoadHistoryPaginating(event, Emitter<HistoryState> emit) async {
-    try {
-      if (state is! HistoryPaginating) {
-        final currentState = state as HistoryLoaded;
-        if (currentState.lastDoc != null) {
-          emit(HistoryPaginating(histories: currentState.histories,
-              books: currentState.books, lastDoc: currentState.lastDoc));
-          final books = await _historyRepository.getBooksInHistories(
-              startAfterDoc: currentState.lastDoc);
-          emit(HistoryLoaded(histories: currentState.histories + books.$1,
-              books: currentState.books + books.$2, lastDoc: books.$3));
-        }
-      }
-    } catch (e) {
-      emit(HistoryError(e.toString()));
-    }
-  }
-
-  void _onLoadHistory(event, Emitter<HistoryState> emit) async {
-    try {
-      emit(HistoryLoading());
-      final data = await _historyRepository.getBooksInHistories();
-      emit(HistoryLoaded(histories: data.$1, books: data.$2, lastDoc: data.$3));
-    } catch (e) {
-      emit(HistoryError(e.toString()));
     }
   }
 

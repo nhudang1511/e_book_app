@@ -1,7 +1,6 @@
 import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
-import 'package:e_book_app/repository/audio/audio_repository.dart';
+import 'package:e_book_app/repository/history_audio/history_audio_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_dialogs/dialogs.dart';
@@ -10,16 +9,15 @@ import 'package:provider/provider.dart';
 import '../../blocs/blocs.dart';
 import '../../config/theme/theme_provider.dart';
 import '../../model/models.dart';
+import 'components/normal_void.dart';
 
 class BookListenScreen extends StatefulWidget {
-  const BookListenScreen({
-    super.key,
-    required this.book,
-    required this.uId,
-  });
+  const BookListenScreen(
+      {super.key, required this.book, required this.uId, required this.bloc});
 
   final Book book;
   final String uId;
+  final AudioBloc bloc;
 
   static const String routeName = '/book_listen';
 
@@ -32,7 +30,6 @@ class _BookListenScreenState extends State<BookListenScreen> {
   bool isPlaying = false;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
-  late AudioBloc audioBloc;
   Audio audio = Audio();
   var chapterListMap;
   var totalChapters = 0;
@@ -44,16 +41,23 @@ class _BookListenScreenState extends State<BookListenScreen> {
   bool isTickedWhite = true;
   bool isTickedBlack = false;
   int index = 0;
+  num overallPercentage = 0;
+  int times = 1;
+  var isToolbar = false;
+  final Map<String, dynamic> chapterScrollPositions = {};
+  final Map<String, dynamic> chapterScrollPercentages = {};
 
   late StreamSubscription<PlayerState> _playerStateSubscription;
   late StreamSubscription<Duration> _durationSubscription;
   late StreamSubscription<Duration> _positionSubscription;
 
+  late HistoryAudioBloc historyAudioBloc;
+
   @override
   void initState() {
     super.initState();
-    audioBloc = AudioBloc(AudioRepository())
-      ..add(LoadAudio(widget.book.id ?? ''));
+    historyAudioBloc = HistoryAudioBloc(HistoryAudioRepository())
+      ..add(LoadHistoryAudioByBookId(widget.book.id ?? '', widget.uId));
     _playerStateSubscription = audioPlayer.onPlayerStateChanged.listen((event) {
       if (mounted) {
         setState(() {
@@ -72,6 +76,20 @@ class _BookListenScreenState extends State<BookListenScreen> {
       if (mounted) {
         setState(() {
           position = event;
+          double percentage = (position.inSeconds / duration.inSeconds);
+          if (chapterScrollPositions[localSelectedChapterId] != null) {
+            setState(() {
+              isToolbar = true;
+            });
+          }
+          if (isFirst) {
+            chapterScrollPositions[localSelectedChapterId] = position.inSeconds;
+            chapterScrollPercentages[localSelectedChapterId] = percentage;
+          } else {
+            chapterScrollPositions[selectedChapterId] = position.inSeconds;
+            chapterScrollPercentages[selectedChapterId] = percentage;
+          }
+          overallPercentage = percentAllChapters(chapterScrollPercentages, totalChapters );
         });
       }
     });
@@ -146,10 +164,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                               border: Border.all(color: Colors.black)),
                           child: isTickedWhite
                               ? const Icon(
-                            Icons.check,
-                            color: Colors.black,
-                            size: 10.0,
-                          )
+                                  Icons.check,
+                                  color: Colors.black,
+                                  size: 10.0,
+                                )
                               : null,
                         ),
                       ),
@@ -173,10 +191,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                               border: Border.all(color: Colors.white)),
                           child: isTickedBlack
                               ? const Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 10.0,
-                          )
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 10.0,
+                                )
                               : null,
                         ),
                       )
@@ -209,21 +227,21 @@ class _BookListenScreenState extends State<BookListenScreen> {
             Builder(
               builder: (dialogContext) {
                 return BlocProvider.value(
-                  value: audioBloc,
+                  value: widget.bloc,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Chapter',
                           style: TextStyle(
                               color:
-                              isTickedBlack ? Colors.black : Colors.white,
+                                  isTickedBlack ? Colors.black : Colors.white,
                               fontSize: 20)),
                       BlocBuilder<AudioBloc, AudioState>(
                         builder: (context, state) {
                           if (state is AudioLoaded) {
                             final chapterList = state.audio.chapterList;
                             final chapterListMap =
-                            chapterList?.entries.map((entry) {
+                                chapterList?.entries.map((entry) {
                               return {
                                 'id': entry.key,
                                 'title': entry.value,
@@ -238,7 +256,7 @@ class _BookListenScreenState extends State<BookListenScreen> {
                             });
                             return SizedBox(
                               height:
-                              MediaQuery.of(dialogContext).size.height / 3,
+                                  MediaQuery.of(dialogContext).size.height / 3,
                               child: ListView.builder(
                                 scrollDirection: Axis.vertical,
                                 itemCount: chapterListMap?.length,
@@ -246,36 +264,36 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                   final chapter = chapterListMap![index];
                                   return ListTile(
                                       title: TextButton(
-                                        style: ButtonStyle(
-                                            backgroundColor:
+                                    style: ButtonStyle(
+                                        backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                              (chapter['id'] == selectedChapterId ||
-                                                  (isFirst &&
-                                                      (chapter['id'] ==
-                                                          localSelectedChapterId)))
-                                                  ? const Color(0xFFD9D9D9)
-                                                  : Colors.transparent,
-                                            )),
-                                        onPressed: () {
-                                          if (chapter['id'] != selectedChapterId) {
-                                            setState(() {
-                                              isFirst = false;
-                                              selectedTableText = chapter['title'];
-                                              selectedChapterId = chapter['id'];
-                                              Navigator.pop(context);
-                                            });
-                                          }
-                                        },
-                                        child: Text(
-                                          chapter['id'],
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: isTickedBlack
-                                                ? Colors.black
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                      ));
+                                      (chapter['id'] == selectedChapterId ||
+                                              (isFirst &&
+                                                  (chapter['id'] ==
+                                                      localSelectedChapterId)))
+                                          ? const Color(0xFFD9D9D9)
+                                          : Colors.transparent,
+                                    )),
+                                    onPressed: () {
+                                      if (chapter['id'] != selectedChapterId) {
+                                        setState(() {
+                                          isFirst = false;
+                                          selectedTableText = chapter['title'];
+                                          selectedChapterId = chapter['id'];
+                                          Navigator.pop(context);
+                                        });
+                                      }
+                                    },
+                                    child: Text(
+                                      chapter['id'],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: isTickedBlack
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ));
                                 },
                               ),
                             );
@@ -292,7 +310,7 @@ class _BookListenScreenState extends State<BookListenScreen> {
                             'Close',
                             style: TextStyle(
                               color:
-                              isTickedBlack ? Colors.black : Colors.white,
+                                  isTickedBlack ? Colors.black : Colors.white,
                             ),
                           ))
                     ],
@@ -309,282 +327,391 @@ class _BookListenScreenState extends State<BookListenScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => audioBloc,
-      child: WillPopScope(
-        onWillPop: () async {
-          if (isTickedWhite &&
-              Theme.of(context).appBarTheme.backgroundColor != Colors.white) {
-            Dialogs.materialDialog(
-                msg: 'Do you want to save theme change?',
-                title: "Warning",
-                color: Colors.black,
-                context: context,
-                actions: [
-                  IconsButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .toggleTheme();
-                      Navigator.pop(context, true);
-                    },
-                    text: "Ok",
-                    iconData: Icons.cancel,
-                    color: Colors.greenAccent,
-                    textStyle: const TextStyle(color: Colors.white),
-                    iconColor: Colors.white,
-                  ),
-                ]);
-            return false;
-          } else if (isTickedBlack &&
-              Theme.of(context).appBarTheme.backgroundColor != Colors.black) {
-            Dialogs.materialDialog(
-                msg: 'Do you want to save theme change?',
-                title: "Warning",
-                color: Colors.white,
-                context: context,
-                actions: [
-                  IconsButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .toggleTheme();
-                      Navigator.pop(context, true);
-                    },
-                    text: "Ok",
-                    iconData: Icons.cancel,
-                    color: Colors.greenAccent,
-                    textStyle: const TextStyle(color: Colors.white),
-                    iconColor: Colors.white,
-                  ),
-                ]);
-            return false;
-          }
-          return true;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HistoryAudioBloc>(
+          create: (BuildContext context) => historyAudioBloc,
+        ),
+      ],
+      child: BlocListener<HistoryAudioBloc, HistoryAudioState>(
+        listener: (context, state) {
+          // TODO: implement listener}
+          print(state);
         },
-        child: BlocBuilder<AudioBloc, AudioState>(
-          builder: (context, state) {
-            if (state is AudioLoaded) {
-              final chapter;
-              final chapterList = state.audio.chapterList;
-              chapterListMap = chapterList?.entries.map((entry) {
-                return {
-                  'id': entry.key,
-                  'title': entry.value,
-                };
-              }).toList();
-              // Sắp xếp danh sách theo key (chapter['id'])
-              chapterListMap.sort((a, b) {
-                // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-                int aNumber =
-                    int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                int bNumber =
-                    int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-                return aNumber.compareTo(bNumber);
-              });
-              chapter = chapterListMap[index];
-              totalChapters = state.audio.chapterList?.length ?? 1 * 100;
-              localSelectedTableText = chapter['title'];
-              localSelectedChapterId = chapter['id'];
-            }
-            return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: isTickedBlack ? Colors.black : Colors.white,
-                  elevation: 0,
-                  iconTheme: const IconThemeData(color: Color(0xFFDFE2E0)),
-                  actions: [
-                    chaptersListIcon(context),
-                    settingIcon(context),
-                  ],
-                ),
-                backgroundColor: isTickedBlack ? Colors.black : Colors.white,
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Image.network(
-                          widget.book.imageUrl ?? '',
-                          width: MediaQuery.of(context).size.width / 1.5,
-                          height: 350,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        widget.book.title ?? '',
-                        style: Theme.of(context)
-                            .textTheme
-                            .displayMedium
-                            ?.copyWith(
-                              color:
-                                  isTickedBlack ? Colors.white : Colors.black,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        widget.book.authorName ?? '',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall!.copyWith(
-                                  color: const Color(0xFFC7C7C7),
-                                  fontWeight: FontWeight.normal,
-                                ),
-                      ),
-                      Slider(
-                        min: 0,
-                        max: duration.inSeconds.toDouble(),
-                        value: position.inSeconds.toDouble(),
-                        onChanged: (value) async {
-                          final position = Duration(seconds: value.toInt());
-                          await audioPlayer.seek(position);
-
-                          await audioPlayer.resume();
+        child: BlocProvider.value(
+          value: widget.bloc,
+          child: WillPopScope(
+            onWillPop: () async {
+              if (isTickedWhite &&
+                  Theme.of(context).appBarTheme.backgroundColor !=
+                      Colors.white) {
+                Dialogs.materialDialog(
+                    msg: 'Do you want to save theme change?',
+                    title: "Warning",
+                    color: Colors.black,
+                    context: context,
+                    actions: [
+                      IconsButton(
+                        onPressed: () {
+                          Provider.of<ThemeProvider>(context, listen: false)
+                              .toggleTheme();
+                          Navigator.pop(context, true);
                         },
-                        thumbColor: isTickedBlack ? Colors.white : Colors.black,
-                        inactiveColor: Colors.grey,
-                        activeColor:
-                            isTickedBlack ? Colors.white : Colors.black,
+                        text: "Ok",
+                        iconData: Icons.cancel,
+                        color: Colors.greenAccent,
+                        textStyle: const TextStyle(color: Colors.white),
+                        iconColor: Colors.white,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(formatTime(position),
-                                style: TextStyle(
-                                    color: isTickedBlack
-                                        ? Colors.white
-                                        : Colors.black)),
-                            Text(formatTime(duration),
-                                style: TextStyle(
-                                    color: isTickedBlack
-                                        ? Colors.white
-                                        : Colors.black)),
+                    ]);
+                return false;
+              } else if (isTickedBlack &&
+                  Theme.of(context).appBarTheme.backgroundColor !=
+                      Colors.black) {
+                Dialogs.materialDialog(
+                    msg: 'Do you want to save theme change?',
+                    title: "Warning",
+                    color: Colors.white,
+                    context: context,
+                    actions: [
+                      IconsButton(
+                        onPressed: () {
+                          Provider.of<ThemeProvider>(context, listen: false)
+                              .toggleTheme();
+                          Navigator.pop(context, true);
+                        },
+                        text: "Ok",
+                        iconData: Icons.cancel,
+                        color: Colors.greenAccent,
+                        textStyle: const TextStyle(color: Colors.white),
+                        iconColor: Colors.white,
+                      ),
+                    ]);
+                return false;
+              }
+              historyAudioBloc.add(AddToHistoryAudioEvent(
+                  uId: widget.uId,
+                  bookId: widget.book.id ?? '',
+                  percent: overallPercentage,
+                  times: times,
+                  chapterScrollPositions: chapterScrollPositions,
+                  chapterScrollPercentages: chapterScrollPercentages));
+              return true;
+            },
+            child: BlocBuilder<AudioBloc, AudioState>(
+              builder: (context, state) {
+                if (state is AudioLoaded) {
+                  final chapter;
+                  final chapterList = state.audio.chapterList;
+                  chapterListMap = chapterList?.entries.map((entry) {
+                    return {
+                      'id': entry.key,
+                      'title': entry.value,
+                    };
+                  }).toList();
+                  // Sắp xếp danh sách theo key (chapter['id'])
+                  chapterListMap.sort((a, b) {
+                    // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+                    int aNumber =
+                        int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                    int bNumber =
+                        int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                    return aNumber.compareTo(bNumber);
+                  });
+                  chapter = chapterListMap[index];
+                  totalChapters = state.audio.chapterList?.length ?? 1 * 100;
+                  localSelectedTableText = chapter['title'];
+                  localSelectedChapterId = chapter['id'];
+                }
+                return BlocBuilder<HistoryAudioBloc, HistoryAudioState>(
+                  builder: (context, state) {
+                    if (state is HistoryAudioLoadedById) {
+                      final historiesAudio = state.historyAudio;
+                      if (historiesAudio.isNotEmpty) {
+                        final historyListMap = historiesAudio
+                            .map((histories) {
+                              return histories.chapterScrollPositions!.entries
+                                  .map((entry) {
+                                return {
+                                  'id': entry.key,
+                                  'title': entry.value,
+                                };
+                              }).toList();
+                            })
+                            .expand((element) => element)
+                            .toList();
+                        if (historyListMap.isNotEmpty) {
+                          historyListMap.sort((a, b) {
+                            int aNumber = int.parse(
+                                a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                            int bNumber = int.parse(
+                                b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+                            return aNumber.compareTo(bNumber);
+                          });
+                          final first = historyListMap.last;
+                          localSelectedChapterId = first['id'];
+                          final chapterHistory = chapterListMap[
+                              numberInString(localSelectedChapterId)! - 1];
+                          localSelectedTableText = chapterHistory['title'];
+                          if (isFirst && !isToolbar) {
+                            audioPlayer
+                                .play(UrlSource(localSelectedTableText))
+                                .then((value) async {
+                              await audioPlayer
+                                  .seek(Duration(seconds: first['title']));
+                              await audioPlayer.pause();
+                            });
+                          }
+                          final percentListMap = historiesAudio
+                              .map((e) => e.chapterScrollPercentages)
+                              .fold<Map<String, dynamic>>({}, (prev, element) {
+                            prev.addAll(element!);
+                            return prev;
+                          });
+                          Map<String, dynamic> newChapterScrollPercentages =
+                              mergePercentages(
+                                  percentListMap, chapterScrollPercentages);
+                          if (newChapterScrollPercentages.isNotEmpty) {
+                            overallPercentage = percentAllChapters(
+                                newChapterScrollPercentages, totalChapters);
+                          }
+                        }
+                      } else {
+                        overallPercentage = percentAllChapters(
+                            chapterScrollPercentages, totalChapters);
+                      }
+                    }
+                    return Scaffold(
+                        appBar: AppBar(
+                          backgroundColor:
+                              isTickedBlack ? Colors.black : Colors.white,
+                          elevation: 0,
+                          iconTheme:
+                              const IconThemeData(color: Color(0xFFDFE2E0)),
+                          actions: [
+                            chaptersListIcon(context),
+                            settingIcon(context),
                           ],
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 20),
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
-                            border: Border.all(
-                                color: isTickedBlack
-                                    ? Colors.white
-                                    : Colors.black),
-                            color: isTickedBlack ? Colors.black : Colors.white),
-                        child: Text(
-                          isFirst ? localSelectedChapterId : selectedChapterId,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(
-                                  color: isTickedBlack
-                                      ? Colors.white
-                                      : Colors.black),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          InkWell(
-                            onTap: () async{
-                              await audioPlayer.play(UrlSource(isFirst
-                                  ? localSelectedTableText
-                                  : selectedTableText));
-                              await audioPlayer.seek(
-                                  Duration(seconds: position.inSeconds - 10));
-                            },
-                            child: Icon(
-                              Icons.replay_10,
-                              color: isTickedBlack ? Colors.white : Colors.black,
-                              size: 30,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              if (index > 0 && index < totalChapters) {
-                                setState(() {
-                                  index = index - 1;
-                                  isFirst = false;
-                                  final chapter = chapterListMap[index];
-                                  selectedTableText = chapter['title'];
-                                  selectedChapterId = chapter['id'];
-                                });
-                              }
-                            },
-                            child: Icon(
-                              Icons.skip_previous_rounded,
-                              color:
-                                  isTickedBlack ? Colors.white : Colors.black,
-                              size: 30,
-                            ),
-                          ),
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor:
-                                isTickedBlack ? Colors.white : Colors.black,
-                            child: IconButton(
-                              icon: Icon(
-                                isPlaying ? Icons.pause : Icons.play_arrow,
-                                color:
-                                    isTickedBlack ? Colors.black : Colors.white,
+                        backgroundColor:
+                            isTickedBlack ? Colors.black : Colors.white,
+                        body: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10.0),
+                                child: Image.network(
+                                  widget.book.imageUrl ?? '',
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.5,
+                                  height: 350,
+                                  fit: BoxFit.fill,
+                                ),
                               ),
-                              iconSize: 30,
-                              onPressed: () async {
-                                if (isPlaying) {
-                                  await audioPlayer.pause();
-                                } else {
-                                  await audioPlayer.play(UrlSource(isFirst
-                                      ? localSelectedTableText
-                                      : selectedTableText));
-                                }
-                              },
-                            ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                widget.book.title ?? '',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium
+                                    ?.copyWith(
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                widget.book.authorName ?? '',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(
+                                      color: const Color(0xFFC7C7C7),
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                              ),
+                              Slider(
+                                min: 0,
+                                max: duration.inSeconds.toDouble(),
+                                value: position.inSeconds.toDouble(),
+                                onChanged: (value) async {
+                                  final position =
+                                      Duration(seconds: value.toInt());
+                                  await audioPlayer.seek(position);
+
+                                  await audioPlayer.resume();
+                                },
+                                thumbColor:
+                                    isTickedBlack ? Colors.white : Colors.black,
+                                inactiveColor: Colors.grey,
+                                activeColor:
+                                    isTickedBlack ? Colors.white : Colors.black,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(formatTime(position),
+                                        style: TextStyle(
+                                            color: isTickedBlack
+                                                ? Colors.white
+                                                : Colors.black)),
+                                    Text(formatTime(duration),
+                                        style: TextStyle(
+                                            color: isTickedBlack
+                                                ? Colors.white
+                                                : Colors.black)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 20),
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(5)),
+                                    border: Border.all(
+                                        color: isTickedBlack
+                                            ? Colors.white
+                                            : Colors.black),
+                                    color: isTickedBlack
+                                        ? Colors.black
+                                        : Colors.white),
+                                child: Text(
+                                  isFirst
+                                      ? localSelectedChapterId
+                                      : selectedChapterId,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          color: isTickedBlack
+                                              ? Colors.white
+                                              : Colors.black),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  InkWell(
+                                    onTap: () async {
+                                      await audioPlayer.play(UrlSource(isFirst
+                                          ? localSelectedTableText
+                                          : selectedTableText));
+                                      await audioPlayer.seek(Duration(
+                                          seconds: position.inSeconds - 10));
+                                    },
+                                    child: Icon(
+                                      Icons.replay_10,
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (index > 0 && index < totalChapters) {
+                                        setState(() {
+                                          index = index - 1;
+                                          isFirst = false;
+                                          final chapter = chapterListMap[index];
+                                          selectedTableText = chapter['title'];
+                                          selectedChapterId = chapter['id'];
+                                        });
+                                      }
+                                    },
+                                    child: Icon(
+                                      Icons.skip_previous_rounded,
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: isTickedBlack
+                                        ? Colors.white
+                                        : Colors.black,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        color: isTickedBlack
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                      iconSize: 30,
+                                      onPressed: () async {
+                                        if (isPlaying) {
+                                          await audioPlayer.pause();
+                                        } else {
+                                          await audioPlayer.play(UrlSource(
+                                              isFirst
+                                                  ? localSelectedTableText
+                                                  : selectedTableText));
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (index >= 0 &&
+                                          index < totalChapters - 1) {
+                                        setState(() {
+                                          index = index + 1;
+                                          isFirst = false;
+                                          final chapter = chapterListMap[index];
+                                          selectedTableText = chapter['title'];
+                                          selectedChapterId = chapter['id'];
+                                        });
+                                      }
+                                    },
+                                    child: Icon(
+                                      Icons.skip_next_rounded,
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () async {
+                                      await audioPlayer.play(UrlSource(isFirst
+                                          ? localSelectedTableText
+                                          : selectedTableText));
+                                      await audioPlayer.seek(Duration(
+                                          seconds: position.inSeconds + 10));
+                                    },
+                                    child: Icon(
+                                      Icons.forward_10,
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                          InkWell(
-                            onTap: () {
-                              if (index >= 0 && index < totalChapters - 1) {
-                                setState(() {
-                                  index = index + 1;
-                                  isFirst = false;
-                                  final chapter = chapterListMap[index];
-                                  selectedTableText = chapter['title'];
-                                  selectedChapterId = chapter['id'];
-                                });
-                              }
-                            },
-                            child: Icon(
-                              Icons.skip_next_rounded,
-                              color:
-                                  isTickedBlack ? Colors.white : Colors.black,
-                              size: 30,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              await audioPlayer.play(UrlSource(isFirst
-                                  ? localSelectedTableText
-                                  : selectedTableText));
-                              await audioPlayer.seek(
-                                  Duration(seconds: position.inSeconds + 10));
-                            },
-                            child: Icon(
-                              Icons.forward_10,
-                              color:
-                                  isTickedBlack ? Colors.white : Colors.black,
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ));
-          },
+                        ));
+                  },
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

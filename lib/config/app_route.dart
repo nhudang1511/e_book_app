@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../blocs/blocs.dart';
 import '../model/models.dart';
 import '../screen/screen.dart';
 
@@ -49,11 +50,13 @@ class AppRouter {
             arguments['chapterScrollPositions'];
         final Map<String, dynamic> chapterScrollPercentages =
             arguments['chapterScrollPercentages'];
+        final bloc = arguments['bloc'] as ChaptersBloc;
         return _route(BookScreen(
             book: book,
             uId: uId,
             chapterScrollPositions: chapterScrollPositions,
-            chapterScrollPercentages: chapterScrollPercentages));
+            chapterScrollPercentages: chapterScrollPercentages,
+            chaptersBloc: bloc));
       case ReviewsScreen.routeName:
         Book book = settings.arguments as Book;
         return _route(ReviewsScreen(book: book));
@@ -69,11 +72,15 @@ class AppRouter {
         return _route(const MissionScreen());
       case BookListenScreen.routeName:
         final Map<String, dynamic> arguments =
-        settings.arguments as Map<String, dynamic>;
+            settings.arguments as Map<String, dynamic>;
         final Book book = arguments['book'] as Book;
         final String uId = arguments['uId'] as String;
-        return _route(BookListenScreen(book: book,
-          uId: uId));
+        final bloc = arguments['bloc'] as AudioBloc;
+        return _route(BookListenScreen(
+          book: book,
+          uId: uId,
+          bloc: bloc,
+        ));
       default:
         return _errorRoute();
     }
@@ -88,6 +95,7 @@ class AppRouter {
               ),
             ));
   }
+
   static Route _route(screen) {
     return MaterialPageRoute(builder: (context) => screen);
   }

@@ -31,6 +31,10 @@ class _DetailBookItemState extends State<DetailBookItem> {
   bool inHis = false;
   List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
+  late AudioBloc audioBloc;
+  bool haveAudio = false;
+  late ChaptersBloc chaptersBloc;
+  bool haveReading = false;
 
   @override
   void initState() {
@@ -43,6 +47,10 @@ class _DetailBookItemState extends State<DetailBookItem> {
     missionBloc = MissionBloc(MissionRepository())
       ..add(LoadedMissionsByType(type: 'read'));
     missionUserBloc = MissionUserBloc(MissionUserRepository());
+    audioBloc = AudioBloc(AudioRepository())
+      ..add(LoadAudio(widget.book.id ?? ''));
+    chaptersBloc = ChaptersBloc(ChaptersRepository())
+      ..add(LoadChapters(widget.book.id ?? ''));
   }
 
   @override
@@ -59,6 +67,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
           create: (context) => missionBloc,
         ),
         BlocProvider(create: (context) => missionUserBloc),
+        BlocProvider(create: (context) => audioBloc),
+        BlocProvider(create: (context) => chaptersBloc)
       ],
       child: MultiBlocListener(
         listeners: [
@@ -106,7 +116,21 @@ class _DetailBookItemState extends State<DetailBookItem> {
                   status: true,
                   id: state.mission.id);
             } else if (state is MissionUserError) {}
-          })
+          }),
+          BlocListener<AudioBloc, AudioState>(listener: (context, state) {
+            if (state is AudioLoaded) {
+              setState(() {
+                haveAudio = true;
+              });
+            }
+          }),
+          BlocListener<ChaptersBloc, ChaptersState>(listener: (context, state) {
+            if (state is ChaptersLoaded) {
+              setState(() {
+                haveReading = true;
+              });
+            }
+          }),
         ],
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 50),
@@ -118,19 +142,19 @@ class _DetailBookItemState extends State<DetailBookItem> {
                 children: [
                   Column(
                     children: [
-                      Text(widget.book.chapters.toString(),
+                      Text(widget.book.language ?? 'Null',
                           style: Theme.of(context)
                               .textTheme
                               .displayMedium!
                               .copyWith(
                                   color:
                                       Theme.of(context).colorScheme.primary)),
-                      const Text('CHAPTERS')
+                      const Text('LANGUAGE')
                     ],
                   ),
                   Column(
                     children: [
-                      Text(widget.book.country ?? '',
+                      Text(widget.book.country ?? 'Null',
                           style: Theme.of(context)
                               .textTheme
                               .displayMedium!
@@ -171,104 +195,219 @@ class _DetailBookItemState extends State<DetailBookItem> {
                 builder: (context, state) {
                   if (state is AuthenticateState) {
                     final uId = state.authUser?.uid;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width / 3,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final Map<String, dynamic> tempPosition = {};
-                                final Map<String, dynamic> tempPercent = {};
-                                if (widget.book.price == 0 || inHis == true) {
-                                  missionUserBloc.add(
-                                      EditMissionUsers(mission: missionUser));
-                                  Navigator.pushNamed(
-                                      context, BookScreen.routeName,
-                                      arguments: {
-                                        'book': widget.book,
-                                        'uId': uId,
-                                        'chapterScrollPositions': tempPosition,
-                                        'chapterScrollPercentages': tempPercent,
-                                      });
-                                } else {
-                                  if (coins >= widget.book.price!) {
-                                    final int newCoins =
-                                        coins - widget.book.price!;
-                                    coinsBloc.add(EditCoinsEvent(
-                                        quantity: newCoins,
-                                        uId: SharedService.getUserId() ?? '',
-                                        coinsId: coinsId));
-                                    Navigator.pushNamed(
-                                        context, BookScreen.routeName,
-                                        arguments: {
-                                          'book': widget.book,
-                                          'uId': uId,
-                                          'chapterScrollPositions':
-                                              tempPosition,
-                                          'chapterScrollPercentages':
-                                              tempPercent,
-                                        });
-                                  } else {
-                                    Dialogs.materialDialog(
-                                        msg:
-                                            'Please add coins to read this book',
-                                        title: "Warning",
-                                        color: Colors.white,
-                                        context: context,
-                                        actions: [
-                                          IconsButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            text: "Ok",
-                                            iconData: Icons.cancel,
-                                            color: Colors.greenAccent,
-                                            textStyle: const TextStyle(
-                                                color: Colors.white),
-                                            iconColor: Colors.white,
+                    return (haveAudio && haveReading)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      final Map<String, dynamic> tempPosition =
+                                          {};
+                                      final Map<String, dynamic> tempPercent =
+                                          {};
+                                      if (widget.book.price == 0 ||
+                                          inHis == true) {
+                                        missionUserBloc.add(EditMissionUsers(
+                                            mission: missionUser));
+                                        Navigator.pushNamed(
+                                            context, BookScreen.routeName,
+                                            arguments: {
+                                              'book': widget.book,
+                                              'uId': uId,
+                                              'chapterScrollPositions':
+                                                  tempPosition,
+                                              'chapterScrollPercentages':
+                                                  tempPercent,
+                                              'bloc': chaptersBloc
+                                            });
+                                      } else {
+                                        if (coins >= widget.book.price!) {
+                                          final int newCoins =
+                                              coins - widget.book.price!;
+                                          coinsBloc.add(EditCoinsEvent(
+                                              quantity: newCoins,
+                                              uId: SharedService.getUserId() ??
+                                                  '',
+                                              coinsId: coinsId));
+                                          Navigator.pushNamed(
+                                              context, BookScreen.routeName,
+                                              arguments: {
+                                                'book': widget.book,
+                                                'uId': uId,
+                                                'chapterScrollPositions':
+                                                    tempPosition,
+                                                'chapterScrollPercentages':
+                                                    tempPercent,
+                                                'bloc': chaptersBloc
+                                              });
+                                        } else {
+                                          Dialogs.materialDialog(
+                                              msg:
+                                                  'Please add coins to read this book',
+                                              title: "Warning",
+                                              color: Colors.white,
+                                              context: context,
+                                              actions: [
+                                                IconsButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  text: "Ok",
+                                                  iconData: Icons.cancel,
+                                                  color: Colors.greenAccent,
+                                                  textStyle: const TextStyle(
+                                                      color: Colors.white),
+                                                  iconColor: Colors.white,
+                                                ),
+                                              ]);
+                                        }
+                                      }
+                                    },
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              100), // Adjust the radius as needed
+                                        ),
+                                      ),
+                                    ),
+                                    child: const Text('READ',
+                                        style: TextStyle(color: Colors.white)),
+                                  )),
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, BookListenScreen.routeName,
+                                          arguments: {
+                                            'book': widget.book,
+                                            'uId': uId,
+                                            'bloc': audioBloc
+                                          });
+                                    },
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              100), // Adjust the radius as needed
+                                        ),
+                                      ),
+                                    ),
+                                    child: const Text('LISTEN',
+                                        style: TextStyle(color: Colors.white)),
+                                  )),
+                            ],
+                          )
+                        : (haveReading && !haveAudio)
+                            ? SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    final Map<String, dynamic> tempPosition =
+                                        {};
+                                    final Map<String, dynamic> tempPercent = {};
+                                    if (widget.book.price == 0 ||
+                                        inHis == true) {
+                                      missionUserBloc.add(EditMissionUsers(
+                                          mission: missionUser));
+                                      Navigator.pushNamed(
+                                          context, BookScreen.routeName,
+                                          arguments: {
+                                            'book': widget.book,
+                                            'uId': uId,
+                                            'chapterScrollPositions':
+                                                tempPosition,
+                                            'chapterScrollPercentages':
+                                                tempPercent,
+                                            'bloc': chaptersBloc
+                                          });
+                                    } else {
+                                      if (coins >= widget.book.price!) {
+                                        final int newCoins =
+                                            coins - widget.book.price!;
+                                        coinsBloc.add(EditCoinsEvent(
+                                            quantity: newCoins,
+                                            uId:
+                                                SharedService.getUserId() ?? '',
+                                            coinsId: coinsId));
+                                        Navigator.pushNamed(
+                                            context, BookScreen.routeName,
+                                            arguments: {
+                                              'book': widget.book,
+                                              'uId': uId,
+                                              'chapterScrollPositions':
+                                                  tempPosition,
+                                              'chapterScrollPercentages':
+                                                  tempPercent,
+                                            });
+                                      } else {
+                                        Dialogs.materialDialog(
+                                            msg:
+                                                'Please add coins to read this book',
+                                            title: "Warning",
+                                            color: Colors.white,
+                                            context: context,
+                                            actions: [
+                                              IconsButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                text: "Ok",
+                                                iconData: Icons.cancel,
+                                                color: Colors.greenAccent,
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white),
+                                                iconColor: Colors.white,
+                                              ),
+                                            ]);
+                                      }
+                                    }
+                                  },
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            100), // Adjust the radius as needed
+                                      ),
+                                    ),
+                                  ),
+                                  child: const Text('READ',
+                                      style: TextStyle(color: Colors.white)),
+                                ))
+                            : (haveAudio && !haveReading)
+                                ? SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 3,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, BookListenScreen.routeName,
+                                            arguments: {
+                                              'book': widget.book,
+                                              'uId': uId,
+                                              'bloc': audioBloc
+                                            });
+                                      },
+                                      style: ButtonStyle(
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                100), // Adjust the radius as needed
                                           ),
-                                        ]);
-                                  }
-                                }
-                              },
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        100), // Adjust the radius as needed
-                                  ),
-                                ),
-                              ),
-                              child: const Text('READ',
-                                  style: TextStyle(color: Colors.white)),
-                            )),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width / 3,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, BookListenScreen.routeName,
-                                    arguments: {
-                                      'book': widget.book,
-                                      'uId': uId,
-                                    });
-                              },
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        100), // Adjust the radius as needed
-                                  ),
-                                ),
-                              ),
-                              child: const Text('LISTEN',
-                                  style: TextStyle(color: Colors.white)),
-                            )),
-                      ],
-                    );
+                                        ),
+                                      ),
+                                      child: const Text('LISTEN',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ))
+                                : const SizedBox();
                   } else {
                     return SizedBox(
                         width: MediaQuery.of(context).size.width - 20,

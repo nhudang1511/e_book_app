@@ -8,16 +8,8 @@ class HistoryInitial extends HistoryState {
 class HistoryLoading extends HistoryState {
 }
 class HistoryLoaded extends HistoryState{
-  final List<Book> books;
   final List<History> histories;
-  DocumentSnapshot? lastDoc;
-  HistoryLoaded({this.books = const <Book>[], this.histories =  const <History>[], this.lastDoc});
-}
-class HistoryPaginating extends HistoryState{
-  final List<Book> books;
-  final List<History> histories;
-  DocumentSnapshot? lastDoc;
-  HistoryPaginating({required this.books, required this.histories, this.lastDoc});
+  HistoryLoaded({this.histories =  const <History>[]});
 }
 class HistoryError extends HistoryState {
   final String error;

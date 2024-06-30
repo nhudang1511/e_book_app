@@ -21,7 +21,10 @@ class _ReviewItemState extends State<ReviewItem> {
   Widget build(BuildContext context) {
     return BlocBuilder<ReviewBloc, ReviewState>(
       builder: (context, state) {
-        if (state is ReviewLoaded) {
+        if(state is ReviewLoading){
+          return const Center(child: CircularProgressIndicator(),);
+        }
+        else if (state is ReviewLoaded) {
           List<Review> reviews = state.reviews;
           reviews = reviews
               .where((element) => element.bookId == widget.book.id)
@@ -85,7 +88,7 @@ class _ReviewItemState extends State<ReviewItem> {
             ],
           );
         } else {
-          return const Text('something went wrong');
+          return const Center(child: Text('something went wrong'));
         }
       },
     );

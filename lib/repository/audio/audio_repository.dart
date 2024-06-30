@@ -10,7 +10,7 @@ class AudioRepository extends BaseAudioRepository {
   AudioRepository();
 
   @override
-  Future<Audio> getChaptersAudio(String bookId) async {
+  Future<Audio?> getChaptersAudio(String bookId) async {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('audio')
@@ -21,8 +21,7 @@ class AudioRepository extends BaseAudioRepository {
         data['id'] = querySnapshot.docs.first.id;
         return Audio().fromJson(data);
       } else {
-        // Trả về một giá trị mặc định nào đó hoặc null
-        return Audio(); // Hoặc trả về một đối tượng Audio mặc định
+        return null;
       }
     } catch (e) {
       log(e.toString());

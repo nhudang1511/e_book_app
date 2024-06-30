@@ -20,8 +20,13 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
       throw Exception("The audioId parameter cannot be empty.");
     }
     try {
-      Audio audio = await _audioRepository.getChaptersAudio(event.bookId);
-      emit(AudioLoaded(audio: audio));
+      Audio? audio = await _audioRepository.getChaptersAudio(event.bookId);
+      if(audio != null){
+        emit(AudioLoaded(audio: audio));
+      }
+      else{
+        emit(AudioFailure());
+      }
     } catch (e) {
       emit(AudioFailure());
     }

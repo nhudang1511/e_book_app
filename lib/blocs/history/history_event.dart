@@ -3,11 +3,6 @@ part of 'history_bloc.dart';
 abstract class HistoryEvent{
   const HistoryEvent();
 }
-
-class LoadHistory extends HistoryEvent {
-}
-class LoadHistoryPaginating extends HistoryEvent{
-}
 class AddToHistoryEvent extends HistoryEvent {
   final String uId;
   final String chapters;

@@ -12,4 +12,5 @@ export 'coins/coins_repository.dart';
 export 'mission_user/mission_user_repository.dart';
 export 'mission/mission_repository.dart';
 export 'audio/audio_repository.dart';
+export 'history_audio/history_audio_repository.dart';
 

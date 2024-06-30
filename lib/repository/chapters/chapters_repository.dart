@@ -10,7 +10,7 @@ class ChaptersRepository extends BaseChaptersRepository {
   ChaptersRepository();
 
   @override
-  Future<Chapters> getChapters(String bookId) async {
+  Future<Chapters?> getChapters(String bookId) async {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('chapters')
@@ -21,8 +21,7 @@ class ChaptersRepository extends BaseChaptersRepository {
         data['id'] = querySnapshot.docs.first.id;
         return Chapters().fromJson(data);
       } else {
-        // Trả về một giá trị mặc định nào đó hoặc null
-        return Chapters(); // Hoặc trả về một đối tượng Chapters mặc định
+        return null;
       }
     } catch (e) {
       log(e.toString());

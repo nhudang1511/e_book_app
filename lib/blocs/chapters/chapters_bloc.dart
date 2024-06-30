@@ -18,8 +18,13 @@ class ChaptersBloc extends Bloc<ChaptersEvent, ChaptersState> {
       throw Exception("The bookId parameter cannot be empty.");
     }
     try {
-      Chapters chapter = await _chaptersRepository.getChapters(event.bookId);
-      emit(ChaptersLoaded(chapters: chapter));
+      Chapters? chapter = await _chaptersRepository.getChapters(event.bookId);
+      if(chapter != null){
+        emit(ChaptersLoaded(chapters: chapter));
+      }
+      else{
+        emit(ChaptersFailure());
+      }
     } catch (e) {
       emit(ChaptersFailure());
     }
