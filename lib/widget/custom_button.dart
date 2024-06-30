@@ -4,17 +4,17 @@ class CustomButton extends StatefulWidget {
   final String title;
   final VoidCallback onPressed;
   final bool disabled;
+  final IconData? icon;
 
   const CustomButton(
       {required this.title,
       required this.onPressed,
       this.disabled = false,
+      this.icon,
       super.key});
 
   @override
   State<StatefulWidget> createState() => _CustomButtonState();
-
-
 }
 
 class _CustomButtonState extends State<CustomButton> {
@@ -24,23 +24,30 @@ class _CustomButtonState extends State<CustomButton> {
       children: [
         Expanded(
           child: SizedBox(
-            height: 48,
+            height: 38,
             child: ElevatedButton(
-              onPressed:  widget.disabled ? null : widget.onPressed,
+              onPressed: widget.disabled ? null : widget.onPressed,
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius:
-                    BorderRadius.circular(4), // Adjust the radius as needed
+                        BorderRadius.circular(4), // Adjust the radius as needed
                   ),
                 ),
               ),
-              child: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(widget.icon),
+                  const SizedBox(width: 5,),
+                  Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18),
+                  ),
+                ],
               ),
             ),
           ),

@@ -222,7 +222,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     },
                                     text: "Ok",
                                     iconData: Icons.cancel,
-                                    color: Colors.greenAccent,
+                                    color: Theme.of(context).colorScheme.primary,
                                     textStyle:
                                         const TextStyle(color: Colors.white),
                                     iconColor: Colors.white,
@@ -309,7 +309,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     },
                                     text: "Ok",
                                     iconData: Icons.cancel,
-                                    color: Colors.greenAccent,
+                                    color: Theme.of(context).colorScheme.primary,
                                     textStyle:
                                         const TextStyle(color: Colors.white),
                                     iconColor: Colors.white,

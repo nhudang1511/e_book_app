@@ -49,18 +49,19 @@ class _ListBookHistoryState extends State<ListBookHistory> {
   Widget build(BuildContext context) {
     return widget.inHistory
         ? Column(
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SectionTitle(title: 'Continue Reading'),
-              ],
-            ),
-            SizedBox(
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SectionTitle(title: 'Continue Reading'),
+                ],
+              ),
+              SizedBox(
                 height: widget.height,
                 child: ListView.builder(
                     scrollDirection: widget.scrollDirection,
-                    itemCount: widget.books.length > 4 ? 4 : widget.books.length,
+                    itemCount:
+                        widget.books.length > 4 ? 4 : widget.books.length,
                     itemBuilder: (context, index) {
                       return BookCardHistory(
                           book: widget.books[index],
@@ -68,8 +69,8 @@ class _ListBookHistoryState extends State<ListBookHistory> {
                           percent: widget.percent[index]);
                     }),
               ),
-          ],
-        )
+            ],
+          )
         : BlocBuilder<BookBloc, BookState>(
             builder: (context, state) {
               if (state is BookLoaded) {
@@ -86,8 +87,9 @@ class _ListBookHistoryState extends State<ListBookHistory> {
                     controller: controller,
                     padding: const EdgeInsets.all(5),
                     itemCount: widget.books.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
                     itemBuilder: (context, index) => BookCardHistory(
                         book: widget.books[index],
                         inLibrary: widget.inLibrary,
@@ -95,10 +97,10 @@ class _ListBookHistoryState extends State<ListBookHistory> {
                   )),
                   isPaginating
                       ? Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ))
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ))
                       : const SizedBox()
                 ],
               );

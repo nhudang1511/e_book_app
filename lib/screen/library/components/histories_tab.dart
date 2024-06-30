@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
-import '../../../repository/repository.dart';
 import '../../../widget/book_items/list_book_history.dart';
 
 class HistoriesTab extends StatelessWidget {

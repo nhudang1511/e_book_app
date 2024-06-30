@@ -1,3 +1,4 @@
+import 'package:e_book_app/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_dialogs/dialogs.dart';
@@ -201,7 +202,9 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             children: [
                               SizedBox(
                                   width: MediaQuery.of(context).size.width / 3,
-                                  child: ElevatedButton(
+                                  child: CustomButton(
+                                    title: 'READ',
+                                    icon: Icons.menu_book_outlined,
                                     onPressed: () {
                                       final Map<String, dynamic> tempPosition =
                                           {};
@@ -256,7 +259,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                                   },
                                                   text: "Ok",
                                                   iconData: Icons.cancel,
-                                                  color: Colors.greenAccent,
+                                                  color: Theme.of(context).colorScheme.primary,
                                                   textStyle: const TextStyle(
                                                       color: Colors.white),
                                                   iconColor: Colors.white,
@@ -265,21 +268,12 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                         }
                                       }
                                     },
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              100), // Adjust the radius as needed
-                                        ),
-                                      ),
-                                    ),
-                                    child: const Text('READ',
-                                        style: TextStyle(color: Colors.white)),
                                   )),
                               SizedBox(
                                   width: MediaQuery.of(context).size.width / 3,
-                                  child: ElevatedButton(
+                                  child: CustomButton(
+                                    title: 'LISTEN',
+                                    icon: Icons.volume_up,
                                     onPressed: () {
                                       Navigator.pushNamed(
                                           context, BookListenScreen.routeName,
@@ -289,24 +283,13 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                             'bloc': audioBloc
                                           });
                                     },
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              100), // Adjust the radius as needed
-                                        ),
-                                      ),
-                                    ),
-                                    child: const Text('LISTEN',
-                                        style: TextStyle(color: Colors.white)),
                                   )),
                             ],
                           )
                         : (haveReading && !haveAudio)
                             ? SizedBox(
                                 width: MediaQuery.of(context).size.width,
-                                child: ElevatedButton(
+                                child: CustomButton(
                                   onPressed: () {
                                     final Map<String, dynamic> tempPosition =
                                         {};
@@ -344,6 +327,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                                   tempPosition,
                                               'chapterScrollPercentages':
                                                   tempPercent,
+                                              'bloc': chaptersBloc
                                             });
                                       } else {
                                         Dialogs.materialDialog(
@@ -359,7 +343,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                                 },
                                                 text: "Ok",
                                                 iconData: Icons.cancel,
-                                                color: Colors.greenAccent,
+                                                color: Theme.of(context).colorScheme.primary,
                                                 textStyle: const TextStyle(
                                                     color: Colors.white),
                                                 iconColor: Colors.white,
@@ -368,23 +352,14 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                       }
                                     }
                                   },
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            100), // Adjust the radius as needed
-                                      ),
-                                    ),
-                                  ),
-                                  child: const Text('READ',
-                                      style: TextStyle(color: Colors.white)),
+                                  icon: Icons.menu_book_outlined,
+                                  title: 'READ',
                                 ))
                             : (haveAudio && !haveReading)
                                 ? SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width / 3,
-                                    child: ElevatedButton(
+                                    child: CustomButton(
                                       onPressed: () {
                                         Navigator.pushNamed(
                                             context, BookListenScreen.routeName,
@@ -394,18 +369,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                               'bloc': audioBloc
                                             });
                                       },
-                                      style: ButtonStyle(
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                100), // Adjust the radius as needed
-                                          ),
-                                        ),
-                                      ),
-                                      child: const Text('LISTEN',
-                                          style:
-                                              TextStyle(color: Colors.white)),
+                                      icon: Icons.volume_up,
+                                      title: 'LISTEN',
                                     ))
                                 : const SizedBox();
                   } else {
@@ -420,7 +385,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
-                                    100), // Adjust the radius as needed
+                                    4), // Adjust the radius as needed
                               ),
                             ),
                           ),

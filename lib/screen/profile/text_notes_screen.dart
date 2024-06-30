@@ -203,29 +203,29 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF122158),
-          title: const Row(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.edit, color: Colors.white),
+              Icon(Icons.edit, color: Theme.of(context).colorScheme.background),
               Text(
                 'Edit Notes',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.background),
               )
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Divider(color: Colors.white, height: 10),
+              Divider(color: Theme.of(context).colorScheme.background, height: 10),
               const SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Name:',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.background),
                   ),
                   const SizedBox(
                     width: 10,
@@ -235,16 +235,16 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
                         width: MediaQuery.of(context).size.width / 2,
                         child: TextFormField(
                             controller: titleContentController,
-                            style: const TextStyle(color: Colors.white),
-                            cursorColor: Colors.white,
-                            decoration: const InputDecoration(
+                            style: TextStyle(color: Theme.of(context).colorScheme.background),
+                            cursorColor: Theme.of(context).colorScheme.background,
+                            decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.background,
                                     width:
                                         2), // Màu gạch dưới khi TextFormField được focus
                               ),
-                              enabledBorder: OutlineInputBorder(
+                              enabledBorder: const OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey, width: 2),
                               ),
@@ -257,9 +257,9 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
               ),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Content:',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.background),
                   ),
                   const SizedBox(
                     width: 10,
@@ -269,16 +269,16 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
                         width: MediaQuery.of(context).size.width / 2,
                         child: TextFormField(
                             controller: contentController,
-                            style: const TextStyle(color: Colors.white),
-                            cursorColor: Colors.white,
-                            decoration: const InputDecoration(
+                            style: TextStyle(color: Theme.of(context).colorScheme.background),
+                            cursorColor: Theme.of(context).colorScheme.background,
+                            decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.background,
                                     width:
                                         2), // Màu gạch dưới khi TextFormField được focus
                               ),
-                              enabledBorder: OutlineInputBorder(
+                              enabledBorder: const OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey, width: 2),
                               ),
@@ -306,18 +306,18 @@ class _TextNotesScreenState extends State<TextNotesScreen> {
                   Navigator.of(context).pop();
                 });
               },
-              child: const Text(
+              child: Text(
                 'Save',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.background),
               ),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 'Close',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.background),
               ),
             ),
           ],

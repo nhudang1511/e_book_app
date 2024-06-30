@@ -24,3 +24,6 @@ class LoadHistoryAudioByBookId extends HistoryAudioEvent {
   final String uId;
   LoadHistoryAudioByBookId(this.bookId, this.uId);
 }
+class LoadHistoryAudio extends HistoryAudioEvent{
+
+}

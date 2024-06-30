@@ -6,6 +6,7 @@ import '../../model/models.dart';
 import '../../widget/widget.dart';
 import '../screen.dart';
 import 'components/favourites_tab.dart';
+import 'components/histories_audio_tab.dart';
 import 'components/histories_tab.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -97,7 +98,7 @@ class _CustomTabState extends State<CustomTab> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: null,
@@ -122,8 +123,9 @@ class _CustomTabState extends State<CustomTab> {
                   labelStyle: const TextStyle(fontWeight: FontWeight.w500),
                   tabs: const [
                     Tab(
-                      text: 'History',
+                      text: 'Reading',
                     ),
+                    Tab(text: 'Listening'),
                     Tab(
                       text: 'Favourites',
                     ),
@@ -141,6 +143,7 @@ class _CustomTabState extends State<CustomTab> {
                         HistoriesTab(
                           uId: widget.uId, book: book,
                         ),
+                        HistoriesAudioTab(uId: widget.uId, book: book,),
                         FavouritesTab(book: book,),
                       ],
                     );

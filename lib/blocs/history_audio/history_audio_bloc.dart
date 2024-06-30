@@ -1,3 +1,4 @@
+import 'package:e_book_app/blocs/audio/audio_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/models.dart';
@@ -13,6 +14,7 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
   HistoryAudioBloc(this._historyAudioRepository) : super(HistoryAudioInitial()) {
     on<AddToHistoryAudioEvent>(_onAddToHistoryAudio);
     on<LoadHistoryAudioByBookId>(_onLoadHistoryAudioByBookId);
+    on<LoadHistoryAudio>(_onLoadHistoryAudio);
   }
 
   void _onAddToHistoryAudio(event, Emitter<HistoryAudioState> emit) async {
@@ -43,4 +45,14 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
       emit(HistoryAudioError(e.toString()));
     }
   }
+
+  void _onLoadHistoryAudio(event, Emitter<HistoryAudioState> emit) async{
+    try {
+      List<HistoryAudio> historyAudio = await _historyAudioRepository.getAllHistoryAudio();
+      emit(HistoryAudioLoaded(historyAudio: historyAudio));
+    } catch (e) {
+      emit(HistoryAudioError(e.toString()));
+    }
+  }
+  
 }

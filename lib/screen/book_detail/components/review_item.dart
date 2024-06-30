@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/screen/reviews/reviews_screen.dart';
+import 'package:e_book_app/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rating_summary/rating_summary.dart';
@@ -67,24 +68,13 @@ class _ReviewItemState extends State<ReviewItem> {
                 ),
               SizedBox(
                   width: MediaQuery.of(context).size.width - 20,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ReviewsScreen.routeName,
-                            arguments: widget.book);
-                      },
-                      style: ButtonStyle(
-                        shape:
-                        MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                100), // Adjust the radius as needed
-                          ),
-                        ),
-                      ),
-                      child: const Text(
-                        'REVIEWS',
-                        style: TextStyle(color: Colors.white),
-                      )))
+                  child: CustomButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, ReviewsScreen.routeName,
+                          arguments: widget.book);
+                    },
+                    title: 'REVIEWS',
+                  ))
             ],
           );
         } else {

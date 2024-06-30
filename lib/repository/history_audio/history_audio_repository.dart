@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book_app/config/shared_preferences.dart';
 
 import '../../model/models.dart';
 import 'base_history_audio_repository.dart';
@@ -26,9 +27,9 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
         var existingData = doc.data();
         // Lấy giá trị chapterScrollPositions từ Firebase
         var existingChapterScrollPositions =
-        existingData['chapterScrollPositions'] as Map<String, dynamic>;
+            existingData['chapterScrollPositions'] as Map<String, dynamic>;
         var existingChapterScrollPercentages =
-        existingData['chapterScrollPercentages'] as Map<String, dynamic>;
+            existingData['chapterScrollPercentages'] as Map<String, dynamic>;
         // Cập nhật giá trị chapterScrollPositions, times và percent mới
         var updatedData = {
           'percent': historyAudio.percent,
@@ -49,7 +50,8 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
         return HistoryAudio().fromJson(doc.data());
       } else {
         // Nếu không tồn tại, thêm một tài liệu mới với chapterScrollPositions mới
-        var newDocRef = await _firebaseFirestore.collection('histories_audio').add({
+        var newDocRef =
+            await _firebaseFirestore.collection('histories_audio').add({
           ...historyAudio.toJson(),
           'chapterScrollPositions': historyAudio.chapterScrollPositions,
           'chapterScrollPercentages': historyAudio.chapterScrollPercentages
@@ -77,6 +79,24 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
           .collection('histories_audio')
           .where('bookId', isEqualTo: bookId)
           .where('uId', isEqualTo: uId)
+          .get();
+      return querySnapshot.docs.map((doc) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        return HistoryAudio().fromJson(data);
+      }).toList();
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<HistoryAudio>> getAllHistoryAudio() async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('histories_audio')
+          .where('uId', isEqualTo: SharedService.getUserId())
           .get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();
