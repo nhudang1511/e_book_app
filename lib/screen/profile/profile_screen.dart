@@ -1,9 +1,12 @@
 import 'package:e_book_app/blocs/blocs.dart';
 import 'package:e_book_app/model/coins_model.dart';
+import 'package:e_book_app/repository/deposit/deposit_repository.dart';
 import 'package:e_book_app/repository/mission/mission_repository.dart';
+import 'package:e_book_app/widget/custom_dash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/screen/screen.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/mission_user_model.dart';
 import '../../repository/coins/coins_repository.dart';
@@ -27,9 +30,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late AuthBloc authBloc;
-  late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
   late CoinsBloc coinsBloc;
+  late DepositBloc depositBloc;
   Coins coins = Coins();
   int addCoins = 0;
   MissionUser missionUser = MissionUser();
@@ -38,11 +41,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     authBloc = BlocProvider.of<AuthBloc>(context);
-    missionBloc = MissionBloc(MissionRepository());
     missionUserBloc = MissionUserBloc(MissionUserRepository())
       ..add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
     coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+    depositBloc = DepositBloc(DepositRepository())
+      ..add(LoadedDeposit(uId: SharedService.getUserId() ?? ''));
   }
 
   @override
@@ -50,25 +54,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final currentHeight = MediaQuery.of(context).size.height;
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => missionBloc),
         BlocProvider(create: (context) => missionUserBloc),
         BlocProvider(create: (context) => coinsBloc),
+        BlocProvider(create: (context) => depositBloc),
       ],
       child: MultiBlocListener(
         listeners: [
-          BlocListener<CoinsBloc, CoinsState>(listener: (context, state) {
-            //print(state);
-          }),
+          BlocListener<DepositBloc, DepositState>(
+              listener: (context, state) {
+                //print(state);
+                if (state is DepositLoaded) {
+                  missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
+                }
+              }),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-            // print(state);
-            if (state is MissionUserListLoaded) {
-              coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
-            }
-          }),
-          BlocListener<MissionBloc, MissionState>(listener: (context, state) {
-            //print(state);
-          }),
+                // print(state);
+                if (state is MissionUserListLoaded) {
+                  coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+                }
+              }),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
@@ -303,18 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   title: "Settings",
                                   currentHeight: currentHeight,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 32, right: 32),
-                                  child: Container(
-                                    height: 0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                  ),
-                                ),
+                                const CustomDash(),
                                 //change password
                                 // if (state.user.provider == 'email')
                                 CustomInkwell(
@@ -330,18 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   title: "Change Password",
                                   currentHeight: currentHeight,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 32, right: 32),
-                                  child: Container(
-                                    height: 0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                  ),
-                                ),
+                                const CustomDash(),
                                 //text notes
                                 CustomInkwell(
                                   onTap: () {
@@ -356,29 +339,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   title: "Text notes",
                                   currentHeight: currentHeight,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 32, right: 32),
-                                  child: Container(
-                                    height: 0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                  ),
-                                ),
+                                const CustomDash(),
                                 CustomInkwell(
                                     onTap: () async {
                                       await Navigator.pushNamed(context,
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
-                                        coinsBloc.add(LoadedCoins(
-                                            uId: SharedService.getUserId() ??
-                                                ''));
-                                        missionUserBloc.add(LoadedMissionUsers(
-                                            uId: SharedService.getUserId() ??
-                                                ''));
+                                        depositBloc.add(LoadedDeposit(uId: SharedService.getUserId() ?? ''));
                                       });
                                     },
                                     mainIcon: Icon(
@@ -388,18 +355,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                     title: "Add coins",
                                     currentHeight: currentHeight),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 32, right: 32),
-                                  child: Container(
-                                    height: 0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                const CustomDash(),
+                                CustomInkwell(
+                                    onTap: () async {
+                                      Navigator.pushNamed(context,
+                                          CommonQuestionScreen.routeName);
+                                    },
+                                    mainIcon: Icon(
+                                      Icons.contact_support_rounded,
+                                      color:
+                                      Theme.of(context).colorScheme.primary,
                                     ),
-                                  ),
-                                ),
+                                    title: "Common Questions",
+                                    currentHeight: currentHeight),
+                                const CustomDash(),
+                                CustomInkwell(
+                                    onTap: () async {
+                                      Navigator.pushNamed(context,
+                                          ContactUsScreen.routeName);
+                                    },
+                                    mainIcon: Icon(
+                                      Icons.message,
+                                      color:
+                                      Theme.of(context).colorScheme.primary,
+                                    ),
+                                    title: "Contact Us",
+                                    currentHeight: currentHeight),
+                                const CustomDash(),
                                 //line
                                 Container(
                                   height: 1,

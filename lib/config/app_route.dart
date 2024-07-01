@@ -81,6 +81,10 @@ class AppRouter {
           uId: uId,
           bloc: bloc,
         ));
+      case CommonQuestionScreen.routeName:
+        return _route(const CommonQuestionScreen());
+      case ContactUsScreen.routeName:
+        return _route(const ContactUsScreen());
       default:
         return _errorRoute();
     }

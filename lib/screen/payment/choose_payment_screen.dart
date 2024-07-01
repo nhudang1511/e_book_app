@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:e_book_app/screen/payment/vnpay.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 import '../../repository/repository.dart';
+import '../../utils/show_snack_bar.dart';
 import '../../widget/widget.dart';
 import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 
@@ -22,10 +24,9 @@ class ChoosePaymentScreen extends StatefulWidget {
 
 class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   int money = 0;
-  late CoinsBloc _coinsBloc;
+  late DepositBloc depositBloc;
   late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
-  String uId = '';
   int coins = 0;
   String coinsId = '';
   List<Mission> mission = [];
@@ -39,8 +40,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   @override
   void initState() {
     super.initState();
-    _coinsBloc = CoinsBloc(CoinsRepository())
-      ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+    depositBloc = DepositBloc(DepositRepository());
     missionBloc = MissionBloc(MissionRepository())
       ..add(LoadedMissionsByType(type: 'coins'));
     missionUserBloc = MissionUserBloc(MissionUserRepository());
@@ -50,7 +50,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => _coinsBloc),
+        BlocProvider(create: (context) => depositBloc),
         BlocProvider(
           create: (context) => missionBloc,
         ),
@@ -58,18 +58,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
       ],
       child: MultiBlocListener(
         listeners: [
-          BlocListener<CoinsBloc, CoinsState>(
-            listener: (context, state) {
-              // print(state);
-              if (state is AddCoins) {
-                Navigator.pop(context);
-              } else if (state is CoinsLoaded) {
-                uId = state.coins.uId ?? '';
-                coins = state.coins.quantity ?? 0;
-                coinsId = state.coins.coinsId ?? '';
-              }
-            },
-          ),
           BlocListener<MissionBloc, MissionState>(
             listener: (context, state) {
               //print('m: $state');
@@ -99,6 +87,12 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                   status: true,
                   id: state.mission.id);
             } else if (state is MissionUserError) {}
+          }),
+          BlocListener<DepositBloc, DepositState>(listener: (context, state) {
+            // print(state);
+            if (state is AddDeposit) {
+              Navigator.of(context).pop();
+            }
           })
         ],
         child: Scaffold(
@@ -130,7 +124,8 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                       buttonValues: listMoneysToCoins.keys.toList(),
                       buttonTextStyle: ButtonTextStyle(
                           selectedColor: Colors.white,
-                          unSelectedColor: Theme.of(context).colorScheme.secondaryContainer,
+                          unSelectedColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           textStyle: const TextStyle(fontSize: 16)),
                       height: 50,
                       horizontal: true,
@@ -177,7 +172,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                 note:
                                     "Contact us for any questions on your order.",
                                 onSuccess: (Map params) async {
-                                  print("onSuccess: $params");
+                                  ShowSnackBar.success("Success deposit money from paypal", context);
                                   if (money ==
                                       listMoneysToCoins.keys.elementAt(0)) {
                                     coins = coins +
@@ -191,21 +186,26 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     coins = coins +
                                         listMoneysToCoins.values.elementAt(2);
                                   }
-                                  if (uId == SharedService.getUserId()) {
-                                    _coinsBloc.add(EditCoinsEvent(
-                                        quantity: coins,
-                                        uId: SharedService.getUserId() ?? '',
-                                        coinsId: coinsId));
-                                    missionUserBloc.add(
-                                        EditMissionUsers(mission: missionUser));
-                                  }
+                                  depositBloc.add(AddNewDepositEvent(
+                                      deposit: Deposit(
+                                          status: true,
+                                          type: 'Paypal',
+                                          uId: SharedService.getUserId() ?? '',
+                                          coin: coins,
+                                          money: money,
+                                          createdAt: Timestamp.fromDate(
+                                              DateTime.now()),
+                                          updateAt: Timestamp.fromDate(
+                                              DateTime.now()))));
+                                  missionUserBloc.add(
+                                      EditMissionUsers(mission: missionUser));
                                 },
                                 onError: (error) {
-                                  print("onError: $error");
+                                  ShowSnackBar.error("Error deposit money from paypal", context);
                                   Navigator.pop(context);
                                 },
                                 onCancel: () {
-                                  print('cancelled:');
+                                  ShowSnackBar.error("Cancelled", context);
                                 },
                               ),
                             ));
@@ -222,7 +222,8 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     },
                                     text: "Ok",
                                     iconData: Icons.cancel,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     textStyle:
                                         const TextStyle(color: Colors.white),
                                     iconColor: Colors.white,
@@ -268,7 +269,7 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                             VNPAYFlutter.instance.show(
                                 paymentUrl: paymentUrl,
                                 onPaymentSuccess: (params) {
-                                  print('Success');
+                                  ShowSnackBar.success("Success deposit money from VNPay", context);
                                   if (money ==
                                       listMoneysToCoins.keys.elementAt(0)) {
                                     coins = coins +
@@ -282,17 +283,22 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     coins = coins +
                                         listMoneysToCoins.values.elementAt(2);
                                   }
-                                  if (uId == SharedService.getUserId()) {
-                                    _coinsBloc.add(EditCoinsEvent(
-                                        quantity: coins,
-                                        uId: SharedService.getUserId() ?? '',
-                                        coinsId: coinsId));
-                                    missionUserBloc.add(
-                                        EditMissionUsers(mission: missionUser));
-                                  }
+                                  depositBloc.add(AddNewDepositEvent(
+                                      deposit: Deposit(
+                                          coin: coins,
+                                          money: money,
+                                          uId: SharedService.getUserId(),
+                                          type: 'VNPay',
+                                          status: true,
+                                          createdAt: Timestamp.fromDate(
+                                              DateTime.now()),
+                                          updateAt: Timestamp.fromDate(
+                                              DateTime.now()))));
+                                  missionUserBloc.add(
+                                      EditMissionUsers(mission: missionUser));
                                 }, //on mobile transaction success
                                 onPaymentError: (params) {
-                                  print('error ${params.toString()}');
+                                  ShowSnackBar.error("Error deposit money from paypal", context);
                                 }, //on mobile transaction error
                                 onWebPaymentComplete: () {} //only use in web
                                 );
@@ -309,7 +315,8 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                     },
                                     text: "Ok",
                                     iconData: Icons.cancel,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     textStyle:
                                         const TextStyle(color: Colors.white),
                                     iconColor: Colors.white,

@@ -21,3 +21,5 @@ export 'login/verify_email_login_screen.dart';
 export 'forgot_password/reset_password_screen.dart';
 export 'mission/mission_screen.dart';
 export 'book/book_listen_screen.dart';
+export 'profile/components/common_questions_screen.dart';
+export 'profile/components/contact_us_screen.dart';

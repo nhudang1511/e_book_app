@@ -335,7 +335,6 @@ class _BookListenScreenState extends State<BookListenScreen> {
       ],
       child: BlocListener<HistoryAudioBloc, HistoryAudioState>(
         listener: (context, state) {
-          // TODO: implement listener}
           print(state);
         },
         child: BlocProvider.value(

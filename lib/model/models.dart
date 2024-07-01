@@ -12,3 +12,6 @@ export 'mission_model.dart';
 export 'mission_user_model.dart';
 export 'audio_model.dart';
 export 'history_audio_model.dart';
+export 'deposit_model.dart';
+export 'contact_model.dart';
+export 'question_model.dart';

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 import '../../widget/custom_dialog_notice.dart';
 import 'components/custom_tab_in_book.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class BookDetailScreen extends StatefulWidget {
   static const String routeName = '/book_detail';
@@ -186,10 +190,28 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                     icon: const Icon(Icons.bookmark_outlined,
                                         color: Color(0xFFDFE2E0))),
                               IconButton(
-                                  onPressed: () {
-                                    Share.share(
-                                        'https://github.com/nhudang1511/e_book_app_frontend');
-                                    //Share.share(widget.book.imageUrl ?? '');
+                                  onPressed: () async {
+                                    final String? text = widget.book.title;
+                                    const String link = 'https://drive.google.com/file/d/1P-jKE2wOMIvctigRuM0B0CEEi0rd32UQ/view?usp=drive_link';
+                                    final String? imageUrl = widget.book.imageUrl;
+
+                                    // Download the image
+                                    final response = await http.get(Uri.parse(imageUrl!));
+                                    final Uint8List bytes = response.bodyBytes;
+
+                                    // Get the temporary directory
+                                    final tempDir = await getTemporaryDirectory();
+                                    final file = await File('${tempDir.path}/image.png').create();
+                                    await file.writeAsBytes(bytes);
+
+                                    // Convert the file to XFile
+                                    final xFile = XFile(file.path);
+
+                                    // Share the file along with text and link
+                                    Share.shareXFiles(
+                                      [xFile],
+                                      text: '$text\n\n$link',
+                                    );
                                   },
                                   icon: const Icon(
                                     Icons.share,

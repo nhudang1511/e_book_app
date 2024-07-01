@@ -61,7 +61,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         obscureText: widget.isObscureText == true,
         enabled: !widget.disabled,
         decoration: InputDecoration(
-          errorStyle: TextStyle(
+          errorStyle: const TextStyle(
             fontWeight: FontWeight.w100,
             fontSize: 12,
           ),
