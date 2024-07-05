@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:e_book_app/blocs/blocs.dart';
 import 'package:e_book_app/repository/question/question_repository.dart';
 import 'package:e_book_app/widget/custom_dash.dart';
@@ -61,7 +62,7 @@ class _CommonQuestionScreenState extends State<CommonQuestionScreen> {
   }
 }
 
-class CustomQuestions extends StatelessWidget {
+class CustomQuestions extends StatefulWidget {
   const CustomQuestions({
     super.key,
     required this.title,
@@ -72,6 +73,15 @@ class CustomQuestions extends StatelessWidget {
   final Map<String, dynamic> questions;
 
   @override
+  State<CustomQuestions> createState() => _CustomQuestionsState();
+}
+
+class _CustomQuestionsState extends State<CustomQuestions> {
+  bool showAnswer = false;
+  late String? selectedQuestionKey;
+  dynamic selectedQuestionValue;
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,33 +90,65 @@ class CustomQuestions extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            title,
+            widget.title,
             style: Theme.of(context).textTheme.displaySmall,
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: questions.length,
+          itemCount: widget.questions.length,
           itemBuilder: (BuildContext context, int index) {
-            final questionKey = questions.keys.elementAt(index);
-            final questionValue = questions[questionKey];
-            return InkWell(
-              onTap: () {
-                print(questionValue);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  questionKey,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontSize: 16),
-                ),
+            final questionKey = widget.questions.keys.elementAt(index);
+            final questionValue = widget.questions[questionKey];
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AutoSizeText(
+                      questionKey,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontSize: 16),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  InkWell(
+                      onTap: () {
+                        setState(() {
+                          if (showAnswer &&
+                              selectedQuestionKey == questionKey) {
+                            showAnswer = false;
+                          } else {
+                            showAnswer = true;
+                            selectedQuestionKey = questionKey;
+                            selectedQuestionValue = questionValue;
+                          }
+                        });
+                      },
+                      child: showAnswer
+                          ? const Icon(Icons.expand_less_rounded)
+                          : const Icon(Icons.expand_more_rounded))
+                ],
               ),
             );
           },
+        ),
+        Visibility(
+          visible: showAnswer,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              selectedQuestionValue.toString(),
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
         ),
         const CustomDash()
       ],

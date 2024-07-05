@@ -15,3 +15,4 @@ export 'history_audio_model.dart';
 export 'deposit_model.dart';
 export 'contact_model.dart';
 export 'question_model.dart';
+export 'bought_model.dart';

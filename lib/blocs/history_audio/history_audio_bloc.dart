@@ -67,4 +67,9 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
   void _onUpdatedHistoryAudio(UpdatedHistoryAudio event, Emitter<HistoryAudioState> emit) {
     emit(HistoryAudioLoaded(historyAudio: event.historiesAudio));
   }
+  @override
+  Future<void> close() {
+    _historyAudioSubscription?.cancel();
+    return super.close();
+  }
 }

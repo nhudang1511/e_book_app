@@ -66,7 +66,8 @@ class _ReviewItemState extends State<ReviewItem> {
                   counterTwoStars: ratingTwoCount,
                   counterOneStars: ratingOneCount,
                 ),
-              SizedBox(
+              Container(
+                margin: const EdgeInsets.only(top: 10),
                   width: MediaQuery.of(context).size.width - 20,
                   child: CustomButton(
                     onPressed: () {

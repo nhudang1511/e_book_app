@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
@@ -6,6 +7,7 @@ import '../../../blocs/blocs.dart';
 import '../../../config/shared_preferences.dart';
 import '../../../model/models.dart';
 import '../../../repository/repository.dart';
+import '../../../utils/show_snack_bar.dart';
 import '../../../widget/widget.dart';
 import '../../screen.dart';
 
@@ -23,6 +25,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
   late HistoryBloc historyBloc;
   late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
+  late BoughtBloc boughtBloc;
   String uIdInCoins = '';
   int coins = 0;
   String coinsId = '';
@@ -48,21 +51,27 @@ class _DetailBookItemState extends State<DetailBookItem> {
       if (coins >= widget.book.price!) {
         CustomDialog.show(
             context: context,
-            title: 'Please add coins to read this book',
+            title: 'Are you sure you will buy this book?',
             dialogColor: Theme.of(context).colorScheme.secondaryContainer,
             msgColor: Theme.of(context).colorScheme.background,
             titleColor: Theme.of(context).colorScheme.background,
             onPressed: () {
               Navigator.of(context).pop();
-              final int newCoins = coins - widget.book.price!;
-              coinsBloc.add(EditCoinsEvent(
-                  quantity: newCoins,
-                  uId: SharedService.getUserId() ?? '',
-                  coinsId: coinsId));
+              boughtBloc.add(AddNewBoughtEvent(
+                  bought: Bought(
+                      uId: uId,
+                      status: true,
+                      coin: widget.book.price,
+                      createdAt: Timestamp.fromDate(DateTime.now()),
+                      updateAt: Timestamp.fromDate(DateTime.now()))));
+              ShowSnackBar.success('Buy books successfully', context);
               Navigator.pushNamed(context, BookScreen.routeName, arguments: {
                 'book': widget.book,
                 'uId': uId,
                 'bloc': chaptersBloc,
+              }).then((value) {
+                inHis = true;
+                boughtBloc.add(LoadedBought(uId: uId ?? ''));
               });
             },
             isCancel: true);
@@ -104,6 +113,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
       ..add(LoadAudio(widget.book.id ?? ''));
     chaptersBloc = ChaptersBloc(ChaptersRepository())
       ..add(LoadChapters(widget.book.id ?? ''));
+    boughtBloc = BoughtBloc(BoughtRepository());
   }
 
   @override
@@ -121,7 +131,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
         ),
         BlocProvider(create: (context) => missionUserBloc),
         BlocProvider(create: (context) => audioBloc),
-        BlocProvider(create: (context) => chaptersBloc)
+        BlocProvider(create: (context) => chaptersBloc),
+        BlocProvider(create: (context) => boughtBloc)
       ],
       child: MultiBlocListener(
         listeners: [
@@ -146,7 +157,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
               if (state is MissionLoadedByType) {
                 mission = state.mission;
                 mission.sort(
-                      (a, b) => Comparable.compare(
+                  (a, b) => Comparable.compare(
                       b.times as Comparable, a.times as Comparable),
                 );
                 for (var m in mission) {
@@ -160,16 +171,16 @@ class _DetailBookItemState extends State<DetailBookItem> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                //print(state);
-                if (state is MissionUserLoaded) {
-                  missionUser = MissionUser(
-                      uId: state.mission.uId,
-                      times: state.mission.times! + 1,
-                      missionId: state.mission.missionId,
-                      status: true,
-                      id: state.mission.id);
-                } else if (state is MissionUserError) {}
-              }),
+            //print(state);
+            if (state is MissionUserLoaded) {
+              missionUser = MissionUser(
+                  uId: state.mission.uId,
+                  times: state.mission.times! + 1,
+                  missionId: state.mission.missionId,
+                  status: true,
+                  id: state.mission.id);
+            } else if (state is MissionUserError) {}
+          }),
           BlocListener<AudioBloc, AudioState>(listener: (context, state) {
             if (state is AudioLoaded) {
               setState(() {
@@ -200,8 +211,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                              color:
-                              Theme.of(context).colorScheme.primary)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                       const Text('LANGUAGE')
                     ],
                   ),
@@ -212,8 +223,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                              color:
-                              Theme.of(context).colorScheme.primary)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                       const Text('COUNTRY')
                     ],
                   ),
@@ -227,8 +238,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                              color:
-                              Theme.of(context).colorScheme.primary)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                       const Text('COINS')
                     ],
                   ),
