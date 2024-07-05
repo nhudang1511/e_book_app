@@ -24,18 +24,16 @@
 //
 //
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
   final String uid;
   final String email;
-
-  // final String? phoneNumber;
   final String? displayName;
   final String? photoURL;
   final bool? status;
+  final String? deviceToken;
 
   const User({
     this.status = true,
@@ -44,13 +42,13 @@ class User extends Equatable {
     // this.phoneNumber,
     this.displayName,
     this.photoURL,
+    this.deviceToken,
   });
 
   factory User.fromFirebaseUser(auth.User user) {
     return User(
       uid: user.uid,
       email: user.email!,
-      // phoneNumber: user.phoneNumber,
       displayName: user.displayName,
       photoURL: user.photoURL,
     );
@@ -67,6 +65,9 @@ class User extends Equatable {
 
     if (photoURL != null) {
       document["photoURL"] = photoURL;
+    }
+    if (deviceToken != null) {
+      document["deviceToken"] = deviceToken;
     }
     return document;
   }

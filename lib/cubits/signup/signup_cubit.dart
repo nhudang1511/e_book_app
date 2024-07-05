@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/repository/repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:e_book_app/model/models.dart' as model;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 part 'signup_state.dart';
 
@@ -66,6 +67,7 @@ class SignupCubit extends Cubit<SignupState> {
   }
 
   Future<void> verifyAccount(User credential) async {
+    late String? deviceToken;
     if (state.status == SignupStatus.verifying) return;
     emit(state.copyWith(status: SignupStatus.verifying));
     try {
@@ -73,7 +75,10 @@ class SignupCubit extends Cubit<SignupState> {
         final isVerified = await _authRepository.isVerified();
         if (isVerified) {
           timer?.cancel();
-          await _userRepository.addUser(model.User.fromFirebaseUser(credential));
+          await _userRepository
+              .addUser(model.User.fromFirebaseUser(credential));
+          deviceToken = await FirebaseMessaging.instance.getToken();
+          _userRepository.updateDeviceToken(credential.uid, deviceToken!);
           emit(state.copyWith(status: SignupStatus.success));
         }
       });
