@@ -17,16 +17,12 @@ class BookScreen extends StatefulWidget {
 
   final Book book;
   final String uId;
-  final Map<String, dynamic> chapterScrollPositions;
-  final Map<String, dynamic> chapterScrollPercentages;
   final ChaptersBloc chaptersBloc;
 
   const BookScreen(
       {super.key,
       required this.book,
       required this.uId,
-      required this.chapterScrollPositions,
-      required this.chapterScrollPercentages,
       required this.chaptersBloc});
 
   @override
@@ -52,6 +48,8 @@ class _BookScreenState extends State<BookScreen> {
   num percent = 0.0;
   TextEditingController noteContentController = TextEditingController();
   late HistoryBloc historyBloc;
+  final Map<String, dynamic> chapterScrollPositions = {};
+  final Map<String, dynamic> chapterScrollPercentages = {};
 
   @override
   void initState() {
@@ -79,25 +77,25 @@ class _BookScreenState extends State<BookScreen> {
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
     double currentScroll = _scrollController.position.pixels;
     double percentage = (currentScroll / maxScrollExtent);
-    if (widget.chapterScrollPositions[localSelectedChapterId] != null) {
+    if (chapterScrollPositions[localSelectedChapterId] != null) {
       setState(() {
         isToolbar = true;
       });
     }
     if (isFirst) {
       // Lưu vị trí khi người dùng kéo tới
-      widget.chapterScrollPositions[localSelectedChapterId] = currentScroll;
+      chapterScrollPositions[localSelectedChapterId] = currentScroll;
       // Lưu phần trăm đã đọc của chương hiện tại
-      widget.chapterScrollPercentages[localSelectedChapterId] = percentage;
+      chapterScrollPercentages[localSelectedChapterId] = percentage;
     } else {
       // Lưu vị trí khi người dùng kéo tới
-      widget.chapterScrollPositions[selectedChapterId] = currentScroll;
+      chapterScrollPositions[selectedChapterId] = currentScroll;
       // Lưu phần trăm đã đọc của chương hiện tại
-      widget.chapterScrollPercentages[selectedChapterId] = percentage;
+      chapterScrollPercentages[selectedChapterId] = percentage;
     }
     // Tính tổng phần trăm đã đọc của tất cả các chương
     overallPercentage =
-        percentAllChapters(widget.chapterScrollPercentages, totalChapters);
+        percentAllChapters(chapterScrollPercentages, totalChapters);
   }
 
   void increaseFontSize() {
@@ -159,8 +157,8 @@ class _BookScreenState extends State<BookScreen> {
               chapters: widget.book.id ?? '',
               percent: overallPercentage,
               times: times,
-              chapterScrollPositions: widget.chapterScrollPositions,
-              chapterScrollPercentages: widget.chapterScrollPercentages));
+              chapterScrollPositions: chapterScrollPositions,
+              chapterScrollPercentages: chapterScrollPercentages));
           return true;
         },
         child: BlocProvider.value(
@@ -253,9 +251,7 @@ class _BookScreenState extends State<BookScreen> {
                                           Map<String, dynamic>
                                               newChapterScrollPercentages =
                                               mergePercentages(
-                                                  percentListMap,
-                                                  widget
-                                                      .chapterScrollPercentages);
+                                                  percentListMap, chapterScrollPercentages);
                                           if (newChapterScrollPercentages
                                               .isNotEmpty) {
                                             overallPercentage =
@@ -269,7 +265,7 @@ class _BookScreenState extends State<BookScreen> {
                                         }
                                       } else {
                                         overallPercentage = percentAllChapters(
-                                            widget.chapterScrollPercentages,
+                                            chapterScrollPercentages,
                                             totalChapters);
                                       }
                                       return Column(
@@ -659,7 +655,7 @@ class _BookScreenState extends State<BookScreen> {
                                 if (_scrollController
                                         .position.maxScrollExtent ==
                                     0.0) {
-                                  widget.chapterScrollPercentages[
+                                  chapterScrollPercentages[
                                       selectedChapterId] = 1;
                                 }
                                 if (chapter['id'] != selectedChapterId) {

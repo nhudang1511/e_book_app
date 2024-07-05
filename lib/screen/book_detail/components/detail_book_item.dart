@@ -34,6 +34,61 @@ class _DetailBookItemState extends State<DetailBookItem> {
   late ChaptersBloc chaptersBloc;
   bool haveReading = false;
 
+  void _handleReadButtonPressed(String? uId) {
+    if (widget.book.price == 0 || inHis == true) {
+      missionUserBloc.add(EditMissionUsers(mission: missionUser));
+      missionUserBloc
+          .add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
+      Navigator.pushNamed(context, BookScreen.routeName, arguments: {
+        'book': widget.book,
+        'uId': uId,
+        'bloc': chaptersBloc,
+      });
+    } else {
+      if (coins >= widget.book.price!) {
+        CustomDialog.show(
+            context: context,
+            title: 'Please add coins to read this book',
+            dialogColor: Theme.of(context).colorScheme.secondaryContainer,
+            msgColor: Theme.of(context).colorScheme.background,
+            titleColor: Theme.of(context).colorScheme.background,
+            onPressed: () {
+              Navigator.of(context).pop();
+              final int newCoins = coins - widget.book.price!;
+              coinsBloc.add(EditCoinsEvent(
+                  quantity: newCoins,
+                  uId: SharedService.getUserId() ?? '',
+                  coinsId: coinsId));
+              Navigator.pushNamed(context, BookScreen.routeName, arguments: {
+                'book': widget.book,
+                'uId': uId,
+                'bloc': chaptersBloc,
+              });
+            },
+            isCancel: true);
+      } else {
+        CustomDialog.show(
+          context: context,
+          title: 'Please add coins to read this book',
+          dialogColor: Theme.of(context).colorScheme.secondaryContainer,
+          msgColor: Theme.of(context).colorScheme.background,
+          titleColor: Theme.of(context).colorScheme.background,
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        );
+      }
+    }
+  }
+
+  void _handleListenButtonPressed(String? uId) {
+    Navigator.pushNamed(context, BookListenScreen.routeName, arguments: {
+      'book': widget.book,
+      'uId': uId,
+      'bloc': audioBloc,
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -91,7 +146,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
               if (state is MissionLoadedByType) {
                 mission = state.mission;
                 mission.sort(
-                  (a, b) => Comparable.compare(
+                      (a, b) => Comparable.compare(
                       b.times as Comparable, a.times as Comparable),
                 );
                 for (var m in mission) {
@@ -105,16 +160,16 @@ class _DetailBookItemState extends State<DetailBookItem> {
           ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-            //print(state);
-            if (state is MissionUserLoaded) {
-              missionUser = MissionUser(
-                  uId: state.mission.uId,
-                  times: state.mission.times! + 1,
-                  missionId: state.mission.missionId,
-                  status: true,
-                  id: state.mission.id);
-            } else if (state is MissionUserError) {}
-          }),
+                //print(state);
+                if (state is MissionUserLoaded) {
+                  missionUser = MissionUser(
+                      uId: state.mission.uId,
+                      times: state.mission.times! + 1,
+                      missionId: state.mission.missionId,
+                      status: true,
+                      id: state.mission.id);
+                } else if (state is MissionUserError) {}
+              }),
           BlocListener<AudioBloc, AudioState>(listener: (context, state) {
             if (state is AudioLoaded) {
               setState(() {
@@ -145,8 +200,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.primary)),
+                              color:
+                              Theme.of(context).colorScheme.primary)),
                       const Text('LANGUAGE')
                     ],
                   ),
@@ -157,8 +212,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.primary)),
+                              color:
+                              Theme.of(context).colorScheme.primary)),
                       const Text('COUNTRY')
                     ],
                   ),
@@ -172,8 +227,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               .textTheme
                               .displayMedium!
                               .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.primary)),
+                              color:
+                              Theme.of(context).colorScheme.primary)),
                       const Text('COINS')
                     ],
                   ),
@@ -193,183 +248,58 @@ class _DetailBookItemState extends State<DetailBookItem> {
                 builder: (context, state) {
                   if (state is AuthenticateState) {
                     final uId = state.authUser?.uid;
-                    return (haveAudio && haveReading)
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width / 3,
-                                  child: CustomButton(
-                                    title: 'READ',
-                                    icon: Icons.menu_book_outlined,
-                                    onPressed: () {
-                                      final Map<String, dynamic> tempPosition =
-                                          {};
-                                      final Map<String, dynamic> tempPercent =
-                                          {};
-                                      if (widget.book.price == 0 ||
-                                          inHis == true) {
-                                        missionUserBloc.add(EditMissionUsers(
-                                            mission: missionUser));
-                                        missionUserBloc.add(LoadedMissionUsers(
-                                            uId: SharedService.getUserId() ??
-                                                ''));
-                                        Navigator.pushNamed(
-                                            context, BookScreen.routeName,
-                                            arguments: {
-                                              'book': widget.book,
-                                              'uId': uId,
-                                              'chapterScrollPositions':
-                                                  tempPosition,
-                                              'chapterScrollPercentages':
-                                                  tempPercent,
-                                              'bloc': chaptersBloc
-                                            });
-                                      } else {
-                                        if (coins >= widget.book.price!) {
-                                          final int newCoins =
-                                              coins - widget.book.price!;
-                                          coinsBloc.add(EditCoinsEvent(
-                                              quantity: newCoins,
-                                              uId: SharedService.getUserId() ??
-                                                  '',
-                                              coinsId: coinsId));
-                                          Navigator.pushNamed(
-                                              context, BookScreen.routeName,
-                                              arguments: {
-                                                'book': widget.book,
-                                                'uId': uId,
-                                                'chapterScrollPositions':
-                                                    tempPosition,
-                                                'chapterScrollPercentages':
-                                                    tempPercent,
-                                                'bloc': chaptersBloc
-                                              });
-                                        } else {
-                                          CustomDialog.show(
-                                              context: context,
-                                              title:
-                                                  'Please add coins to read this book',
-                                              dialogColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondaryContainer,
-                                              msgColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .background,
-                                              titleColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .background,
-                                              onPressed: () {
-                                                Navigator.pop(context, true);
-                                              });
-                                        }
-                                      }
-                                    },
-                                  )),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width / 3,
-                                  child: CustomButton(
-                                    title: 'LISTEN',
-                                    icon: Icons.volume_up,
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, BookListenScreen.routeName,
-                                          arguments: {
-                                            'book': widget.book,
-                                            'uId': uId,
-                                            'bloc': audioBloc
-                                          });
-                                    },
-                                  )),
-                            ],
-                          )
-                        : (haveReading && !haveAudio)
-                            ? SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: CustomButton(
-                                  onPressed: () {
-                                    final Map<String, dynamic> tempPosition =
-                                        {};
-                                    final Map<String, dynamic> tempPercent = {};
-                                    if (widget.book.price == 0 ||
-                                        inHis == true) {
-                                      missionUserBloc.add(EditMissionUsers(
-                                          mission: missionUser));
-                                      missionUserBloc.add(LoadedMissionUsers(
-                                          uId:
-                                              SharedService.getUserId() ?? ''));
-                                      Navigator.pushNamed(
-                                          context, BookScreen.routeName,
-                                          arguments: {
-                                            'book': widget.book,
-                                            'uId': uId,
-                                            'chapterScrollPositions':
-                                                tempPosition,
-                                            'chapterScrollPercentages':
-                                                tempPercent,
-                                            'bloc': chaptersBloc
-                                          });
-                                    } else {
-                                      if (coins >= widget.book.price!) {
-                                        final int newCoins =
-                                            coins - widget.book.price!;
-                                        coinsBloc.add(EditCoinsEvent(
-                                            quantity: newCoins,
-                                            uId:
-                                                SharedService.getUserId() ?? '',
-                                            coinsId: coinsId));
-                                        Navigator.pushNamed(
-                                            context, BookScreen.routeName,
-                                            arguments: {
-                                              'book': widget.book,
-                                              'uId': uId,
-                                              'chapterScrollPositions':
-                                                  tempPosition,
-                                              'chapterScrollPercentages':
-                                                  tempPercent,
-                                              'bloc': chaptersBloc
-                                            });
-                                      } else {
-                                        CustomDialog.show(
-                                            context: context,
-                                            title:
-                                                'Please add coins to read this book',
-                                            dialogColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondaryContainer,
-                                            msgColor: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            titleColor: Theme.of(context)
-                                                .colorScheme
-                                                .background,
-                                            onPressed: () {
-                                              Navigator.pop(context, true);
-                                            });
-                                      }
-                                    }
-                                  },
-                                  icon: Icons.menu_book_outlined,
-                                  title: 'READ',
-                                ))
-                            : (haveAudio && !haveReading)
-                                ? SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 3,
-                                    child: CustomButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, BookListenScreen.routeName,
-                                            arguments: {
-                                              'book': widget.book,
-                                              'uId': uId,
-                                              'bloc': audioBloc
-                                            });
-                                      },
-                                      icon: Icons.volume_up,
-                                      title: 'LISTEN',
-                                    ))
-                                : const SizedBox();
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (haveReading && haveAudio) ...[
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: CustomButton(
+                              title: 'READ',
+                              icon: Icons.menu_book_outlined,
+                              onPressed: () {
+                                _handleReadButtonPressed(uId);
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: CustomButton(
+                              title: 'LISTEN',
+                              icon: Icons.volume_up,
+                              onPressed: () {
+                                _handleListenButtonPressed(uId);
+                              },
+                            ),
+                          ),
+                        ],
+                        if (haveReading && !haveAudio)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 1.4,
+                            child: CustomButton(
+                              onPressed: () {
+                                _handleReadButtonPressed(uId);
+                              },
+                              icon: Icons.menu_book_outlined,
+                              title: 'READ',
+                            ),
+                          ),
+                        if (!haveReading && haveAudio)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 1.4,
+                            child: CustomButton(
+                              onPressed: () {
+                                _handleListenButtonPressed(uId);
+                              },
+                              icon: Icons.volume_up,
+                              title: 'LISTEN',
+                            ),
+                          ),
+                      ],
+                    );
                   } else {
                     return SizedBox(
                         width: MediaQuery.of(context).size.width - 20,

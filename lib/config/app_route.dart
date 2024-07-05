@@ -46,16 +46,10 @@ class AppRouter {
             settings.arguments as Map<String, dynamic>;
         final Book book = arguments['book'] as Book;
         final String uId = arguments['uId'] as String;
-        final Map<String, dynamic> chapterScrollPositions =
-            arguments['chapterScrollPositions'];
-        final Map<String, dynamic> chapterScrollPercentages =
-            arguments['chapterScrollPercentages'];
         final bloc = arguments['bloc'] as ChaptersBloc;
         return _route(BookScreen(
             book: book,
             uId: uId,
-            chapterScrollPositions: chapterScrollPositions,
-            chapterScrollPercentages: chapterScrollPercentages,
             chaptersBloc: bloc));
       case ReviewsScreen.routeName:
         Book book = settings.arguments as Book;
