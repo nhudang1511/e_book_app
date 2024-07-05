@@ -9,16 +9,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:e_book_app/model/models.dart' as model;
 
 class UserRepository extends BaseUserRepository {
-  final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firebaseFirestore;
   final FirebaseStorage _firebaseStorage;
 
-  UserRepository(
-      {FirebaseAuth? firebaseAuth,
-      FirebaseFirestore? firebaseFirestore,
-      FirebaseStorage? firebaseStorage})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance,
+  UserRepository({
+    FirebaseFirestore? firebaseFirestore,
+    FirebaseStorage? firebaseStorage,
+  })  : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance,
         _firebaseStorage = firebaseStorage ?? FirebaseStorage.instance;
 
   @override
@@ -46,10 +43,11 @@ class UserRepository extends BaseUserRepository {
 
   @override
   Future<void> addUser(model.User user) async {
-    await _firebaseFirestore
-        .collection('users')
-        .doc(user.uid)
-        .set(user.toDocument());
+    await _firebaseFirestore.collection('users').doc(user.uid).set({
+      ...user.toDocument(),
+      'create_at': FieldValue.serverTimestamp(),
+      'update_at': FieldValue.serverTimestamp(),
+    });
   }
 
   @override
@@ -60,9 +58,7 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<List<model.User>> getAllUsers() async {
     try {
-      var querySnapshot = await _firebaseFirestore
-          .collection('users')
-          .get();
+      var querySnapshot = await _firebaseFirestore.collection('users').get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();
         data['id'] = doc.id;
@@ -72,5 +68,13 @@ class UserRepository extends BaseUserRepository {
       log(e.toString());
       rethrow;
     }
+  }
+
+  @override
+  Future<void> updateDeviceToken(String uId, String deviceToken) async {
+    await _firebaseFirestore
+        .collection('users')
+        .doc(uId)
+        .update({'deviceToken': deviceToken});
   }
 }

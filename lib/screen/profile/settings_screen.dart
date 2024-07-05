@@ -1,5 +1,4 @@
 import 'package:e_book_app/blocs/blocs.dart';
-import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:e_book_app/config/theme/theme.dart';
 import 'package:e_book_app/screen/screen.dart';
 import 'package:e_book_app/widget/widget.dart';

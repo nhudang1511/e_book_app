@@ -13,4 +13,5 @@ abstract class BaseUserRepository {
   Future<User?> getProfile({required auth.User user});
   Future<void> updateUser(User user);
   Future<void> addUser(User user);
+  Future<void> updateDeviceToken(String uId,String deviceToken);
 }

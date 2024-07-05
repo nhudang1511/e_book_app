@@ -6,6 +6,7 @@ import 'package:e_book_app/model/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../repository/repository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 part 'login_state.dart';
 
@@ -40,6 +41,7 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> logInWithCredentials() async {
+    late String? deviceToken;
     if (state.status == LoginStatus.submitting) return;
     emit(state.copyWith(status: LoginStatus.submitting));
     try {
@@ -50,10 +52,12 @@ class LoginCubit extends Cubit<LoginState> {
       if (credential != null) {
         SharedService.setUserId(credential.uid);
         if (credential.emailVerified == true) {
+          deviceToken = await FirebaseMessaging.instance.getToken();
+          _userRepository.updateDeviceToken(credential.uid, deviceToken!);
           emit(state.copyWith(status: LoginStatus.success));
         } else {
           await _authRepository.sendEmailVerification();
-          verifyAccount();
+          verifyAccount(credential.uid);
         }
       }
     } on ServerException catch (e) {
@@ -66,7 +70,8 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<void> verifyAccount() async {
+  Future<void> verifyAccount(String uId) async {
+    late String? deviceToken;
     if (state.status == LoginStatus.verifying) return;
     emit(state.copyWith(status: LoginStatus.verifying));
     try {
@@ -74,6 +79,8 @@ class LoginCubit extends Cubit<LoginState> {
         final isVerified = await _authRepository.isVerified();
         if (isVerified) {
           timer?.cancel();
+          deviceToken = await FirebaseMessaging.instance.getToken();
+          _userRepository.updateDeviceToken(uId, deviceToken!);
           emit(state.copyWith(status: LoginStatus.success));
         }
       });
@@ -100,12 +107,15 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> logInWithGoogle() async {
+    late String? deviceToken;
     if (state.status == LoginStatus.submitting) return;
     emit(state.copyWith(status: LoginStatus.submitting));
     try {
       final credential = await _authRepository.logInWithGoogle();
       if (credential != null) {
-        _userRepository.addUser(User.fromFirebaseUser(credential));
+        await _userRepository.addUser(User.fromFirebaseUser(credential));
+        deviceToken = await FirebaseMessaging.instance.getToken();
+        _userRepository.updateDeviceToken(credential.uid, deviceToken!);
         emit(state.copyWith(status: LoginStatus.success));
       }
     } catch (e) {
@@ -114,13 +124,15 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> logInWithFacebook() async {
+    late String? deviceToken;
     if (state.status == LoginStatus.submitting) return;
     emit(state.copyWith(status: LoginStatus.submitting));
     try {
       final credential = await _authRepository.logInWithFacebook();
       if (credential != null) {
         _userRepository.addUser(User.fromFirebaseUser(credential));
-
+        deviceToken = await FirebaseMessaging.instance.getToken();
+        _userRepository.updateDeviceToken(credential.uid, deviceToken!);
         emit(state.copyWith(status: LoginStatus.success));
       }
     } catch (e) {
