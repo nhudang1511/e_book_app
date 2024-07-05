@@ -21,8 +21,10 @@ Future<void> main() async {
   final bool? isDark = SharedService.getTheme();
   runApp(MyApp(isDark: isDark ?? false));
 }
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.isDark});
+
   @override
   State<MyApp> createState() => _MyAppState();
 
@@ -54,7 +56,6 @@ class _MyAppState extends State<MyApp> {
           create: (_) => LoginCubit(
             authRepository: AuthRepository(),
             userRepository: UserRepository(),
-
           ),
           child: const LoginScreen(),
         ),
@@ -70,37 +71,42 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (_) => ListUserBloc(
-             UserRepository(),
+            UserRepository(),
           )..add(LoadListUser()),
         ),
         BlocProvider(
           create: (_) => LibraryBloc(LibraryRepository())..add(LoadLibrary()),
         ),
         BlocProvider(
-          create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
+            create: (_) => ReviewBloc(ReviewRepository())..add(LoadedReview())),
         BlocProvider(
           create: (_) => NoteBloc(
-            NoteRepository(),),
+            NoteRepository(),
+          ),
         ),
-        BlocProvider(create: (_) => CategoryBloc(CategoryRepository())..add(LoadCategory()))
+        BlocProvider(
+            create: (_) =>
+                CategoryBloc(CategoryRepository())..add(LoadCategory())),
+        BlocProvider(
+            create: (_) => HistoryBloc(HistoryRepository())
+              ..add(LoadedHistory(uId: SharedService.getUserId() ?? '')))
       ],
       child: ChangeNotifierProvider(
-        create: (BuildContext context) => ThemeProvider(widget.isDark),
-        builder: (context, snapshot){
-          final settings = Provider.of<ThemeProvider>(context);
-          return MaterialApp(
-            title: 'E Book App',
-            debugShowCheckedModeBanner: false,
-            theme: settings.themeData,
-            // darkTheme: darkTheme,
-            // themeMode: ThemeMode.system,
-            onGenerateRoute: AppRouter.onGenerateRoute,
-            initialRoute: SplashScreen.routeName,
-            navigatorKey: navigatorKey,
-            // navigatorObservers: <NavigatorObserver>[MyApp.observer],
-          );
-        }
-      ),
+          create: (BuildContext context) => ThemeProvider(widget.isDark),
+          builder: (context, snapshot) {
+            final settings = Provider.of<ThemeProvider>(context);
+            return MaterialApp(
+              title: 'E Book App',
+              debugShowCheckedModeBanner: false,
+              theme: settings.themeData,
+              // darkTheme: darkTheme,
+              // themeMode: ThemeMode.system,
+              onGenerateRoute: AppRouter.onGenerateRoute,
+              initialRoute: SplashScreen.routeName,
+              navigatorKey: navigatorKey,
+              // navigatorObservers: <NavigatorObserver>[MyApp.observer],
+            );
+          }),
     );
   }
 }

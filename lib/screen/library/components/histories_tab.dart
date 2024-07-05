@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
+import '../../../repository/repository.dart';
 import '../../../widget/book_items/list_book_history.dart';
 
 class HistoriesTab extends StatelessWidget {
@@ -52,16 +54,10 @@ class _DisplayHistoriesState extends State<DisplayHistories> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('histories')
-          .where('uId', isEqualTo: widget.uId)
-          .snapshots(),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.hasData) {
-          List<History> histories = snapshot.data!.docs.map((doc) {
-            return History.fromSnapshot(doc);
-          }).toList();
+    return BlocBuilder<HistoryBloc, HistoryState>(
+      builder: (context, state) {
+        if (state is HistoryLoaded) {
+          List<History> histories = state.histories;
           matchingBooks = widget.book
               .where(
                   (book) => histories.any((item) => item.chapters == book.id))
@@ -69,26 +65,25 @@ class _DisplayHistoriesState extends State<DisplayHistories> {
           if (matchingBooks.isNotEmpty) {
             percent = [];
             for (var book in matchingBooks) {
-              List<History> matchedHistories =
-                  histories.where((item) => item.chapters == book.id).toList();
+              List<History> matchedHistories = histories
+                  .where((item) => item.chapters == book.id)
+                  .toList();
               for (var history in matchedHistories) {
                 percent.add(history.percent!);
               }
             }
           }
-          return matchingBooks.isNotEmpty
-              ? ListBookHistory(
-                  books: matchingBooks,
-                  scrollDirection: widget.scrollDirection,
-                  height: widget.height,
-                  inLibrary: false,
-                  percent: percent,
-                  inHistory: widget.inHistory,
-                )
-              : const SizedBox();
-        } else {
-          return const Center(child: CircularProgressIndicator());
         }
+        return matchingBooks.isNotEmpty
+            ? ListBookHistory(
+                books: matchingBooks,
+                scrollDirection: widget.scrollDirection,
+                height: widget.height,
+                inLibrary: false,
+                percent: percent,
+                inHistory: widget.inHistory,
+              )
+            : const SizedBox();
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,11 +12,14 @@ part 'history_state.dart';
 
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryRepository _historyRepository;
+  StreamSubscription<QuerySnapshot>? _historySubscription;
 
   HistoryBloc(this._historyRepository) : super(HistoryInitial()) {
     on<AddToHistoryEvent>(_onAddToHistory);
     on<LoadHistoryByBookId>(_onLoadHistoryByBookId);
     on<LoadedHistoryByUId>(_onLoadHistoryByUId);
+    on<LoadedHistory>(_onLoadedHistory);
+    on<UpdatedHistory>(_onUpdatedHistory);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -29,7 +34,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           chapterScrollPercentages: event.chapterScrollPercentages);
       // Thêm sách vào thư viện
       History history = await _historyRepository.addBookInHistory(histories);
-      emit(HistoryLoaded(histories: [history]));
+      emit(HistoryAdded(histories: [history]));
     } catch (e) {
       emit(HistoryError('error in add'));
     }
@@ -53,5 +58,30 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     } catch (e) {
       emit(HistoryError(e.toString()));
     }
+  }
+
+  void _onLoadedHistory(
+      LoadedHistory event, Emitter<HistoryState> emit) async {
+    _historySubscription?.cancel();
+    _historySubscription = _historyRepository.streamHistories(event.uId).listen(
+      (snapshot) {
+        List<History> histories =
+            snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
+        add(UpdatedHistory(histories: histories));
+      },
+      onError: (error) {
+        emit(HistoryError(error.toString()));
+      },
+    );
+  }
+
+  void _onUpdatedHistory(UpdatedHistory event, Emitter<HistoryState> emit) {
+    emit(HistoryLoaded(histories: event.histories));
+  }
+
+  @override
+  Future<void> close() {
+    _historySubscription?.cancel();
+    return super.close();
   }
 }

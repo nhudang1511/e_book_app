@@ -27,3 +27,8 @@ class LoadedMissionsById extends MissionEvent{
   final String missionId;
   LoadedMissionsById({required this.missionId});
 }
+class UpdatedMission extends MissionEvent{
+  final List<Mission> missions;
+
+  UpdatedMission({required this.missions});
+}

@@ -108,4 +108,12 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
       rethrow;
     }
   }
+
+  @override
+  Stream<QuerySnapshot<Object?>> streamHistoriesAudio(String uId) {
+    return _firebaseFirestore
+        .collection('histories_audio')
+        .where('uId', isEqualTo: uId)
+        .snapshots();
+  }
 }

@@ -3,8 +3,6 @@ import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:e_book_app/screen/payment/vnpay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_dialogs/dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
@@ -172,7 +170,9 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                 note:
                                     "Contact us for any questions on your order.",
                                 onSuccess: (Map params) async {
-                                  ShowSnackBar.success("Success deposit money from paypal", context);
+                                  ShowSnackBar.success(
+                                      "Success deposit money from paypal",
+                                      context);
                                   if (money ==
                                       listMoneysToCoins.keys.elementAt(0)) {
                                     coins = coins +
@@ -201,7 +201,9 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                       EditMissionUsers(mission: missionUser));
                                 },
                                 onError: (error) {
-                                  ShowSnackBar.error("Error deposit money from paypal", context);
+                                  ShowSnackBar.error(
+                                      "Error deposit money from paypal",
+                                      context);
                                   Navigator.pop(context);
                                 },
                                 onCancel: () {
@@ -210,25 +212,19 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                               ),
                             ));
                           } else {
-                            Dialogs.materialDialog(
-                                msg: 'Please select coins to continue!',
-                                title: "Warning",
-                                color: Colors.white,
+                            CustomDialog.show(
                                 context: context,
-                                actions: [
-                                  IconsButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    text: "Ok",
-                                    iconData: Icons.cancel,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    textStyle:
-                                        const TextStyle(color: Colors.white),
-                                    iconColor: Colors.white,
-                                  ),
-                                ]);
+                                title: 'Please select coins to continue!',
+                                dialogColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
+                                msgColor:
+                                    Theme.of(context).colorScheme.background,
+                                titleColor:
+                                    Theme.of(context).colorScheme.background,
+                                onPressed: () {
+                                  Navigator.pop(context, true);
+                                });
                           }
                         },
                       ),
@@ -269,7 +265,9 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                             VNPAYFlutter.instance.show(
                                 paymentUrl: paymentUrl,
                                 onPaymentSuccess: (params) {
-                                  ShowSnackBar.success("Success deposit money from VNPay", context);
+                                  ShowSnackBar.success(
+                                      "Success deposit money from VNPay",
+                                      context);
                                   if (money ==
                                       listMoneysToCoins.keys.elementAt(0)) {
                                     coins = coins +
@@ -298,30 +296,26 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                       EditMissionUsers(mission: missionUser));
                                 }, //on mobile transaction success
                                 onPaymentError: (params) {
-                                  ShowSnackBar.error("Error deposit money from paypal", context);
+                                  ShowSnackBar.error(
+                                      "Error deposit money from paypal",
+                                      context);
                                 }, //on mobile transaction error
                                 onWebPaymentComplete: () {} //only use in web
                                 );
                           } else {
-                            Dialogs.materialDialog(
-                                msg: 'Please select coins to continue!',
-                                title: "Warning",
-                                color: Colors.white,
+                            CustomDialog.show(
                                 context: context,
-                                actions: [
-                                  IconsButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    text: "Ok",
-                                    iconData: Icons.cancel,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    textStyle:
-                                        const TextStyle(color: Colors.white),
-                                    iconColor: Colors.white,
-                                  ),
-                                ]);
+                                title: 'Please select coins to continue!',
+                                dialogColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
+                                msgColor:
+                                    Theme.of(context).colorScheme.background,
+                                titleColor:
+                                    Theme.of(context).colorScheme.background,
+                                onPressed: () {
+                                  Navigator.pop(context, true);
+                                });
                           }
                         },
                       ),

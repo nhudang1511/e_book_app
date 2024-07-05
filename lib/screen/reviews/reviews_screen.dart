@@ -63,8 +63,11 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               //print('m: $state');
               if (state is MissionLoadedByType) {
                 mission = state.mission;
-                mission.sort((a, b) => Comparable.compare(b.times as Comparable, a.times as Comparable),);
-                for(var m in mission){
+                mission.sort(
+                  (a, b) => Comparable.compare(
+                      b.times as Comparable, a.times as Comparable),
+                );
+                for (var m in mission) {
                   //print(m.id);
                   missionUserBloc.add(LoadedMissionsUserById(
                       missionId: m.id ?? '',
@@ -78,14 +81,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             //print(state);
             if (state is MissionUserLoaded) {
               missionUser = MissionUser(
-                uId: state.mission.uId,
-                times: state.mission.times! + 1,
-                missionId: state.mission.missionId,
-                status: true,
-                id: state.mission.id
-              );
-            } else if (state is MissionUserError) {
-            }
+                  uId: state.mission.uId,
+                  times: state.mission.times! + 1,
+                  missionId: state.mission.missionId,
+                  status: true,
+                  id: state.mission.id);
+            } else if (state is MissionUserError) {}
           })
         ],
         child: Scaffold(
@@ -234,9 +235,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                         builder: (BuildContext context) {
                                           _timer = Timer(
                                               const Duration(seconds: 1), () {
-                                              missionUserBloc.add(
-                                                  EditMissionUsers(
-                                                      mission: missionUser));
+                                            missionUserBloc.add(
+                                                EditMissionUsers(
+                                                    mission: missionUser));
+                                            missionUserBloc.add(
+                                                LoadedMissionUsers(
+                                                    uId: SharedService
+                                                            .getUserId() ??
+                                                        ''));
                                             BlocProvider.of<ReviewBloc>(context)
                                                 .add(LoadedReview());
                                             Navigator.of(context).pop();

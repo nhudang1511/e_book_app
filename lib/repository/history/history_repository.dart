@@ -8,6 +8,7 @@ class HistoryRepository extends BaseHistoryRepository {
 
   HistoryRepository({FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
+
   @override
   Future<History> addBookInHistory(History history) async {
     try {
@@ -63,7 +64,6 @@ class HistoryRepository extends BaseHistoryRepository {
     }
   }
 
-
   @override
   Future<List<History>> getHistories(String bookId, String uId) async {
     if (bookId.isEmpty) {
@@ -107,5 +107,13 @@ class HistoryRepository extends BaseHistoryRepository {
       log(e.toString());
       rethrow;
     }
+  }
+
+  @override
+  Stream<QuerySnapshot> streamHistories(String uId) {
+    return _firebaseFirestore
+        .collection('histories')
+        .where('uId', isEqualTo: uId)
+        .snapshots();
   }
 }

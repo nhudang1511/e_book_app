@@ -1,8 +1,9 @@
 part of 'history_audio_bloc.dart';
 
-abstract class HistoryAudioEvent{
+abstract class HistoryAudioEvent {
   const HistoryAudioEvent();
 }
+
 class AddToHistoryAudioEvent extends HistoryAudioEvent {
   final String uId;
   final String bookId;
@@ -13,17 +14,28 @@ class AddToHistoryAudioEvent extends HistoryAudioEvent {
 
   const AddToHistoryAudioEvent(
       {required this.uId,
-        required this.bookId,
-        required this.percent,
-        required this.times,
-        required this.chapterScrollPositions,
-        required this.chapterScrollPercentages});
+      required this.bookId,
+      required this.percent,
+      required this.times,
+      required this.chapterScrollPositions,
+      required this.chapterScrollPercentages});
 }
+
 class LoadHistoryAudioByBookId extends HistoryAudioEvent {
   final String bookId;
   final String uId;
+
   LoadHistoryAudioByBookId(this.bookId, this.uId);
 }
-class LoadHistoryAudio extends HistoryAudioEvent{
 
+class LoadHistoryAudio extends HistoryAudioEvent {
+  final String uId;
+
+  LoadHistoryAudio({required this.uId});
+}
+
+class UpdatedHistoryAudio extends HistoryAudioEvent {
+  final List<HistoryAudio> historiesAudio;
+
+  UpdatedHistoryAudio({required this.historiesAudio});
 }

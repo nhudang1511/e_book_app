@@ -1,3 +1,4 @@
+import 'package:e_book_app/config/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,7 +37,7 @@ class _HistoriesAudioTabState extends State<HistoriesAudioTab> {
     super.initState();
     controller.addListener(_scrollListener);
     historyAudioBloc = HistoryAudioBloc(HistoryAudioRepository())
-      ..add(LoadHistoryAudio());
+      ..add(LoadHistoryAudio(uId: SharedService.getUserId() ?? ''));
   }
 
   @override

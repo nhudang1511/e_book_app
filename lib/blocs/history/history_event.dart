@@ -30,3 +30,13 @@ class LoadedHistoryByUId extends HistoryEvent {
   final String bookId;
   LoadedHistoryByUId({required this.uId, required this.bookId});
 }
+class LoadedHistory extends HistoryEvent {
+  final String uId;
+
+  LoadedHistory({required this.uId});
+}
+class UpdatedHistory extends HistoryEvent {
+  final List<History> histories;
+
+  UpdatedHistory({required this.histories});
+}

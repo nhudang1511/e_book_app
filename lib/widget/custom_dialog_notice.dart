@@ -10,7 +10,7 @@ class CustomDialogNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor:
-          Theme.of(context).colorScheme.secondaryContainer!.withOpacity(0.8),
+          Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

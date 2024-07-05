@@ -1,15 +1,12 @@
-import 'package:e_book_app/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_dialogs/dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:readmore/readmore.dart';
 
 import '../../../blocs/blocs.dart';
 import '../../../config/shared_preferences.dart';
-import '../../../model/book_model.dart';
 import '../../../model/models.dart';
 import '../../../repository/repository.dart';
+import '../../../widget/widget.dart';
 import '../../screen.dart';
 
 class DetailBookItem extends StatefulWidget {
@@ -214,6 +211,9 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                           inHis == true) {
                                         missionUserBloc.add(EditMissionUsers(
                                             mission: missionUser));
+                                        missionUserBloc.add(LoadedMissionUsers(
+                                            uId: SharedService.getUserId() ??
+                                                ''));
                                         Navigator.pushNamed(
                                             context, BookScreen.routeName,
                                             arguments: {
@@ -246,25 +246,22 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                                 'bloc': chaptersBloc
                                               });
                                         } else {
-                                          Dialogs.materialDialog(
-                                              msg:
-                                                  'Please add coins to read this book',
-                                              title: "Warning",
-                                              color: Colors.white,
+                                          CustomDialog.show(
                                               context: context,
-                                              actions: [
-                                                IconsButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  text: "Ok",
-                                                  iconData: Icons.cancel,
-                                                  color: Theme.of(context).colorScheme.primary,
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.white),
-                                                  iconColor: Colors.white,
-                                                ),
-                                              ]);
+                                              title:
+                                                  'Please add coins to read this book',
+                                              dialogColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondaryContainer,
+                                              msgColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .background,
+                                              titleColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .background,
+                                              onPressed: () {
+                                                Navigator.pop(context, true);
+                                              });
                                         }
                                       }
                                     },
@@ -298,6 +295,9 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                         inHis == true) {
                                       missionUserBloc.add(EditMissionUsers(
                                           mission: missionUser));
+                                      missionUserBloc.add(LoadedMissionUsers(
+                                          uId:
+                                              SharedService.getUserId() ?? ''));
                                       Navigator.pushNamed(
                                           context, BookScreen.routeName,
                                           arguments: {
@@ -330,25 +330,22 @@ class _DetailBookItemState extends State<DetailBookItem> {
                                               'bloc': chaptersBloc
                                             });
                                       } else {
-                                        Dialogs.materialDialog(
-                                            msg:
-                                                'Please add coins to read this book',
-                                            title: "Warning",
-                                            color: Colors.white,
+                                        CustomDialog.show(
                                             context: context,
-                                            actions: [
-                                              IconsButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                text: "Ok",
-                                                iconData: Icons.cancel,
-                                                color: Theme.of(context).colorScheme.primary,
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white),
-                                                iconColor: Colors.white,
-                                              ),
-                                            ]);
+                                            title:
+                                                'Please add coins to read this book',
+                                            dialogColor: Theme.of(context)
+                                                .colorScheme
+                                                .secondaryContainer,
+                                            msgColor: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                            titleColor: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                            onPressed: () {
+                                              Navigator.pop(context, true);
+                                            });
                                       }
                                     }
                                   },

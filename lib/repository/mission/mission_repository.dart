@@ -11,27 +11,32 @@ class MissionRepository extends BaseMissionRepository {
   MissionRepository();
 
   @override
-  Future<List<Mission>> getAllMission() async {
+  Stream<List<Mission>> getAllMissions() async* {
     try {
-      var querySnapshot = await _firebaseFirestore.collection('mission').get();
-      List<Mission> missions = [];
+      await for (var querySnapshot in _firebaseFirestore
+          .collection('mission')
+          .orderBy('coins', descending: false)
+          .snapshots()) {
+        List<Mission> missions = [];
 
-      for (var doc in querySnapshot.docs) {
-        var data = doc.data();
-        data['id'] = doc.id;
-        var missionUser = await _firebaseFirestore
-            .collection('mission_user')
-            .where('uId', isEqualTo: SharedService.getUserId())
-            .where('missionId', isEqualTo: data['id']).where('status', isEqualTo: false)
-            .get();
-        if (missionUser.size != 0) {
-          data['status'] = false;
-        } else {
-          data['status'] = true;
+        for (var doc in querySnapshot.docs) {
+          var data = doc.data();
+          data['id'] = doc.id;
+          var missionUser = await _firebaseFirestore
+              .collection('mission_user')
+              .where('uId', isEqualTo: SharedService.getUserId())
+              .where('missionId', isEqualTo: data['id'])
+              .where('status', isEqualTo: false)
+              .get();
+          if (missionUser.size != 0) {
+            data['status'] = false;
+          } else {
+            data['status'] = true;
+          }
+          missions.add(Mission().fromJson(data));
         }
-        missions.add(Mission().fromJson(data));
+        yield missions;
       }
-      return missions;
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -63,7 +68,6 @@ class MissionRepository extends BaseMissionRepository {
       rethrow;
     }
   }
-
 
   @override
   Future<Mission?> getMissionById(String missionId) async {

@@ -7,9 +7,9 @@ class HistoryInitial extends HistoryState {
 
 class HistoryLoading extends HistoryState {
 }
-class HistoryLoaded extends HistoryState{
+class HistoryAdded extends HistoryState{
   final List<History> histories;
-  HistoryLoaded({this.histories =  const <History>[]});
+  HistoryAdded({this.histories =  const <History>[]});
 }
 class HistoryError extends HistoryState {
   final String error;
@@ -24,4 +24,9 @@ class HistoryLoadedById extends HistoryState {
 class HistoryLoadedByUId extends HistoryState {
   final History history;
   const HistoryLoadedByUId({required this.history});
+}
+class HistoryLoaded extends HistoryState {
+  final List<History> histories;
+
+  HistoryLoaded({required this.histories});
 }

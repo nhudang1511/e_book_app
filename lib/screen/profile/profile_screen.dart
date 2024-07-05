@@ -1,12 +1,10 @@
 import 'package:e_book_app/blocs/blocs.dart';
 import 'package:e_book_app/model/coins_model.dart';
 import 'package:e_book_app/repository/deposit/deposit_repository.dart';
-import 'package:e_book_app/repository/mission/mission_repository.dart';
 import 'package:e_book_app/widget/custom_dash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/screen/screen.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/mission_user_model.dart';
 import '../../repository/coins/coins_repository.dart';

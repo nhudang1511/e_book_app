@@ -33,3 +33,20 @@ num percentAllChapters(Map<String, dynamic> chapterScrollPercentages, var totalC
   (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
   return overallPercentage;
 }
+String formatTime(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
+  final hour = twoDigits(duration.inHours);
+  final minutes = twoDigits(duration.inMinutes.remainder(60));
+  final seconds = twoDigits(duration.inSeconds.remainder(60));
+  return [if (duration.inHours > 0) hour, minutes, seconds].join(':');
+}
+void sortChapterListMap (List<Map<String, dynamic>>? chapterListMap) {
+  return chapterListMap?.sort((a, b) {
+    // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
+    int aNumber =
+    int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+    int bNumber =
+    int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+    return aNumber.compareTo(bNumber);
+  });
+}
