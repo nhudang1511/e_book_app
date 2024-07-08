@@ -15,3 +15,12 @@ class LoadedBought extends BoughtEvent {
   final String uId;
   LoadedBought({required this.uId});
 }
+class LoadedBoughtByUId extends BoughtEvent{
+  final String uId;
+  LoadedBoughtByUId({required this.uId});
+}
+class LoadedBoughtByMonth extends BoughtEvent{
+  final String uId;
+  final DateTime month;
+  LoadedBoughtByMonth({required this.uId, required this.month});
+}

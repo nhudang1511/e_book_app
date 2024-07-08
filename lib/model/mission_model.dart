@@ -34,6 +34,7 @@ class Mission extends CustomModel{
       'type': type,
       'times': times,
       'coins': coins,
+      'status': status
     };
   }
 }

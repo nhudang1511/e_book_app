@@ -14,6 +14,10 @@ class DepositLoaded extends DepositState{
   final Deposit deposit;
   const DepositLoaded({required this.deposit});
 }
+class DepositCoinLoaded extends DepositState{
+  final num depositCoin;
+  const DepositCoinLoaded({required this.depositCoin});
+}
 class DepositError extends DepositState {
   final String error;
 

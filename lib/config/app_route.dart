@@ -79,6 +79,8 @@ class AppRouter {
         return _route(const CommonQuestionScreen());
       case ContactUsScreen.routeName:
         return _route(const ContactUsScreen());
+      case Statistical.routeName:
+        return _route(const Statistical());
       default:
         return _errorRoute();
     }

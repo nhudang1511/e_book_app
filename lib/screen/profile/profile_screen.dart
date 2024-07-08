@@ -357,6 +357,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 CustomInkwell(
                                     onTap: () async {
                                       Navigator.pushNamed(context,
+                                          Statistical.routeName);
+                                    },
+                                    mainIcon: Icon(
+                                      Icons.contact_page_rounded,
+                                      color:
+                                      Theme.of(context).colorScheme.primary,
+                                    ),
+                                    title: "Statistic",
+                                    currentHeight: currentHeight),
+                                const CustomDash(),
+                                CustomInkwell(
+                                    onTap: () async {
+                                      Navigator.pushNamed(context,
                                           CommonQuestionScreen.routeName);
                                     },
                                     mainIcon: Icon(
@@ -379,13 +392,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                     title: "Contact Us",
                                     currentHeight: currentHeight),
-                                const CustomDash(),
                                 //line
                                 Container(
                                   height: 1,
                                   decoration: BoxDecoration(
                                     color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                               ],

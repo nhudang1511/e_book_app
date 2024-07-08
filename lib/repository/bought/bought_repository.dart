@@ -35,10 +35,64 @@ class BoughtRepository extends BaseBoughtRepository {
   }
 
   @override
+  Future<num> getTotalBought(String uId) async {
+    num totalCoins = 0;
+
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('bought')
+          .where('uId', isEqualTo: uId)
+          .where('status', isEqualTo: false)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          var data = doc.data();
+          totalCoins += data['coin'] ?? 0;
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+
+    return totalCoins;
+  }
+
+  @override
   Future<void> editBought(Bought bought) {
     return _firebaseFirestore
         .collection('bought')
         .doc(bought.id)
         .update(bought.toJson());
+  }
+  @override
+  Future<num> getTotalBoughtByMonth(String uId, DateTime month) async {
+    num totalCoins = 0;
+
+    try {
+      var startOfMonth = DateTime(month.year, month.month,1);
+      var endOfMonth = DateTime(month.year, month.month + 1, 1);
+      // Lấy dữ liệu từ Firestore với điều kiện uId và updatedAt có tháng/năm tương ứng
+      var querySnapshot = await _firebaseFirestore
+          .collection('bought')
+          .where('uId', isEqualTo: uId)
+          .where('status', isEqualTo: false)
+          .where('updateAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth))
+          .where('updateAt', isLessThan: Timestamp.fromDate(endOfMonth))
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          var data = doc.data();
+          totalCoins += data['coin'] ?? 0;
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+
+    return totalCoins;
   }
 }

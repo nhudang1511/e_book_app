@@ -243,9 +243,14 @@ class _BookCardMainState extends State<BookCardMain> {
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder:
                                           (BuildContext context, int index) {
+                                            final colors = [
+                                              const Color(0xFFEB6097),
+                                              const Color(0xFF6A1CBD),
+                                              const Color(0xFFFDC844)
+                                            ];
                                         return Container(
                                           decoration: BoxDecoration(
-                                              color: const Color(0xFFEB6097),
+                                              color: colors[index%3],
                                               borderRadius:
                                                   BorderRadius.circular(5)),
                                           padding: const EdgeInsets.all(5),

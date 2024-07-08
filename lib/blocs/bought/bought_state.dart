@@ -14,6 +14,10 @@ class BoughtLoaded extends BoughtState{
   final Bought bought;
   const BoughtLoaded({required this.bought});
 }
+class BoughtCoinLoaded extends BoughtState{
+  final num boughtCoin;
+  const BoughtCoinLoaded({required this.boughtCoin});
+}
 class BoughtError extends BoughtState {
   final String error;
 

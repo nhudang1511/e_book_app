@@ -23,3 +23,4 @@ export 'mission/mission_screen.dart';
 export 'book/book_listen_screen.dart';
 export 'profile/components/common_questions_screen.dart';
 export 'profile/components/contact_us_screen.dart';
+export 'statistical/statistical_screen.dart';

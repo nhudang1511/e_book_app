@@ -13,6 +13,8 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
   DepositBloc(this._depositRepository) : super(DepositInitial()) {
     on<AddNewDepositEvent>(_onAddNewDeposit);
     on<LoadedDeposit>(_onLoadedDeposit);
+    on<LoadedDepositByUId>(_onLoadedDepositByUId);
+    on<LoadedDepositByMonth>(_onLoadedDepositByMonth);
   }
 
   void _onAddNewDeposit(event, Emitter<DepositState> emit) async {
@@ -48,6 +50,35 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
       }
     } catch (e) {
       emit(DepositError(e.toString()));
+    }
+  }
+
+  void _onLoadedDepositByUId(event, Emitter<DepositState> emit) async {
+    emit(DepositLoading());
+    try {
+      num depositCoin = await _depositRepository.getTotalDeposits(event.uId);
+      if (depositCoin != 0) {
+        emit(DepositCoinLoaded(depositCoin: depositCoin));
+      } else {
+        emit(const DepositError('error'));
+      }
+    } catch (e) {
+      emit(const DepositError('error'));
+    }
+  }
+
+  void _onLoadedDepositByMonth(event, Emitter<DepositState> emit) async {
+    emit(DepositLoading());
+    try {
+      num depositCoin = await _depositRepository.getTotalDepositsByMonth(
+          event.uId, event.month);
+      if (depositCoin != 0) {
+        emit(DepositCoinLoaded(depositCoin: depositCoin));
+      } else {
+        emit(const DepositError('error'));
+      }
+    } catch (e) {
+      emit(const DepositError('error'));
     }
   }
 }

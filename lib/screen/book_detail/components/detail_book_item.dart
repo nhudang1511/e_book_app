@@ -21,14 +21,11 @@ class DetailBookItem extends StatefulWidget {
 }
 
 class _DetailBookItemState extends State<DetailBookItem> {
-  late CoinsBloc coinsBloc;
-  late HistoryBloc historyBloc;
   late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
   late BoughtBloc boughtBloc;
-  String uIdInCoins = '';
+  late CoinsBloc coinsBloc;
   int coins = 0;
-  String coinsId = '';
   bool inHis = false;
   List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
@@ -37,44 +34,47 @@ class _DetailBookItemState extends State<DetailBookItem> {
   late ChaptersBloc chaptersBloc;
   bool haveReading = false;
 
-  void _handleReadButtonPressed(String? uId) {
+  void _handleActionButtonPressed(String? uId, bool isListen) {
     if (widget.book.price == 0 || inHis == true) {
       missionUserBloc.add(EditMissionUsers(mission: missionUser));
-      missionUserBloc
-          .add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
-      Navigator.pushNamed(context, BookScreen.routeName, arguments: {
+      missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
+      Navigator.pushNamed(context, isListen ? BookListenScreen.routeName : BookScreen.routeName, arguments: {
         'book': widget.book,
         'uId': uId,
-        'bloc': chaptersBloc,
+        'bloc': isListen ? audioBloc : chaptersBloc,
       });
     } else {
       if (coins >= widget.book.price!) {
         CustomDialog.show(
-            context: context,
-            title: 'Are you sure you will buy this book?',
-            dialogColor: Theme.of(context).colorScheme.secondaryContainer,
-            msgColor: Theme.of(context).colorScheme.background,
-            titleColor: Theme.of(context).colorScheme.background,
-            onPressed: () {
-              Navigator.of(context).pop();
-              boughtBloc.add(AddNewBoughtEvent(
-                  bought: Bought(
-                      uId: uId,
-                      status: true,
-                      coin: widget.book.price,
-                      createdAt: Timestamp.fromDate(DateTime.now()),
-                      updateAt: Timestamp.fromDate(DateTime.now()))));
-              ShowSnackBar.success('Buy books successfully', context);
-              Navigator.pushNamed(context, BookScreen.routeName, arguments: {
-                'book': widget.book,
-                'uId': uId,
-                'bloc': chaptersBloc,
-              }).then((value) {
-                inHis = true;
-                boughtBloc.add(LoadedBought(uId: uId ?? ''));
-              });
-            },
-            isCancel: true);
+          context: context,
+          title: 'Are you sure you will buy this book?',
+          dialogColor: Theme.of(context).colorScheme.secondaryContainer,
+          msgColor: Theme.of(context).colorScheme.background,
+          titleColor: Theme.of(context).colorScheme.background,
+          onPressed: () {
+            Navigator.of(context).pop();
+            boughtBloc.add(AddNewBoughtEvent(
+              bought: Bought(
+                uId: uId,
+                status: true,
+                coin: widget.book.price,
+                createdAt: Timestamp.fromDate(DateTime.now()),
+                updateAt: Timestamp.fromDate(DateTime.now()),
+                bookId: widget.book.id,
+              ),
+            ));
+            ShowSnackBar.success('Buy books successfully', context);
+            Navigator.pushNamed(context, isListen ? BookListenScreen.routeName : BookScreen.routeName, arguments: {
+              'book': widget.book,
+              'uId': uId,
+              'bloc': isListen ? audioBloc : chaptersBloc,
+            }).then((value) {
+              inHis = true;
+              boughtBloc.add(LoadedBought(uId: uId ?? ''));
+            });
+          },
+          isCancel: true,
+        );
       } else {
         CustomDialog.show(
           context: context,
@@ -90,22 +90,10 @@ class _DetailBookItemState extends State<DetailBookItem> {
     }
   }
 
-  void _handleListenButtonPressed(String? uId) {
-    Navigator.pushNamed(context, BookListenScreen.routeName, arguments: {
-      'book': widget.book,
-      'uId': uId,
-      'bloc': audioBloc,
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    coinsBloc = CoinsBloc(CoinsRepository())
-      ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
-    historyBloc = HistoryBloc(HistoryRepository())
-      ..add(LoadedHistoryByUId(
-          uId: SharedService.getUserId() ?? '', bookId: widget.book.id ?? ''));
     missionBloc = MissionBloc(MissionRepository())
       ..add(LoadedMissionsByType(type: 'read'));
     missionUserBloc = MissionUserBloc(MissionUserRepository());
@@ -113,39 +101,35 @@ class _DetailBookItemState extends State<DetailBookItem> {
       ..add(LoadAudio(widget.book.id ?? ''));
     chaptersBloc = ChaptersBloc(ChaptersRepository())
       ..add(LoadChapters(widget.book.id ?? ''));
-    boughtBloc = BoughtBloc(BoughtRepository());
+    boughtBloc = BoughtBloc(BoughtRepository())
+      ..add(LoadedBought(uId: SharedService.getUserId() ?? ''));
+    coinsBloc = CoinsBloc(CoinsRepository())
+      ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CoinsBloc>(
-          create: (BuildContext context) => coinsBloc,
-        ),
-        BlocProvider<HistoryBloc>(
-          create: (BuildContext context) => historyBloc,
-        ),
         BlocProvider(
           create: (context) => missionBloc,
         ),
         BlocProvider(create: (context) => missionUserBloc),
         BlocProvider(create: (context) => audioBloc),
         BlocProvider(create: (context) => chaptersBloc),
-        BlocProvider(create: (context) => boughtBloc)
+        BlocProvider(create: (context) => boughtBloc),
+        BlocProvider(create: (context) => coinsBloc)
       ],
       child: MultiBlocListener(
         listeners: [
           BlocListener<CoinsBloc, CoinsState>(listener: (context, state) {
             if (state is CoinsLoaded) {
-              uIdInCoins = state.coins.uId ?? '';
               coins = state.coins.quantity ?? 0;
-              coinsId = state.coins.coinsId ?? '';
             }
           }),
-          BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
-            if (state is HistoryLoadedByUId) {
-              if (state.history.id != null) {
+          BlocListener<BoughtBloc, BoughtState>(listener: (context, state) {
+            if (state is BoughtLoaded) {
+              if (state.bought.bookId == widget.book.id) {
                 inHis = true;
               }
             }
@@ -269,7 +253,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               title: 'READ',
                               icon: Icons.menu_book_outlined,
                               onPressed: () {
-                                _handleReadButtonPressed(uId);
+                                _handleActionButtonPressed(uId, false);
                               },
                             ),
                           ),
@@ -282,7 +266,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                               title: 'LISTEN',
                               icon: Icons.volume_up,
                               onPressed: () {
-                                _handleListenButtonPressed(uId);
+                                _handleActionButtonPressed(uId, true);
                               },
                             ),
                           ),
@@ -292,7 +276,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             width: MediaQuery.of(context).size.width / 1.4,
                             child: CustomButton(
                               onPressed: () {
-                                _handleReadButtonPressed(uId);
+                                _handleActionButtonPressed(uId, false);
                               },
                               icon: Icons.menu_book_outlined,
                               title: 'READ',
@@ -303,7 +287,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
                             width: MediaQuery.of(context).size.width / 1.4,
                             child: CustomButton(
                               onPressed: () {
-                                _handleListenButtonPressed(uId);
+                                _handleActionButtonPressed(uId, true);
                               },
                               icon: Icons.volume_up,
                               title: 'LISTEN',

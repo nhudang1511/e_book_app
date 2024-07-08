@@ -9,6 +9,7 @@ class Bought extends CustomModel {
   final bool? status;
   final Timestamp? createdAt;
   final Timestamp? updateAt;
+  final String? bookId;
 
   Bought(
       {this.id,
@@ -16,7 +17,9 @@ class Bought extends CustomModel {
         this.uId,
         this.status,
         this.createdAt,
-        this.updateAt});
+        this.updateAt,
+        this.bookId
+      });
 
   @override
   Bought fromJson(Map<String, dynamic> json) {
@@ -26,7 +29,9 @@ class Bought extends CustomModel {
         uId: json['uId'],
         status: json['status'],
         createdAt: json['createdAt'] as Timestamp?,
-        updateAt: json['updateAt'] as Timestamp?);
+        updateAt: json['updateAt'] as Timestamp?,
+      bookId: json['bookId']
+    );
     return coins;
   }
 
@@ -37,7 +42,8 @@ class Bought extends CustomModel {
       'uId': uId,
       'status': status,
       'createdAt': createdAt,
-      'updateAt': updateAt
+      'updateAt': updateAt,
+      'bookId': bookId
     };
   }
 }

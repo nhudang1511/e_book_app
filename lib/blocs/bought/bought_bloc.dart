@@ -13,6 +13,8 @@ class BoughtBloc extends Bloc<BoughtEvent, BoughtState> {
   BoughtBloc(this._boughtRepository) : super(BoughtInitial()) {
     on<AddNewBoughtEvent>(_onAddNewBought);
     on<LoadedBought>(_onLoadedBought);
+    on<LoadedBoughtByUId>(_onLoadedBoughtByUId);
+    on<LoadedBoughtByMonth>(_onLoadedBoughtByMonth);
   }
 
   void _onAddNewBought(event, Emitter<BoughtState> emit) async {
@@ -37,7 +39,8 @@ class BoughtBloc extends Bloc<BoughtEvent, BoughtState> {
             coin: bought.coin,
             id: bought.id,
             createdAt: bought.createdAt,
-            updateAt: Timestamp.fromDate(DateTime.now())));
+            updateAt: Timestamp.fromDate(DateTime.now()),
+            bookId: bought.bookId));
         await coinsRepository.editCoins(Coins(
             uId: event.uId,
             coinsId: coins.coinsId,
@@ -46,6 +49,34 @@ class BoughtBloc extends Bloc<BoughtEvent, BoughtState> {
       }
     } catch (e) {
       emit(BoughtError(e.toString()));
+    }
+  }
+  void _onLoadedBoughtByUId(event, Emitter<BoughtState> emit) async {
+    emit(BoughtLoading());
+    try {
+      num boughtCoin = await _boughtRepository.getTotalBought(event.uId);
+      if(boughtCoin != 0){
+        emit(BoughtCoinLoaded(boughtCoin: boughtCoin));
+      }
+      else{
+        emit(const BoughtError('error'));
+      }
+    } catch (e) {
+      emit(const BoughtError('error'));
+    }
+  }
+  void _onLoadedBoughtByMonth(event, Emitter<BoughtState> emit) async {
+    emit(BoughtLoading());
+    try {
+      num boughtCoin = await _boughtRepository.getTotalBoughtByMonth(
+          event.uId, event.month);
+      if (boughtCoin != 0) {
+        emit(BoughtCoinLoaded(boughtCoin: boughtCoin));
+      } else {
+        emit(const BoughtError('error'));
+      }
+    } catch (e) {
+      emit(const BoughtError('error'));
     }
   }
 }
