@@ -20,6 +20,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<LoadedHistoryByUId>(_onLoadHistoryByUId);
     on<LoadedHistory>(_onLoadedHistory);
     on<UpdatedHistory>(_onUpdatedHistory);
+    on<RemoveItemInHistory>(_onRemoveItemInHistory);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -77,6 +78,17 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
   void _onUpdatedHistory(UpdatedHistory event, Emitter<HistoryState> emit) {
     emit(HistoryLoaded(histories: event.histories));
+  }
+  void _onRemoveItemInHistory(
+      event, Emitter<HistoryState> emit) async {
+    emit(HistoryLoading());
+    try {
+      History history = await _historyRepository
+          .removeItemInHistory(event.history);
+      emit(HistoryLoaded(histories: [history]));
+    } catch (e) {
+      emit(HistoryError('error in add'));
+    }
   }
 
   @override

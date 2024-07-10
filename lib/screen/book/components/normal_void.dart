@@ -5,6 +5,7 @@ int? numberInString(String? words) {
   if (matches.isEmpty) return null;
   return int.parse(matches.first.group(0)!);
 }
+
 Map<String, dynamic> mergePercentages(Map<String, dynamic> percentListMap,
     Map<String, dynamic> chapterScrollPercentages) {
   Map<String, dynamic> mergedPercentages = chapterScrollPercentages;
@@ -25,14 +26,17 @@ Map<String, dynamic> mergePercentages(Map<String, dynamic> percentListMap,
   }
   return mergedPercentages;
 }
-num percentAllChapters(Map<String, dynamic> chapterScrollPercentages, var totalChapters) {
+
+num percentAllChapters(
+    Map<String, dynamic> chapterScrollPercentages, var totalChapters) {
   double totalPercentage = chapterScrollPercentages.values
       .fold(0, (sum, percentage) => sum + percentage);
 
   num overallPercentage =
-  (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
+      (totalChapters != 0) ? (totalPercentage / totalChapters) * 100 : 0;
   return overallPercentage;
 }
+
 String formatTime(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, '0');
   final hour = twoDigits(duration.inHours);
@@ -40,13 +44,18 @@ String formatTime(Duration duration) {
   final seconds = twoDigits(duration.inSeconds.remainder(60));
   return [if (duration.inHours > 0) hour, minutes, seconds].join(':');
 }
-void sortChapterListMap (List<Map<String, dynamic>>? chapterListMap) {
+
+void sortChapterListMap(List<Map<String, dynamic>>? chapterListMap) {
   return chapterListMap?.sort((a, b) {
     // Trích xuất số từ chuỗi chương (ví dụ: 'Chương 1' -> 1)
-    int aNumber =
-    int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
-    int bNumber =
-    int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+    int aNumber = int.parse(a['id'].replaceAll(RegExp(r'[^0-9]'), ''));
+    int bNumber = int.parse(b['id'].replaceAll(RegExp(r'[^0-9]'), ''));
     return aNumber.compareTo(bNumber);
   });
+}
+
+bool compareChapterId(String oldChapter, String newChapter) {
+  int aNumber = int.parse(oldChapter.replaceAll(RegExp(r'[^0-9]'), ''));
+  int bNumber = int.parse(newChapter.replaceAll(RegExp(r'[^0-9]'), ''));
+  return aNumber > bNumber;
 }

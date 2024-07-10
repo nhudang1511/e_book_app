@@ -1,60 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../blocs/blocs.dart';
 import '../../../config/shared_preferences.dart';
 import '../../../model/models.dart';
 import '../../../repository/repository.dart';
-import '../../../widget/book_items/list_book_history.dart';
+import '../../../widget/widget.dart';
 
-class HistoriesTab extends StatelessWidget {
+class HistoriesTab extends StatefulWidget {
   const HistoriesTab({super.key, required this.uId, required this.book});
 
   final String uId;
   final List<Book> book;
 
   @override
-  Widget build(BuildContext context) {
-    return DisplayHistories(
-      uId: uId,
-      scrollDirection: Axis.vertical,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      inHistory: false,
-      book: book,
-    );
-  }
+  State<HistoriesTab> createState() => _HistoriesTabState();
 }
 
-class DisplayHistories extends StatefulWidget {
-  const DisplayHistories({
-    super.key,
-    required this.uId,
-    required this.scrollDirection,
-    required this.height,
-    required this.inHistory,
-    required this.book,
-  });
-
-  final String? uId;
-  final Axis scrollDirection;
-  final double height;
-  final bool inHistory;
-  final List<Book> book;
-
-  @override
-  State<DisplayHistories> createState() => _DisplayHistoriesState();
-}
-
-class _DisplayHistoriesState extends State<DisplayHistories> {
+class _HistoriesTabState extends State<HistoriesTab> {
+  ScrollController controller = ScrollController();
+  bool isPaginating = false;
   List<Book> matchingBooks = [];
   List<num> percent = [];
   late HistoryBloc historyBloc;
 
+  void _scrollListener() {
+    if (controller.offset >= controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
+      isPaginating = true;
+      context.read<BookBloc>().add(LoadBooksPaginating());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    controller.addListener(_scrollListener);
     historyBloc = HistoryBloc(HistoryRepository())
       ..add(LoadedHistory(uId: SharedService.getUserId() ?? ''));
   }
@@ -83,16 +64,48 @@ class _DisplayHistoriesState extends State<DisplayHistories> {
               }
             }
           }
-          return matchingBooks.isNotEmpty
-              ? ListBookHistory(
-            books: matchingBooks,
-            scrollDirection: widget.scrollDirection,
-            height: widget.height,
-            inLibrary: false,
-            percent: percent,
-            inHistory: widget.inHistory,
-          )
-              : const SizedBox();
+          return BlocBuilder<BookBloc, BookState>(
+            builder: (context, state) {
+              if (state is BookLoaded) {
+                isPaginating = false;
+                if (state.lastDoc != null && matchingBooks.length <= 8) {
+                  isPaginating = true;
+                  context.read<BookBloc>().add(LoadBooksPaginating());
+                }
+              }
+              return matchingBooks.isNotEmpty
+                  ? Column(
+                      children: [
+                        Expanded(
+                            child: GridView.builder(
+                          controller: controller,
+                          padding: const EdgeInsets.all(5),
+                          itemCount: matchingBooks.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2),
+                          itemBuilder: (context, index) => BookCardHistory(
+                              book: matchingBooks[index],
+                              inLibrary: true,
+                              percent: percent[index]),
+                        )),
+                        isPaginating
+                            ? Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ))
+                            : const SizedBox()
+                      ],
+                    )
+                  : matchingBooks.isEmpty && isPaginating
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : const SizedBox();
+            },
+          );
         },
       ),
     );

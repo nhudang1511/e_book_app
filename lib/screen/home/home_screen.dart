@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
 import '../../widget/widget.dart';
-import '../library/components/histories_tab.dart';
 import 'components/custom_appbar_home.dart';
 import 'components/list_quote.dart';
 
@@ -182,26 +181,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               )),
-            SliverToBoxAdapter(
-              child: BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is AuthenticateState) {
-                    return Column(
-                      children: [
-                        DisplayHistories(
-                          uId: state.authUser?.uid,
-                          scrollDirection: Axis.horizontal,
-                          height: 180,
-                          inHistory: true,
-                          book: books,
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-            ),
             SliverList(
               delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {

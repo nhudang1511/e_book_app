@@ -63,20 +63,19 @@ class _HistoriesAudioTabState extends State<HistoriesAudioTab> {
               }
             }
           }
-          return matchingBooks.isNotEmpty
-              ? Column(
-                  children: [
-                    BlocBuilder<BookBloc, BookState>(
-                      builder: (context, state) {
-                        if (state is BookLoaded) {
-                          isPaginating = false;
-                          if (state.lastDoc != null &&
-                              widget.book.length <= 8) {
-                            isPaginating = true;
-                            context.read<BookBloc>().add(LoadBooksPaginating());
-                          }
-                        }
-                        return Expanded(
+          return BlocBuilder<BookBloc, BookState>(
+            builder: (context, state) {
+              if (state is BookLoaded) {
+                isPaginating = false;
+                if (state.lastDoc != null && matchingBooks.length <= 8) {
+                  isPaginating = true;
+                  context.read<BookBloc>().add(LoadBooksPaginating());
+                }
+              }
+              return matchingBooks.isNotEmpty
+                  ? Column(
+                      children: [
+                        Expanded(
                             child: GridView.builder(
                           controller: controller,
                           padding: const EdgeInsets.all(5),
@@ -88,19 +87,24 @@ class _HistoriesAudioTabState extends State<HistoriesAudioTab> {
                               book: matchingBooks[index],
                               inLibrary: true,
                               percent: percent[index]),
-                        ));
-                      },
-                    ),
-                    isPaginating
-                        ? Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ))
-                        : const SizedBox()
-                  ],
-                )
-              : const SizedBox();
+                        )),
+                        isPaginating
+                            ? Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ))
+                            : const SizedBox()
+                      ],
+                    )
+                  : matchingBooks.isEmpty && isPaginating
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : const SizedBox();
+            },
+          );
         },
       ),
     );

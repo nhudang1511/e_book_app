@@ -6,4 +6,5 @@ abstract class BaseHistoryAudioRepository{
   Future<List<HistoryAudio>> getHistoryAudio(String bookId, String uId);
   Future<List<HistoryAudio>> getAllHistoryAudio();
   Stream<QuerySnapshot> streamHistoriesAudio(String uId);
+  Future<HistoryAudio> removeItemInHistoryAudio(HistoryAudio historyAudio);
 }

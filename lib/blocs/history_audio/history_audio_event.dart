@@ -39,3 +39,10 @@ class UpdatedHistoryAudio extends HistoryAudioEvent {
 
   UpdatedHistoryAudio({required this.historiesAudio});
 }
+
+class RemoveItemInHistoryAudio extends HistoryAudioEvent{
+  final HistoryAudio historyAudio;
+
+  RemoveItemInHistoryAudio({required this.historyAudio});
+
+}

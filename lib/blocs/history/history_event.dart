@@ -40,3 +40,8 @@ class UpdatedHistory extends HistoryEvent {
 
   UpdatedHistory({required this.histories});
 }
+class RemoveItemInHistory extends HistoryEvent{
+  final History history;
+
+  RemoveItemInHistory({required this.history});
+}

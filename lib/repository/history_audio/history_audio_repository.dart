@@ -116,4 +116,63 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
         .where('uId', isEqualTo: uId)
         .snapshots();
   }
+
+  @override
+  Future<HistoryAudio> removeItemInHistoryAudio(HistoryAudio historyAudio) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('histories_audio')
+          .where('uId', isEqualTo: historyAudio.uId)
+          .where('bookId', isEqualTo: historyAudio.bookId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        var existingData = doc.data();
+
+        // Lấy giá trị chapterScrollPositions từ Firebase
+        var existingChapterScrollPositions = existingData['chapterScrollPositions'] as Map<String, dynamic>;
+        var existingChapterScrollPercentages = existingData['chapterScrollPercentages'] as Map<String, dynamic>;
+
+        // Xóa các item nếu key tồn tại
+        var updatedChapterScrollPositions = _removeMatchingKeys(existingChapterScrollPositions, historyAudio.chapterScrollPositions);
+        var updatedChapterScrollPercentages = _removeMatchingKeys(existingChapterScrollPercentages, historyAudio.chapterScrollPercentages);
+
+        // Cập nhật giá trị chapterScrollPositions, times và percent mới
+        var updatedData = {
+          'percent': historyAudio.percent,
+          'times': FieldValue.increment(1),
+          'chapterScrollPositions': updatedChapterScrollPositions,
+          'chapterScrollPercentages': updatedChapterScrollPercentages,
+        };
+
+        await doc.reference.update(updatedData);
+
+        // Trả về lịch sử đã được cập nhật
+        return HistoryAudio().fromJson(doc.data());
+      } else {
+        // Nếu không tồn tại, thêm một tài liệu mới với chapterScrollPositions mới
+        var newDocRef = await _firebaseFirestore.collection('histories_audio').add({
+          ...historyAudio.toJson(),
+          'chapterScrollPositions': historyAudio.chapterScrollPositions,
+          'chapterScrollPercentages': historyAudio.chapterScrollPercentages
+        });
+
+        // Lấy dữ liệu của tài liệu mới được thêm và trả về
+        var newDocSnapshot = await newDocRef.get();
+        return HistoryAudio().fromJson(newDocSnapshot.data()!);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Map<String, dynamic> _removeMatchingKeys(Map<String, dynamic> map, Map<String, dynamic>? keysToKeep) {
+    if (keysToKeep == null) return {};
+    var updatedMap = Map<String, dynamic>.from(map);
+    updatedMap.removeWhere((key, value) => !keysToKeep.containsKey(key));
+    return updatedMap;
+  }
+
 }

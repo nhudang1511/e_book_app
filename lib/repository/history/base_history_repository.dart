@@ -6,4 +6,5 @@ abstract class BaseHistoryRepository{
   Future<List<History>> getHistories(String bookId, String uId);
   Future<History> getHistoryByUId(String uId, String bookId);
   Stream<QuerySnapshot> streamHistories(String uId);
+  Future<History> removeItemInHistory(History history);
 }

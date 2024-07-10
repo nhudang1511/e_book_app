@@ -204,232 +204,228 @@ class _BookScreenState extends State<BookScreen> {
                                         1 * 100;
                                 localSelectedTableText = chapter?['title'];
                                 localSelectedChapterId = chapter?['id'];
-                                return BlocBuilder<HistoryBloc, HistoryState>(
-                                  builder: (context, state) {
-                                    if (state is HistoryLoadedById) {
-                                      final histories = state.histories;
-                                      if (histories.isNotEmpty) {
-                                        final historyListMap = histories
-                                            .map((histories) {
-                                              return histories
-                                                  .chapterScrollPositions!
-                                                  .entries
-                                                  .map((entry) {
-                                                return {
-                                                  'id': entry.key,
-                                                  'title': entry.value,
-                                                };
-                                              }).toList();
-                                            })
-                                            .expand((element) => element)
-                                            .toList();
-                                        if (historyListMap.isNotEmpty) {
-                                          sortChapterListMap(historyListMap);
-                                          final first = historyListMap.last;
-                                          localSelectedChapterId = first['id'];
-                                          final chapterHistory =
-                                              chapterListMap?[numberInString(
-                                                      localSelectedChapterId)! -
-                                                  1];
-                                          localSelectedTableText =
-                                              chapterHistory?['title'];
-                                          if (isFirst && !isToolbar) {
-                                            Future.delayed(Duration.zero, () {
-                                              _scrollController
-                                                  .jumpTo(first['title']);
-                                            });
-                                          }
-                                          final percentListMap = histories
-                                              .map((e) =>
-                                                  e.chapterScrollPercentages)
-                                              .fold<Map<String, dynamic>>({},
-                                                  (prev, element) {
-                                            prev.addAll(element!);
-                                            return prev;
+                              }
+                              return BlocBuilder<HistoryBloc, HistoryState>(
+                                builder: (context, state) {
+                                  if (state is HistoryLoadedById) {
+                                    final histories = state.histories;
+                                    if (histories.isNotEmpty) {
+                                      final historyListMap = histories
+                                          .map((histories) {
+                                            return histories
+                                                .chapterScrollPositions!.entries
+                                                .map((entry) {
+                                              return {
+                                                'id': entry.key,
+                                                'title': entry.value,
+                                              };
+                                            }).toList();
+                                          })
+                                          .expand((element) => element)
+                                          .toList();
+                                      if (historyListMap.isNotEmpty) {
+                                        sortChapterListMap(historyListMap);
+                                        final first = historyListMap.last;
+                                        localSelectedChapterId = first['id'];
+                                        final chapterHistory = chapterListMap?[
+                                            numberInString(
+                                                    localSelectedChapterId)! -
+                                                1];
+                                        localSelectedTableText =
+                                            chapterHistory?['title'];
+                                        if (isFirst && !isToolbar) {
+                                          Future.delayed(Duration.zero, () {
+                                            _scrollController
+                                                .jumpTo(first['title']);
                                           });
-                                          // print('histories: $percentListMap');
-                                          Map<String, dynamic>
-                                              newChapterScrollPercentages =
-                                              mergePercentages(
-                                                  percentListMap, chapterScrollPercentages);
-                                          if (newChapterScrollPercentages
-                                              .isNotEmpty) {
-                                            overallPercentage =
-                                                percentAllChapters(
-                                                    newChapterScrollPercentages,
-                                                    totalChapters);
-                                          }
-                                          // else{
-                                          //   percentAllChapters(widget.chapterScrollPercentages);
-                                          // }
                                         }
-                                      } else {
-                                        overallPercentage = percentAllChapters(
-                                            chapterScrollPercentages,
-                                            totalChapters);
+                                        final percentListMapPosition = histories
+                                            .map(
+                                                (e) => e.chapterScrollPositions)
+                                            .fold<Map<String, dynamic>>({},
+                                                (prev, element) {
+                                          prev.addAll(element!);
+                                          return prev;
+                                        });
+                                        mergePercentages(percentListMapPosition,
+                                            chapterScrollPositions);
+                                        final percentListMap = histories
+                                            .map((e) =>
+                                                e.chapterScrollPercentages)
+                                            .fold<Map<String, dynamic>>({},
+                                                (prev, element) {
+                                          prev.addAll(element!);
+                                          return prev;
+                                        });
+                                        // print('histories: $percentListMap');
+                                        Map<String, dynamic>
+                                            newChapterScrollPercentages =
+                                            mergePercentages(percentListMap,
+                                                chapterScrollPercentages);
+                                        if (newChapterScrollPercentages
+                                            .isNotEmpty) {
+                                          overallPercentage =
+                                              percentAllChapters(
+                                                  newChapterScrollPercentages,
+                                                  totalChapters);
+                                        }
+                                        // else{
+                                        //   percentAllChapters(widget.chapterScrollPercentages);
+                                        // }
                                       }
-                                      return Column(
-                                        children: [
-                                          Text(
-                                            isFirst
-                                                ? localSelectedChapterId
-                                                : selectedChapterId,
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge!
-                                                .copyWith(
-                                                    color: isTickedBlack
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: fontSize),
-                                          ),
-                                          SelectableText(
-                                            isFirst
-                                                ? localSelectedTableText
-                                                : selectedTableText,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge!
-                                                .copyWith(
-                                                    color: isTickedBlack
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: fontSize),
-                                            showCursor: true,
-                                            contextMenuBuilder:
-                                                (context, editableTextState) {
-                                              return AdaptiveTextSelectionToolbar(
-                                                  anchors: editableTextState
-                                                      .contextMenuAnchors,
-                                                  children: [
-                                                    Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width -
-                                                              120,
-                                                      decoration: BoxDecoration(
-                                                          color: const Color(
-                                                              0xFF8C2EEE),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5)),
-                                                      child: Row(
-                                                        children: [
-                                                          TextButton(
-                                                            child: const Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Copy',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          13,
-                                                                      color: Colors
-                                                                          .white),
-                                                                ),
-                                                                Icon(Icons.copy,
-                                                                    color: Colors
-                                                                        .white)
-                                                              ],
-                                                            ),
-                                                            onPressed: () {
-                                                              Clipboard.setData(
-                                                                  ClipboardData(
-                                                                      text:
-                                                                          selectedText));
-                                                            },
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Clipboard.setData(
-                                                                  ClipboardData(
-                                                                      text:
-                                                                          selectedText));
-                                                              _showClipboardDialog(
-                                                                  context);
-                                                            },
-                                                            child: const Row(
-                                                              children: [
-                                                                Text('Save',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        color: Colors
-                                                                            .white)),
-                                                                Icon(
-                                                                  Icons.save,
+                                    } else {
+                                      overallPercentage = percentAllChapters(
+                                          chapterScrollPercentages,
+                                          totalChapters);
+                                    }
+                                  }
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        isFirst
+                                            ? localSelectedChapterId
+                                            : selectedChapterId,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                                color: isTickedBlack
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                                fontSize: fontSize),
+                                      ),
+                                      SelectableText(
+                                        isFirst
+                                            ? localSelectedTableText
+                                            : selectedTableText,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                                color: isTickedBlack
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                                fontSize: fontSize),
+                                        showCursor: true,
+                                        contextMenuBuilder:
+                                            (context, editableTextState) {
+                                          return AdaptiveTextSelectionToolbar(
+                                              anchors: editableTextState
+                                                  .contextMenuAnchors,
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      120,
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xFF8C2EEE),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5)),
+                                                  child: Row(
+                                                    children: [
+                                                      TextButton(
+                                                        child: const Row(
+                                                          children: [
+                                                            Text(
+                                                              'Copy',
+                                                              style: TextStyle(
+                                                                  fontSize: 13,
                                                                   color: Colors
-                                                                      .white,
-                                                                )
-                                                              ],
+                                                                      .white),
                                                             ),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              final translator =
-                                                                  GoogleTranslator();
-                                                              translator
-                                                                  .translate(
-                                                                      selectedText,
-                                                                      to: 'vi')
-                                                                  .then((result) => ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(SnackBar(
+                                                            Icon(Icons.copy,
+                                                                color: Colors
+                                                                    .white)
+                                                          ],
+                                                        ),
+                                                        onPressed: () {
+                                                          Clipboard.setData(
+                                                              ClipboardData(
+                                                                  text:
+                                                                      selectedText));
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Clipboard.setData(
+                                                              ClipboardData(
+                                                                  text:
+                                                                      selectedText));
+                                                          _showClipboardDialog(
+                                                              context);
+                                                        },
+                                                        child: const Row(
+                                                          children: [
+                                                            Text('Save',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .white)),
+                                                            Icon(
+                                                              Icons.save,
+                                                              color:
+                                                                  Colors.white,
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          final translator =
+                                                              GoogleTranslator();
+                                                          translator
+                                                              .translate(
+                                                                  selectedText,
+                                                                  to: 'vi')
+                                                              .then((result) => ScaffoldMessenger.of(
+                                                                      context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
                                                                           content:
                                                                               Text(result.toString()))));
-                                                            },
-                                                            child: const Row(
-                                                              children: [
-                                                                Text('Trans',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        color: Colors
-                                                                            .white)),
-                                                                Icon(
-                                                                  Icons
-                                                                      .g_translate,
-                                                                  color: Colors
-                                                                      .white,
-                                                                )
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ]);
-                                            },
-                                            onSelectionChanged:
-                                                (selection, cause) {
-                                              setState(() {
-                                                selectedText = isFirst
-                                                    ? localSelectedTableText
-                                                        .substring(
-                                                            selection.start,
-                                                            selection.end)
-                                                    : selectedTableText
-                                                        .substring(
-                                                            selection.start,
-                                                            selection.end);
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    } else {
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    }
-                                  },
-                                );
-                              } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
+                                                        },
+                                                        child: const Row(
+                                                          children: [
+                                                            Text('Trans',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .white)),
+                                                            Icon(
+                                                              Icons.g_translate,
+                                                              color:
+                                                                  Colors.white,
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ]);
+                                        },
+                                        onSelectionChanged: (selection, cause) {
+                                          setState(() {
+                                            selectedText = isFirst
+                                                ? localSelectedTableText
+                                                    .substring(selection.start,
+                                                        selection.end)
+                                                : selectedTableText.substring(
+                                                    selection.start,
+                                                    selection.end);
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                           )),
                     ],
@@ -655,16 +651,87 @@ class _BookScreenState extends State<BookScreen> {
                                 if (_scrollController
                                         .position.maxScrollExtent ==
                                     0.0) {
-                                  chapterScrollPercentages[
-                                      selectedChapterId] = 1;
+                                  setState(() {
+                                    chapterScrollPercentages[isFirst
+                                        ? localSelectedChapterId
+                                        : selectedChapterId] = 1;
+                                  });
                                 }
                                 if (chapter['id'] != selectedChapterId) {
-                                  setState(() {
-                                    isFirst = false;
-                                    selectedTableText = chapter['title'];
-                                    selectedChapterId = chapter['id'];
-                                    Navigator.pop(context);
-                                  });
+                                  if ((isFirst &&
+                                          compareChapterId(
+                                              localSelectedChapterId,
+                                              chapter['id'])) ||
+                                      compareChapterId(
+                                          selectedChapterId, chapter['id'])) {
+                                    CustomDialog.show(
+                                      context: context,
+                                      title: 'Are you sure back older chapter?',
+                                      dialogColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      msgColor: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      titleColor: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      onPressed: () {
+                                        setState(() {
+                                          for (var i =
+                                                  chapterListMap?.length ?? 0;
+                                              i > 0;
+                                              i--) {
+                                            if (chapterListMap?[i - 1] !=
+                                                null) {
+                                              var chapterItem =
+                                                  chapterListMap?[i - 1];
+                                              if (chapterItem?['id'] !=
+                                                  chapter['id']) {
+                                                // Xóa item trong chapterScrollPercentages có key bằng chapterItem?['id']
+                                                chapterScrollPercentages
+                                                    .remove(chapterItem?['id']);
+                                                chapterScrollPositions
+                                                    .remove(chapterItem?['id']);
+                                              } else {
+                                                // Nếu chapterItem?['id'] == chapter['id'], ngừng xóa và thoát vòng lặp
+                                                break;
+                                              }
+                                            }
+                                            //print(chapterListMap?[i - 1]);
+                                          }
+                                          historyBloc.add(RemoveItemInHistory(
+                                            history: History(
+                                              uId: widget.uId,
+                                              chapters: widget.book.id ?? '',
+                                              percent: overallPercentage,
+                                              times: times,
+                                              chapterScrollPositions:
+                                                  chapterScrollPositions,
+                                              chapterScrollPercentages:
+                                                  chapterScrollPercentages,
+                                            ),
+                                          ));
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                      isCancel: true,
+                                    ).then((value) {
+                                      setState(() {
+                                        isFirst = false;
+                                        selectedTableText = chapter['title'];
+                                        selectedChapterId = chapter['id'];
+                                        Navigator.pop(context);
+                                      });
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isFirst = false;
+                                      selectedTableText = chapter['title'];
+                                      selectedChapterId = chapter['id'];
+                                      Navigator.pop(context);
+                                    });
+                                  }
                                 }
                               },
                               child: Text(

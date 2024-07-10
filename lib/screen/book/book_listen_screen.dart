@@ -85,13 +85,20 @@ class _BookListenScreenState extends State<BookListenScreen> {
           if (isFirst) {
             chapterScrollPositions[localSelectedChapterId] = position.inSeconds;
             chapterScrollPercentages[localSelectedChapterId] = percentage;
+            index = int.parse(
+                localSelectedChapterId.replaceAll(RegExp(r'[^0-9]'), '')) -
+                1;
           } else {
             chapterScrollPositions[selectedChapterId] = position.inSeconds;
             chapterScrollPercentages[selectedChapterId] = percentage;
+            index =
+                int.parse(selectedChapterId.replaceAll(RegExp(r'[^0-9]'), '')) -
+                    1;
           }
-          overallPercentage = percentAllChapters(chapterScrollPercentages, totalChapters );
+          overallPercentage =
+              percentAllChapters(chapterScrollPercentages, totalChapters);
 
-          if(position.inSeconds >= duration.inSeconds){
+          if (position.inSeconds >= duration.inSeconds) {
             if (index >= 0 && index < totalChapters - 1) {
               index = index + 1;
               isFirst = false;
@@ -107,7 +114,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         isTickedWhite =
-            Theme.of(context).appBarTheme.backgroundColor == Colors.white;
+            Theme
+                .of(context)
+                .appBarTheme
+                .backgroundColor == Colors.white;
         isTickedBlack = !isTickedWhite;
       });
     });
@@ -167,10 +177,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                               border: Border.all(color: Colors.black)),
                           child: isTickedWhite
                               ? const Icon(
-                                  Icons.check,
-                                  color: Colors.black,
-                                  size: 10.0,
-                                )
+                            Icons.check,
+                            color: Colors.black,
+                            size: 10.0,
+                          )
                               : null,
                         ),
                       ),
@@ -194,10 +204,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                               border: Border.all(color: Colors.white)),
                           child: isTickedBlack
                               ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 10.0,
-                                )
+                            Icons.check,
+                            color: Colors.white,
+                            size: 10.0,
+                          )
                               : null,
                         ),
                       )
@@ -237,11 +247,13 @@ class _BookListenScreenState extends State<BookListenScreen> {
                       Text('Chapter',
                           style: TextStyle(
                               color:
-                                  isTickedBlack ? Colors.black : Colors.white,
+                              isTickedBlack ? Colors.black : Colors.white,
                               fontSize: 20)),
                       SizedBox(
-                        height:
-                        MediaQuery.of(dialogContext).size.height / 3,
+                        height: MediaQuery
+                            .of(dialogContext)
+                            .size
+                            .height / 3,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: chapterListMap?.length,
@@ -261,12 +273,88 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                       )),
                                   onPressed: () {
                                     if (chapter['id'] != selectedChapterId) {
-                                      setState(() {
-                                        isFirst = false;
-                                        selectedTableText = chapter['title'];
-                                        selectedChapterId = chapter['id'];
-                                        Navigator.pop(context);
-                                      });
+                                      if ((isFirst &&
+                                          compareChapterId(
+                                              localSelectedChapterId,
+                                              chapter['id'])) ||
+                                          compareChapterId(
+                                              selectedChapterId,
+                                              chapter['id'])) {
+                                        CustomDialog.show(
+                                          context: context,
+                                          title: 'Are you sure back older chapter?',
+                                          dialogColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                          msgColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .background,
+                                          titleColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .background,
+                                          onPressed: () {
+                                            setState(() {
+                                              for (var i =
+                                                  chapterListMap?.length ?? 0;
+                                              i > 0;
+                                              i--) {
+                                                if (chapterListMap?[i - 1] !=
+                                                    null) {
+                                                  var chapterItem =
+                                                  chapterListMap?[i - 1];
+                                                  if (chapterItem?['id'] !=
+                                                      chapter['id']) {
+                                                    // Xóa item trong chapterScrollPercentages có key bằng chapterItem?['id']
+                                                    chapterScrollPercentages
+                                                        .remove(
+                                                        chapterItem?['id']);
+                                                    chapterScrollPositions
+                                                        .remove(
+                                                        chapterItem?['id']);
+                                                  } else {
+                                                    // Nếu chapterItem?['id'] == chapter['id'], ngừng xóa và thoát vòng lặp
+                                                    break;
+                                                  }
+                                                }
+                                                //print(chapterListMap?[i - 1]);
+                                              }
+                                              historyAudioBloc
+                                                  .add(RemoveItemInHistoryAudio(
+                                                historyAudio: HistoryAudio(
+                                                  uId: widget.uId,
+                                                  bookId: widget.book.id ?? '',
+                                                  percent: overallPercentage,
+                                                  times: times,
+                                                  chapterScrollPositions:
+                                                  chapterScrollPositions,
+                                                  chapterScrollPercentages:
+                                                  chapterScrollPercentages,
+                                                ),
+                                              ));
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          isCancel: true,
+                                        ).then((value) {
+                                          setState(() {
+                                            isFirst = false;
+                                            selectedTableText =
+                                            chapter['title'];
+                                            selectedChapterId = chapter['id'];
+                                            Navigator.pop(context);
+                                          });
+                                        });
+                                      } else {
+                                        setState(() {
+                                          isFirst = false;
+                                          selectedTableText = chapter['title'];
+                                          selectedChapterId = chapter['id'];
+                                          Navigator.pop(context);
+                                        });
+                                      }
                                     }
                                   },
                                   child: Text(
@@ -290,7 +378,7 @@ class _BookListenScreenState extends State<BookListenScreen> {
                             'Close',
                             style: TextStyle(
                               color:
-                                  isTickedBlack ? Colors.black : Colors.white,
+                              isTickedBlack ? Colors.black : Colors.white,
                             ),
                           ))
                     ],
@@ -322,7 +410,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
           child: WillPopScope(
             onWillPop: () async {
               if (isTickedWhite &&
-                  Theme.of(context).appBarTheme.backgroundColor !=
+                  Theme
+                      .of(context)
+                      .appBarTheme
+                      .backgroundColor !=
                       Colors.white) {
                 CustomDialog.show(
                     context: context,
@@ -337,7 +428,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                     });
                 return false;
               } else if (isTickedBlack &&
-                  Theme.of(context).appBarTheme.backgroundColor !=
+                  Theme
+                      .of(context)
+                      .appBarTheme
+                      .backgroundColor !=
                       Colors.black) {
                 CustomDialog.show(
                     context: context,
@@ -386,14 +480,14 @@ class _BookListenScreenState extends State<BookListenScreen> {
                       if (historiesAudio.isNotEmpty) {
                         final historyListMap = historiesAudio
                             .map((histories) {
-                              return histories.chapterScrollPositions!.entries
-                                  .map((entry) {
-                                return {
-                                  'id': entry.key,
-                                  'title': entry.value,
-                                };
-                              }).toList();
-                            })
+                          return histories.chapterScrollPositions!.entries
+                              .map((entry) {
+                            return {
+                              'id': entry.key,
+                              'title': entry.value,
+                            };
+                          }).toList();
+                        })
                             .expand((element) => element)
                             .toList();
                         if (historyListMap.isNotEmpty) {
@@ -401,19 +495,27 @@ class _BookListenScreenState extends State<BookListenScreen> {
                           final first = historyListMap.last;
                           localSelectedChapterId = first['id'];
                           final chapterHistory = chapterListMap?[
-                              numberInString(localSelectedChapterId)! - 1];
+                          numberInString(localSelectedChapterId)! - 1];
                           localSelectedTableText = chapterHistory?['title'];
                           if (isFirst && !isToolbar) {
                             audioPlayer
                                 .play(UrlSource(localSelectedTableText))
                                 .then((value) async {
-                              if(first['title'] <= duration.inSeconds){
+                              if (first['title'] <= duration.inSeconds) {
                                 await audioPlayer
                                     .seek(Duration(seconds: first['title']));
                                 await audioPlayer.pause();
                               }
                             });
                           }
+                          final percentListMapPosition = historiesAudio
+                              .map((e) => e.chapterScrollPositions)
+                              .fold<Map<String, dynamic>>({}, (prev, element) {
+                            prev.addAll(element!);
+                            return prev;
+                          });
+                          mergePercentages(
+                              percentListMapPosition, chapterScrollPositions);
                           final percentListMap = historiesAudio
                               .map((e) => e.chapterScrollPercentages)
                               .fold<Map<String, dynamic>>({}, (prev, element) {
@@ -421,32 +523,33 @@ class _BookListenScreenState extends State<BookListenScreen> {
                             return prev;
                           });
                           Map<String, dynamic> newChapterScrollPercentages =
-                              mergePercentages(
-                                  percentListMap, chapterScrollPercentages);
+                          mergePercentages(
+                              percentListMap, chapterScrollPercentages);
                           if (newChapterScrollPercentages.isNotEmpty) {
                             overallPercentage = percentAllChapters(
                                 newChapterScrollPercentages, totalChapters);
                           }
                         }
-                      } else {
-                        overallPercentage = percentAllChapters(
-                            chapterScrollPercentages, totalChapters);
                       }
+                      // else {
+                      //   overallPercentage = percentAllChapters(
+                      //       chapterScrollPercentages, totalChapters);
+                      // }
                     }
                     return Scaffold(
                         appBar: AppBar(
                           backgroundColor:
-                              isTickedBlack ? Colors.black : Colors.white,
+                          isTickedBlack ? Colors.black : Colors.white,
                           elevation: 0,
                           iconTheme:
-                              const IconThemeData(color: Color(0xFFDFE2E0)),
+                          const IconThemeData(color: Color(0xFFDFE2E0)),
                           actions: [
                             chaptersListIcon(context),
                             settingIcon(context),
                           ],
                         ),
                         backgroundColor:
-                            isTickedBlack ? Colors.black : Colors.white,
+                        isTickedBlack ? Colors.black : Colors.white,
                         body: SingleChildScrollView(
                           child: Column(
                             children: [
@@ -455,7 +558,10 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                 child: Image.network(
                                   widget.book.imageUrl ?? '',
                                   width:
-                                      MediaQuery.of(context).size.width / 1.5,
+                                  MediaQuery
+                                      .of(context)
+                                      .size
+                                      .width / 1.5,
                                   height: 350,
                                   fit: BoxFit.fill,
                                 ),
@@ -465,49 +571,53 @@ class _BookListenScreenState extends State<BookListenScreen> {
                               ),
                               Text(
                                 widget.book.title ?? '',
-                                style: Theme.of(context)
+                                style: Theme
+                                    .of(context)
                                     .textTheme
                                     .displayMedium
                                     ?.copyWith(
-                                      color: isTickedBlack
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
+                                  color: isTickedBlack
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                               Text(
                                 widget.book.authorName ?? '',
-                                style: Theme.of(context)
+                                style: Theme
+                                    .of(context)
                                     .textTheme
                                     .headlineSmall!
                                     .copyWith(
-                                      color: const Color(0xFFC7C7C7),
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                                  color: const Color(0xFFC7C7C7),
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                               Slider(
                                 min: 0,
                                 max: duration.inSeconds.toDouble(),
-                                value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
+                                value: position.inSeconds
+                                    .toDouble()
+                                    .clamp(0.0, duration.inSeconds.toDouble()),
                                 onChanged: (value) async {
                                   final position =
-                                      Duration(seconds: value.toInt());
+                                  Duration(seconds: value.toInt());
                                   await audioPlayer.seek(position);
 
                                   await audioPlayer.resume();
                                 },
                                 thumbColor:
-                                    isTickedBlack ? Colors.white : Colors.black,
+                                isTickedBlack ? Colors.white : Colors.black,
                                 inactiveColor: Colors.grey,
                                 activeColor:
-                                    isTickedBlack ? Colors.white : Colors.black,
+                                isTickedBlack ? Colors.white : Colors.black,
                               ),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
+                                const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(formatTime(position),
                                         style: TextStyle(
@@ -541,26 +651,32 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                       ? localSelectedChapterId
                                       : selectedChapterId,
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context)
+                                  style: Theme
+                                      .of(context)
                                       .textTheme
                                       .titleLarge!
                                       .copyWith(
-                                          color: isTickedBlack
-                                              ? Colors.white
-                                              : Colors.black),
+                                      color: isTickedBlack
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   InkWell(
                                     onTap: () async {
-                                      await audioPlayer.play(UrlSource(isFirst
-                                          ? localSelectedTableText
-                                          : selectedTableText));
-                                      await audioPlayer.seek(Duration(
-                                          seconds: position.inSeconds - 10));
+                                      if (isPlaying) {
+                                        await audioPlayer.seek(Duration(
+                                            seconds: position.inSeconds - 10));
+                                      } else {
+                                        await audioPlayer.play(UrlSource(isFirst
+                                            ? localSelectedTableText
+                                            : selectedTableText));
+                                        await audioPlayer.seek(Duration(
+                                            seconds: position.inSeconds - 10));
+                                      }
                                     },
                                     child: Icon(
                                       Icons.replay_10,
@@ -573,12 +689,57 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                   InkWell(
                                     onTap: () {
                                       if (index > 0 && index < totalChapters) {
-                                        setState(() {
-                                          index = index - 1;
-                                          isFirst = false;
-                                          final chapter = chapterListMap?[index];
-                                          selectedTableText = chapter?['title'];
-                                          selectedChapterId = chapter?['id'];
+                                        CustomDialog.show(
+                                          context: context,
+                                          title:
+                                          'Are you sure back older chapter?',
+                                          dialogColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                          msgColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .background,
+                                          titleColor: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .background,
+                                          onPressed: () {
+                                            setState(() {
+                                              var chapterItem =
+                                              chapterListMap?[index];
+                                              chapterScrollPercentages
+                                                  .remove(chapterItem?['id']);
+                                              chapterScrollPositions
+                                                  .remove(chapterItem?['id']);
+                                              historyAudioBloc
+                                                  .add(RemoveItemInHistoryAudio(
+                                                historyAudio: HistoryAudio(
+                                                  uId: widget.uId,
+                                                  bookId: widget.book.id ?? '',
+                                                  percent: overallPercentage,
+                                                  times: times,
+                                                  chapterScrollPositions:
+                                                  chapterScrollPositions,
+                                                  chapterScrollPercentages:
+                                                  chapterScrollPercentages,
+                                                ),
+                                              ));
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          isCancel: true,
+                                        ).then((value) {
+                                          setState(() {
+                                            index = index - 1;
+                                            isFirst = false;
+                                            final chapter =
+                                            chapterListMap?[index];
+                                            selectedTableText =
+                                            chapter?['title'];
+                                            selectedChapterId = chapter?['id'];
+                                          });
                                         });
                                       }
                                     },
@@ -624,7 +785,8 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                         setState(() {
                                           index = index + 1;
                                           isFirst = false;
-                                          final chapter = chapterListMap?[index];
+                                          final chapter =
+                                          chapterListMap?[index];
                                           selectedTableText = chapter?['title'];
                                           selectedChapterId = chapter?['id'];
                                         });
@@ -640,12 +802,16 @@ class _BookListenScreenState extends State<BookListenScreen> {
                                   ),
                                   InkWell(
                                     onTap: () async {
-                                      await audioPlayer.stop();
-                                      await audioPlayer.play(UrlSource(isFirst
-                                          ? localSelectedTableText
-                                          : selectedTableText));
-                                      await audioPlayer.seek(Duration(
-                                          seconds: position.inSeconds + 10));
+                                      if (isPlaying) {
+                                        await audioPlayer.seek(Duration(
+                                            seconds: position.inSeconds + 10));
+                                      } else {
+                                        await audioPlayer.play(UrlSource(isFirst
+                                            ? localSelectedTableText
+                                            : selectedTableText));
+                                        await audioPlayer.seek(Duration(
+                                            seconds: position.inSeconds + 10));
+                                      }
                                     },
                                     child: Icon(
                                       Icons.forward_10,
