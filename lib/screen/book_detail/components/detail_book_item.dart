@@ -102,7 +102,7 @@ class _DetailBookItemState extends State<DetailBookItem> {
     chaptersBloc = ChaptersBloc(ChaptersRepository())
       ..add(LoadChapters(widget.book.id ?? ''));
     boughtBloc = BoughtBloc(BoughtRepository())
-      ..add(LoadedBought(uId: SharedService.getUserId() ?? ''));
+      ..add(LoadedBoughtFinish(uId: SharedService.getUserId() ?? ''));
     coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
   }

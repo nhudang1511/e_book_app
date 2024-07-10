@@ -60,14 +60,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listeners: [
           BlocListener<DepositBloc, DepositState>(
               listener: (context, state) {
-                //print(state);
+                print(state);
                 if (state is DepositLoaded) {
                   missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
                 }
               }),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                // print(state);
+                print(state);
                 if (state is MissionUserListLoaded) {
                   coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
                 }
@@ -344,6 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
                                         depositBloc.add(LoadedDeposit(uId: SharedService.getUserId() ?? ''));
+
                                       });
                                     },
                                     mainIcon: Icon(

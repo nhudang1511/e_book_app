@@ -35,6 +35,27 @@ class BoughtRepository extends BaseBoughtRepository {
   }
 
   @override
+  Future<Bought?> getBought(String uId) async {
+    try {
+      var querySnapshot = await _firebaseFirestore
+          .collection('bought')
+          .where('uId', isEqualTo: uId)
+          .where('status', isEqualTo: false)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var data = querySnapshot.docs.first.data();
+        data['id'] = querySnapshot.docs.first.id;
+        return Bought().fromJson(data);
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+    return null;
+  }
+
+  @override
   Future<num> getTotalBought(String uId) async {
     num totalCoins = 0;
 

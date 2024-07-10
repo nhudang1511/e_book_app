@@ -5,4 +5,5 @@ abstract class BaseBoughtRepository{
   Future<void> editBought(Bought bought);
   Future<num> getTotalBought(String uId);
   Future<num> getTotalBoughtByMonth(String uId, DateTime month);
+  Future<Bought?> getBought(String uId);
 }

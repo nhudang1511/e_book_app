@@ -65,6 +65,12 @@ class _StatisticalState extends State<Statistical> {
       ..add(LoadedBoughtByUId(uId: SharedService.getUserId() ?? ''));
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void _updateChartData() {
     setState(() {
       chartData = [

@@ -15,6 +15,7 @@ class BoughtBloc extends Bloc<BoughtEvent, BoughtState> {
     on<LoadedBought>(_onLoadedBought);
     on<LoadedBoughtByUId>(_onLoadedBoughtByUId);
     on<LoadedBoughtByMonth>(_onLoadedBoughtByMonth);
+    on<LoadedBoughtFinish>(_onLoadedBoughtFinish);
   }
 
   void _onAddNewBought(event, Emitter<BoughtState> emit) async {
@@ -74,6 +75,18 @@ class BoughtBloc extends Bloc<BoughtEvent, BoughtState> {
         emit(BoughtCoinLoaded(boughtCoin: boughtCoin));
       } else {
         emit(const BoughtError('error'));
+      }
+    } catch (e) {
+      emit(const BoughtError('error'));
+    }
+  }
+
+  void _onLoadedBoughtFinish(event, Emitter<BoughtState> emit) async {
+    emit(BoughtLoading());
+    try {
+      Bought? bought = await _boughtRepository.getBought(event.uId);
+      if (bought != null) {
+        emit(BoughtLoaded(bought: bought));
       }
     } catch (e) {
       emit(const BoughtError('error'));
