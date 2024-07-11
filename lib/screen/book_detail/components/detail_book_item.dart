@@ -64,6 +64,8 @@ class _DetailBookItemState extends State<DetailBookItem> {
               ),
             ));
             ShowSnackBar.success('Buy books successfully', context);
+            missionUserBloc.add(EditMissionUsers(mission: missionUser));
+            missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
             Navigator.pushNamed(context, isListen ? BookListenScreen.routeName : BookScreen.routeName, arguments: {
               'book': widget.book,
               'uId': uId,

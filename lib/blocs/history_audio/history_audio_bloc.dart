@@ -21,6 +21,7 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
     on<LoadHistoryAudio>(_onLoadHistoryAudio);
     on<UpdatedHistoryAudio>(_onUpdatedHistoryAudio);
     on<RemoveItemInHistoryAudio>(_onRemoveItemInHistoryAudio);
+    on<LoadedHistoryAudioByUId>(_onLoadHistoryAudioByUId);
   }
 
   void _onAddToHistoryAudio(event, Emitter<HistoryAudioState> emit) async {
@@ -75,6 +76,22 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
     emit(HistoryAudioLoaded(historyAudio: event.historiesAudio));
   }
 
+  void _onLoadHistoryAudioByUId(
+      LoadedHistoryAudioByUId event, Emitter<HistoryAudioState> emit) async {
+    _historyAudioSubscription?.cancel();
+    _historyAudioSubscription =
+        _historyAudioRepository.streamHistoriesAudioByUId(event.uId, event.bookId).listen(
+              (snapshot) {
+            List<HistoryAudio> histories =
+            snapshot.docs.map((doc) => HistoryAudio.fromSnapshot(doc)).toList();
+            add(UpdatedHistoryAudio(historiesAudio: histories));
+          },
+          onError: (error) {
+            emit(HistoryAudioError(error.toString()));
+          },
+        );
+  }
+
   void _onRemoveItemInHistoryAudio(
       event, Emitter<HistoryAudioState> emit) async {
     emit(HistoryAudioLoading());
@@ -83,7 +100,7 @@ class HistoryAudioBloc extends Bloc<HistoryAudioEvent, HistoryAudioState> {
           .removeItemInHistoryAudio(event.historyAudio);
       emit(HistoryAudioLoaded(historyAudio: [historyAudio]));
     } catch (e) {
-      print(e.toString());
+      //print(e.toString());
       emit(HistoryAudioError('error in add'));
     }
   }

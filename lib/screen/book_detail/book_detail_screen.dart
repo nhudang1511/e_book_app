@@ -11,7 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
-import '../../widget/custom_dialog_notice.dart';
+import '../../utils/show_snack_bar.dart';
 import 'components/custom_tab_in_book.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -173,19 +173,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               else
                                 IconButton(
                                     onPressed: () {
-                                      widget._timer =
-                                          Timer(const Duration(seconds: 1), () {
-                                            Navigator.of(context).pop();
-                                          });
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return const CustomDialogNotice(
-                                            title: Icons.downloading,
-                                            content: 'Please log in to add',
-                                          );
-                                        },
-                                      );
+                                      ShowSnackBar.error(
+                                          "Please log in to add",
+                                          context);
                                     },
                                     icon: const Icon(Icons.bookmark_outlined,
                                         color: Color(0xFFDFE2E0))),

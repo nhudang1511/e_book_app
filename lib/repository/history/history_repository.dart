@@ -174,4 +174,14 @@ class HistoryRepository extends BaseHistoryRepository {
     updatedMap.removeWhere((key, value) => !keysToKeep.containsKey(key));
     return updatedMap;
   }
+
+  @override
+  Stream<QuerySnapshot<Object?>> streamHistoriesByUId(String uId, String bookId) {
+    return _firebaseFirestore
+        .collection('histories')
+        .where('uId', isEqualTo: uId)
+        .where("chapters", isEqualTo: bookId)
+        .where("percent", isGreaterThanOrEqualTo: 50)
+        .snapshots();
+  }
 }

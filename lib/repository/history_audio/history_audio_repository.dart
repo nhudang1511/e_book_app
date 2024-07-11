@@ -118,6 +118,16 @@ class HistoryAudioRepository extends BaseHistoryAudioRepository {
   }
 
   @override
+  Stream<QuerySnapshot<Object?>> streamHistoriesAudioByUId(String uId, String bookId) {
+    return _firebaseFirestore
+        .collection('histories_audio')
+        .where('uId', isEqualTo: uId)
+        .where("bookId", isEqualTo: bookId)
+        .where("percent", isGreaterThanOrEqualTo: 50)
+        .snapshots();
+  }
+
+  @override
   Future<HistoryAudio> removeItemInHistoryAudio(HistoryAudio historyAudio) async {
     try {
       var querySnapshot = await _firebaseFirestore

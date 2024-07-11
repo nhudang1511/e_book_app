@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_book_app/config/shared_preferences.dart';
-import 'package:e_book_app/repository/mission/mission_repository.dart';
-import 'package:e_book_app/repository/mission_user/mission_user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rating_dialog/rating_dialog.dart';
@@ -10,6 +8,8 @@ import 'package:rating_summary/rating_summary.dart';
 
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import '../../repository/repository.dart';
+import '../../utils/show_snack_bar.dart';
 import '../../widget/widget.dart';
 import '../book_detail/components/review_item.dart';
 
@@ -33,6 +33,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
   bool isEdit = false;
+  late HistoryBloc historyBloc;
+  late HistoryAudioBloc historyAudioBloc;
 
   @override
   void initState() {
@@ -40,6 +42,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     missionBloc = MissionBloc(MissionRepository())
       ..add(LoadedMissionsByType(type: 'comment'));
     missionUserBloc = MissionUserBloc(MissionUserRepository());
+    historyBloc = HistoryBloc(HistoryRepository())
+      ..add(LoadedHistoryStreamByUId(
+          uId: SharedService.getUserId() ?? '', bookId: widget.book.id ?? ''));
+    historyAudioBloc = HistoryAudioBloc(HistoryAudioRepository())
+      ..add(LoadedHistoryAudioByUId(
+          uId: SharedService.getUserId() ?? '', bookId: widget.book.id ?? ''));
   }
 
   @override
@@ -55,9 +63,25 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           create: (context) => missionBloc,
         ),
         BlocProvider(create: (context) => missionUserBloc),
+        BlocProvider(create: (context) => historyBloc),
+        BlocProvider(create: (context) => historyAudioBloc)
       ],
       child: MultiBlocListener(
         listeners: [
+          BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
+            if (state is HistoryLoaded) {
+              if (state.histories.isNotEmpty) {
+                isEdit = true;
+              }
+            }
+          }),
+          BlocListener<HistoryAudioBloc, HistoryAudioState>(listener: (context, state) {
+            if (state is HistoryAudioLoaded) {
+              if (state.historyAudio.isNotEmpty) {
+                isEdit = true;
+              }
+            }
+          }),
           BlocListener<MissionBloc, MissionState>(
             listener: (context, state) {
               //print('m: $state');
@@ -87,7 +111,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   status: true,
                   id: state.mission.id);
             } else if (state is MissionUserError) {}
-          })
+          }),
         ],
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
@@ -172,135 +196,84 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              if (!isReviewed) {
-                if (SharedService.getUserId() != null) {
+              if (SharedService.getUserId() != null) {
+                if (!isReviewed && isEdit) {
                   showDialog(
                       context: context,
                       barrierDismissible: true,
                       // set to false if you want to force a rating
                       builder: (context) {
-                        return StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('histories')
-                                .where('uId',
-                                    isEqualTo: SharedService.getUserId())
-                                .where("chapters", isEqualTo: widget.book.id)
-                                .where("percent", isEqualTo: 100)
-                                .snapshots(),
-                            builder: (BuildContext context, snapshot) {
-                              if (snapshot.hasData) {
-                                List<History> historyFull =
-                                    snapshot.data!.docs.map((doc) {
-                                  return History.fromSnapshot(doc);
-                                }).toList();
-                                if (historyFull.isNotEmpty) {
-                                  return RatingDialog(
-                                    starSize: 30,
-                                    initialRating: 1.0,
-                                    // your app's name?
-                                    title: const Text(
-                                      'Rating Dialog',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    // encourage your user to leave a high rating?
-                                    message: const Text(
-                                      'Tap to rate the book',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    // your app's logo?
-                                    image: Image.asset(
-                                      'assets/logo/logo.png',
-                                    ),
-                                    submitButtonText: 'Submit',
-                                    commentHint: 'Add your reviews',
-                                    onCancelled: () => print('cancelled'),
-                                    onSubmitted: (response) {
-                                      BlocProvider.of<ReviewBloc>(context).add(
-                                          AddNewReviewEvent(
-                                              bookId: widget.book.id ?? '',
-                                              content: response.comment,
-                                              status: true,
-                                              userId:
-                                                  SharedService.getUserId() ??
-                                                      '',
-                                              rating: response.rating.round(),
-                                              time: Timestamp.now()));
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          _timer = Timer(
-                                              const Duration(seconds: 1), () {
-                                            missionUserBloc.add(
-                                                EditMissionUsers(
-                                                    mission: missionUser));
-                                            missionUserBloc.add(
-                                                LoadedMissionUsers(
-                                                    uId: SharedService
-                                                            .getUserId() ??
-                                                        ''));
-                                            BlocProvider.of<ReviewBloc>(context)
-                                                .add(LoadedReview());
-                                            Navigator.of(context).pop();
-                                          });
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        },
-                                      ).then((value) {
-                                        if (_timer.isActive) {
-                                          _timer.cancel();
-                                        }
-                                      });
-                                    },
-                                  );
-                                } else {
-                                  _timer =
-                                      Timer(const Duration(seconds: 1), () {
-                                    Navigator.of(context).pop();
-                                  });
-                                  return const CustomDialogNotice(
-                                    title: Icons.warning,
-                                    content:
-                                        'Please read full books to add review',
-                                  );
-                                }
-                              } else {
-                                return const CircularProgressIndicator();
+                        return RatingDialog(
+                          starSize: 30,
+                          initialRating: 1.0,
+                          // your app's name?
+                          title: const Text(
+                            'Rating Dialog',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          // encourage your user to leave a high rating?
+                          message: const Text(
+                            'Tap to rate the book',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          // your app's logo?
+                          image: Image.asset(
+                            'assets/logo/logo.png',
+                          ),
+                          submitButtonText: 'Submit',
+                          commentHint: 'Add your reviews',
+                          onSubmitted: (response) {
+                            BlocProvider.of<ReviewBloc>(context).add(
+                                AddNewReviewEvent(
+                                    bookId: widget.book.id ?? '',
+                                    content: response.comment,
+                                    status: true,
+                                    userId: SharedService.getUserId() ?? '',
+                                    rating: response.rating.round(),
+                                    time: Timestamp.now()));
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                _timer = Timer(const Duration(seconds: 1), () {
+                                  missionUserBloc.add(
+                                      EditMissionUsers(mission: missionUser));
+                                  missionUserBloc.add(LoadedMissionUsers(
+                                      uId: SharedService.getUserId() ?? ''));
+                                  BlocProvider.of<ReviewBloc>(context)
+                                      .add(LoadedReview());
+                                  Navigator.of(context).pop();
+                                });
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              },
+                            ).then((value) {
+                              if (_timer.isActive) {
+                                _timer.cancel();
                               }
                             });
+                          },
+                        );
                       });
-                } else {
-                  _timer = Timer(const Duration(seconds: 1), () {
-                    Navigator.of(context).pop();
-                  });
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const CustomDialogNotice(
-                        title: Icons.warning,
-                        content: 'Please log in to review',
-                      );
-                    },
-                  );
+                } else if (isReviewed) {
+                  ShowSnackBar.error(
+                      "Each account can only rate a book once",
+                      context);
                 }
-              } else {
-                _timer = Timer(const Duration(seconds: 1), () {
-                  Navigator.of(context).pop();
-                });
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const CustomDialogNotice(
-                      title: Icons.warning,
-                      content: 'Each account can only rate a book once',
-                    );
-                  },
-                );
+                else if(!isEdit){
+                  ShowSnackBar.error(
+                      "Read at least 50% to be able to add review",
+                      context);
+                }
+              }
+              else {
+                ShowSnackBar.error(
+                    "Please log in to review",
+                    context);
               }
             },
             backgroundColor: const Color(0xFF8C2EEE),

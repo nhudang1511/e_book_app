@@ -21,6 +21,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<LoadedHistory>(_onLoadedHistory);
     on<UpdatedHistory>(_onUpdatedHistory);
     on<RemoveItemInHistory>(_onRemoveItemInHistory);
+    on<LoadedHistoryStreamByUId>(_onLoadedHistoryStreamByUId);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -75,6 +76,22 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       },
     );
   }
+
+  void _onLoadedHistoryStreamByUId(
+      LoadedHistoryStreamByUId event, Emitter<HistoryState> emit) async {
+    _historySubscription?.cancel();
+    _historySubscription = _historyRepository.streamHistoriesByUId(event.uId, event.bookId).listen(
+          (snapshot) {
+        List<History> histories =
+        snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
+        add(UpdatedHistory(histories: histories));
+      },
+      onError: (error) {
+        emit(HistoryError(error.toString()));
+      },
+    );
+  }
+
 
   void _onUpdatedHistory(UpdatedHistory event, Emitter<HistoryState> emit) {
     emit(HistoryLoaded(histories: event.histories));

@@ -46,3 +46,9 @@ class RemoveItemInHistoryAudio extends HistoryAudioEvent{
   RemoveItemInHistoryAudio({required this.historyAudio});
 
 }
+class LoadedHistoryAudioByUId extends HistoryAudioEvent {
+  final String uId;
+  final String bookId;
+
+  LoadedHistoryAudioByUId({required this.uId, required this.bookId});
+}

@@ -6,7 +6,7 @@ import '../../blocs/blocs.dart';
 import '../../config/shared_preferences.dart';
 import '../../model/models.dart';
 import '../../repository/repository.dart';
-import '../widget.dart';
+import '../../utils/show_snack_bar.dart';
 
 class BookCardMain extends StatefulWidget {
   final Book book;
@@ -183,19 +183,9 @@ class _BookCardMainState extends State<BookCardMain> {
                                   } else {
                                     return IconButton(
                                         onPressed: () {
-                                          _timer = Timer(
-                                              const Duration(seconds: 1), () {
-                                            Navigator.of(context).pop();
-                                          });
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return const CustomDialogNotice(
-                                                title: Icons.downloading,
-                                                content: 'Please log in to add',
-                                              );
-                                            },
-                                          );
+                                          ShowSnackBar.error(
+                                              "Please log in to add",
+                                              context);
                                         },
                                         icon: const Icon(
                                             Icons.bookmark_outlined,
