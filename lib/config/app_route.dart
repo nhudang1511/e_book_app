@@ -81,6 +81,11 @@ class AppRouter {
         return _route(const ContactUsScreen());
       case Statistical.routeName:
         return _route(const Statistical());
+      case WifiDisconnectScreen.routeName:
+        final Map<String, dynamic> arguments =
+        settings.arguments as Map<String, dynamic>;
+        final VoidCallback onRetry = arguments['onRetry'];
+        return _route(WifiDisconnectScreen(onRetry: onRetry,));
       default:
         return _errorRoute();
     }

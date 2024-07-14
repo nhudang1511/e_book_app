@@ -20,4 +20,6 @@ class BooksLoadAll extends BookState{
   BooksLoadAll({required this.books});
 }
 class BookFailure extends BookState{
+  final String? error;
+  BookFailure({this.error});
 }

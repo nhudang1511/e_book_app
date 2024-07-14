@@ -24,3 +24,4 @@ export 'book/book_listen_screen.dart';
 export 'profile/components/common_questions_screen.dart';
 export 'profile/components/contact_us_screen.dart';
 export 'statistical/statistical_screen.dart';
+export 'wifi_disconnect/wifi_disconnected_screen.dart';

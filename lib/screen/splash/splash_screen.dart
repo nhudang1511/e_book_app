@@ -1,7 +1,7 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:e_book_app/screen/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../blocs/blocs.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,9 +15,28 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _isBookLoaded = false;
+  bool _isWifiConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkWifiConnection();
+  }
+
+  Future<void> _checkWifiConnection() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.wifi) {
+      setState(() {
+        _isWifiConnected = true;
+      });
+    } else {
+      _navigateToErrorScreen();
+    }
+    _checkIfDataLoaded();
+  }
 
   void _checkIfDataLoaded() {
-    if (_isBookLoaded) {
+    if (_isBookLoaded && _isWifiConnected) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainScreen.routeName,
@@ -26,13 +45,26 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  void _navigateToErrorScreen() {
+    Navigator.pushNamed(context, WifiDisconnectScreen.routeName, arguments: {
+      'onRetry': _retryConnection
+    });
+  }
+
+  void _retryConnection() {
+    Navigator.pop(context);
+    _checkWifiConnection();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
         BlocListener<BookBloc, BookState>(listener: (context, state) {
           if (state is BookLoaded) {
-            _isBookLoaded = true;
+            setState(() {
+              _isBookLoaded = true;
+            });
             _checkIfDataLoaded();
           }
         }),

@@ -74,6 +74,7 @@ dependencies:
   auto_size_text: ^3.0.0
   syncfusion_flutter_charts: ^22.2.12
   mat_month_picker_dialog: ^1.1.1
+  connectivity_plus: ^2.1.0
 
 dev_dependencies:
   flutter_test:

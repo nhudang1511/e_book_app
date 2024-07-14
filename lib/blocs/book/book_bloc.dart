@@ -22,7 +22,7 @@ class BookBloc extends Bloc<BookEvent, BookState> {
       final book = await _bookRepository.readBooks();
       emit(BookLoaded(books: book.$1, lastDoc: book.$2));
     } catch (e) {
-      emit(BookFailure());
+      emit(BookFailure(error: e.toString()));
     }
   }
 
@@ -41,7 +41,7 @@ class BookBloc extends Bloc<BookEvent, BookState> {
         }
       }
     } catch (e) {
-      emit(BookFailure());
+      emit(BookFailure(error: e.toString()));
     }
   }
 }
