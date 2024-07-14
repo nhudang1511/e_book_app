@@ -21,14 +21,14 @@ class DetailBookItem extends StatefulWidget {
 }
 
 class _DetailBookItemState extends State<DetailBookItem> {
-  late MissionBloc missionBloc;
+  // late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
   late BoughtBloc boughtBloc;
   late CoinsBloc coinsBloc;
   int coins = 0;
   bool inHis = false;
-  List<Mission> mission = [];
   MissionUser missionUser = MissionUser();
+  Mission mission = Mission();
   late AudioBloc audioBloc;
   bool haveAudio = false;
   late ChaptersBloc chaptersBloc;
@@ -36,12 +36,14 @@ class _DetailBookItemState extends State<DetailBookItem> {
 
   void _handleActionButtonPressed(String? uId, bool isListen) {
     if (widget.book.price == 0 || inHis == true) {
-      missionUserBloc.add(EditMissionUsers(mission: missionUser));
-      missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
-      Navigator.pushNamed(context, isListen ? BookListenScreen.routeName : BookScreen.routeName, arguments: {
-        'book': widget.book,
-        'uId': uId,
-        'bloc': isListen ? audioBloc : chaptersBloc,
+      Navigator.pushNamed(
+          context, isListen ? BookListenScreen.routeName : BookScreen.routeName,
+          arguments: {
+            'book': widget.book,
+            'uId': uId,
+            'bloc': isListen ? audioBloc : chaptersBloc,
+          }).then((value){
+        missionUserBloc.add(EditMissionUsers(missionUser: missionUser, mission: mission));
       });
     } else {
       if (coins >= widget.book.price!) {
@@ -64,13 +66,13 @@ class _DetailBookItemState extends State<DetailBookItem> {
               ),
             ));
             ShowSnackBar.success('Buy books successfully', context);
-            missionUserBloc.add(EditMissionUsers(mission: missionUser));
-            missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
-            Navigator.pushNamed(context, isListen ? BookListenScreen.routeName : BookScreen.routeName, arguments: {
-              'book': widget.book,
-              'uId': uId,
-              'bloc': isListen ? audioBloc : chaptersBloc,
-            }).then((value) {
+            Navigator.pushNamed(context,
+                isListen ? BookListenScreen.routeName : BookScreen.routeName,
+                arguments: {
+                  'book': widget.book,
+                  'uId': uId,
+                  'bloc': isListen ? audioBloc : chaptersBloc,
+                }).then((value) {
               inHis = true;
               boughtBloc.add(LoadedBought(uId: uId ?? ''));
             });
@@ -92,13 +94,11 @@ class _DetailBookItemState extends State<DetailBookItem> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
-    missionBloc = MissionBloc(MissionRepository())
-      ..add(LoadedMissionsByType(type: 'read'));
-    missionUserBloc = MissionUserBloc(MissionUserRepository());
+    missionUserBloc = MissionUserBloc(MissionUserRepository())
+      ..add(LoadedMissionsUserById(type: 'read'));
     audioBloc = AudioBloc(AudioRepository())
       ..add(LoadAudio(widget.book.id ?? ''));
     chaptersBloc = ChaptersBloc(ChaptersRepository())
@@ -110,12 +110,17 @@ class _DetailBookItemState extends State<DetailBookItem> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => missionBloc,
-        ),
+        // BlocProvider(
+        //   create: (context) => missionBloc,
+        // ),
         BlocProvider(create: (context) => missionUserBloc),
         BlocProvider(create: (context) => audioBloc),
         BlocProvider(create: (context) => chaptersBloc),
@@ -124,6 +129,21 @@ class _DetailBookItemState extends State<DetailBookItem> {
       ],
       child: MultiBlocListener(
         listeners: [
+          BlocListener<MissionUserBloc, MissionUserState>(
+              listener: (context, state) {
+                if (state is MissionUserLoaded) {
+                  mission = state.mission ?? Mission();
+                  missionUser = MissionUser(
+                      uId: state.missionUser?.uId,
+                      times: state.missionUser!.times! + 1,
+                      missionId: state.missionUser?.missionId,
+                      status: true,
+                      id: state.missionUser?.id);
+                } else if(state is MissionUserFinish){
+                  coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+                  ShowSnackBar.success('Congratulations on completing the read type task', context);
+                } else if (state is MissionUserError) {}
+              }),
           BlocListener<CoinsBloc, CoinsState>(listener: (context, state) {
             if (state is CoinsLoaded) {
               coins = state.coins.quantity ?? 0;
@@ -131,41 +151,12 @@ class _DetailBookItemState extends State<DetailBookItem> {
           }),
           BlocListener<BoughtBloc, BoughtState>(listener: (context, state) {
             if (state is BoughtLoaded) {
+              missionUserBloc.add(EditMissionUsers(missionUser: missionUser, mission: mission));
               if (state.bought.bookId == widget.book.id) {
                 inHis = true;
               }
             }
             //print(inHis);
-          }),
-          BlocListener<MissionBloc, MissionState>(
-            listener: (context, state) {
-              //print('m: $state');
-              if (state is MissionLoadedByType) {
-                mission = state.mission;
-                mission.sort(
-                  (a, b) => Comparable.compare(
-                      b.times as Comparable, a.times as Comparable),
-                );
-                for (var m in mission) {
-                  //print(m.id);
-                  missionUserBloc.add(LoadedMissionsUserById(
-                      missionId: m.id ?? '',
-                      uId: SharedService.getUserId() ?? ''));
-                }
-              }
-            },
-          ),
-          BlocListener<MissionUserBloc, MissionUserState>(
-              listener: (context, state) {
-            //print(state);
-            if (state is MissionUserLoaded) {
-              missionUser = MissionUser(
-                  uId: state.mission.uId,
-                  times: state.mission.times! + 1,
-                  missionId: state.mission.missionId,
-                  status: true,
-                  id: state.mission.id);
-            } else if (state is MissionUserError) {}
           }),
           BlocListener<AudioBloc, AudioState>(listener: (context, state) {
             if (state is AudioLoaded) {

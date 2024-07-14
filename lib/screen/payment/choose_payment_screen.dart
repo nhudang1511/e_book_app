@@ -23,12 +23,8 @@ class ChoosePaymentScreen extends StatefulWidget {
 class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   int money = 0;
   late DepositBloc depositBloc;
-  late MissionBloc missionBloc;
-  late MissionUserBloc missionUserBloc;
   int coins = 0;
   String coinsId = '';
-  List<Mission> mission = [];
-  MissionUser missionUser = MissionUser();
   var listMoneysToCoins = {
     1: 300,
     5: 2000,
@@ -39,9 +35,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
   void initState() {
     super.initState();
     depositBloc = DepositBloc(DepositRepository());
-    missionBloc = MissionBloc(MissionRepository())
-      ..add(LoadedMissionsByType(type: 'coins'));
-    missionUserBloc = MissionUserBloc(MissionUserRepository());
   }
 
   @override
@@ -49,43 +42,9 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => depositBloc),
-        BlocProvider(
-          create: (context) => missionBloc,
-        ),
-        BlocProvider(create: (context) => missionUserBloc),
       ],
       child: MultiBlocListener(
         listeners: [
-          BlocListener<MissionBloc, MissionState>(
-            listener: (context, state) {
-              //print('m: $state');
-              if (state is MissionLoadedByType) {
-                mission = state.mission;
-                mission.sort(
-                  (a, b) => Comparable.compare(
-                      b.times as Comparable, a.times as Comparable),
-                );
-                for (var m in mission) {
-                  // print(m.id);
-                  missionUserBloc.add(LoadedMissionsUserById(
-                      missionId: m.id ?? '',
-                      uId: SharedService.getUserId() ?? ''));
-                }
-              }
-            },
-          ),
-          BlocListener<MissionUserBloc, MissionUserState>(
-              listener: (context, state) {
-            // print(state);
-            if (state is MissionUserLoaded) {
-              missionUser = MissionUser(
-                  uId: state.mission.uId,
-                  times: state.mission.times! + 1,
-                  missionId: state.mission.missionId,
-                  status: true,
-                  id: state.mission.id);
-            } else if (state is MissionUserError) {}
-          }),
           BlocListener<DepositBloc, DepositState>(listener: (context, state) {
             // print(state);
             if (state is AddDeposit) {
@@ -197,8 +156,6 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                               DateTime.now()),
                                           updateAt: Timestamp.fromDate(
                                               DateTime.now()))));
-                                  missionUserBloc.add(
-                                      EditMissionUsers(mission: missionUser));
                                 },
                                 onError: (error) {
                                   ShowSnackBar.error(
@@ -292,12 +249,10 @@ class _ChoosePaymentScreenState extends State<ChoosePaymentScreen> {
                                               DateTime.now()),
                                           updateAt: Timestamp.fromDate(
                                               DateTime.now()))));
-                                  missionUserBloc.add(
-                                      EditMissionUsers(mission: missionUser));
                                 }, //on mobile transaction success
                                 onPaymentError: (params) {
                                   ShowSnackBar.error(
-                                      "Error deposit money from paypal",
+                                      "Error deposit money from VNPay",
                                       context);
                                 }, //on mobile transaction error
                                 onWebPaymentComplete: () {} //only use in web

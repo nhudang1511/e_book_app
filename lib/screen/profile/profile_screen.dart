@@ -1,15 +1,15 @@
 import 'package:e_book_app/blocs/blocs.dart';
-import 'package:e_book_app/model/coins_model.dart';
 import 'package:e_book_app/repository/deposit/deposit_repository.dart';
 import 'package:e_book_app/widget/custom_dash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_book_app/screen/screen.dart';
 import '../../config/shared_preferences.dart';
-import '../../model/mission_user_model.dart';
 import '../../repository/coins/coins_repository.dart';
 import '../../repository/mission_user/mission_user_repository.dart';
+import '../../utils/utils.dart';
 import '../../widget/widget.dart';
+import '../../model/models.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -34,13 +34,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Coins coins = Coins();
   int addCoins = 0;
   MissionUser missionUser = MissionUser();
+  Mission mission = Mission();
 
   @override
   void initState() {
     super.initState();
     authBloc = BlocProvider.of<AuthBloc>(context);
-    missionUserBloc = MissionUserBloc(MissionUserRepository())
-      ..add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
+    missionUserBloc = MissionUserBloc(MissionUserRepository());
     coinsBloc = CoinsBloc(CoinsRepository())
       ..add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
     depositBloc = DepositBloc(DepositRepository())
@@ -62,15 +62,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               listener: (context, state) {
                 print(state);
                 if (state is DepositLoaded) {
-                  missionUserBloc.add(LoadedMissionUsers(uId: SharedService.getUserId() ?? ''));
+                  missionUserBloc.add(EditMissionUsers(missionUser: missionUser, mission: mission));
                 }
               }),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-                print(state);
-                if (state is MissionUserListLoaded) {
-                  coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+                if (state is MissionUserLoaded) {
+                  mission = state.mission ?? Mission();
+                  missionUser = MissionUser(
+                      uId: state.missionUser?.uId,
+                      times: state.missionUser!.times! + 1,
+                      missionId: state.missionUser?.missionId,
+                      status: true,
+                      id: state.missionUser?.id);
                 }
+                else if(state is MissionUserFinish){
+                  coinsBloc.add(LoadedCoins(uId: SharedService.getUserId() ?? ''));
+                  ShowSnackBar.success('Congratulations on completing the deposit type task', context);
+                }
+                else if (state is MissionUserError) {}
               }),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(
@@ -120,6 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   context, LoginScreen.routeName);
                               coinsBloc.add(LoadedCoins(
                                   uId: SharedService.getUserId() ?? ''));
+                              missionUserBloc.add(LoadedMissionsUserById(type: 'coins'));
                             },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all<
@@ -340,11 +351,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const CustomDash(),
                                 CustomInkwell(
                                     onTap: () async {
+                                      missionUserBloc.add(LoadedMissionsUserById(type: 'coins'));
                                       await Navigator.pushNamed(context,
                                               ChoosePaymentScreen.routeName)
                                           .then((value) {
                                         depositBloc.add(LoadedDeposit(uId: SharedService.getUserId() ?? ''));
-
                                       });
                                     },
                                     mainIcon: Icon(

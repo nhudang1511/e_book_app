@@ -3,10 +3,6 @@ part of 'mission_user_bloc.dart';
 abstract class MissionUserEvent{
   const MissionUserEvent();
 }
-class LoadedMissionUsers extends MissionUserEvent {
-  final String uId;
-  LoadedMissionUsers({required this.uId});
-}
 class AddMissionUsers extends MissionUserEvent {
   final MissionUser mission;
 
@@ -15,14 +11,14 @@ class AddMissionUsers extends MissionUserEvent {
   });
 }
 class EditMissionUsers extends MissionUserEvent {
-  final MissionUser mission;
+  final MissionUser missionUser;
+  final Mission? mission;
 
   const EditMissionUsers({
-    required this.mission
+    required this.missionUser, this.mission
   });
 }
 class LoadedMissionsUserById extends MissionUserEvent{
-  final String missionId;
-  final String uId;
-  LoadedMissionsUserById({required this.missionId, required this.uId});
+  final String type;
+  LoadedMissionsUserById({required this.type});
 }

@@ -8,4 +8,3 @@ class LoadBooks extends BookEvent{
 class LoadBooksPaginating extends BookEvent{
   LoadBooksPaginating();
 }
-class LoadAllBooks extends BookEvent{}

@@ -13,7 +13,6 @@ class BookBloc extends Bloc<BookEvent, BookState> {
   BookBloc(this._bookRepository) : super(BookLoading()) {
     on<LoadBooks>(_onLoadBook);
     on<LoadBooksPaginating>(_onLoadBooksPaginating);
-    on<LoadAllBooks>(_onLoadAllBooks);
   }
 
   void _onLoadBook(event, Emitter<BookState> emit) async {
@@ -41,17 +40,6 @@ class BookBloc extends Bloc<BookEvent, BookState> {
               books: currentState.books + books.$1, lastDoc: books.$2));
         }
       }
-    } catch (e) {
-      emit(BookFailure());
-    }
-  }
-
-  void _onLoadAllBooks(event, Emitter<BookState> emit) async {
-    try {
-      // Not paginating.
-      emit(BookLoading());
-      final book = await _bookRepository.getAllBooks();
-      emit(BooksLoadAll(books: book));
     } catch (e) {
       emit(BookFailure());
     }

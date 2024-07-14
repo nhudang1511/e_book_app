@@ -8,13 +8,11 @@ class MissionUserInitial extends MissionUserState {
 class MissionUserLoading extends MissionUserState{
 }
 class MissionUserLoaded extends MissionUserState{
-  final MissionUser mission;
-  const MissionUserLoaded({required this.mission});
+  final MissionUser? missionUser;
+  final Mission? mission;
+  const MissionUserLoaded({this.missionUser, this.mission});
 }
-class MissionUserListLoaded extends MissionUserState{
-  final List<MissionUser?> mission;
-  const MissionUserListLoaded({required this.mission});
-}
+class MissionUserFinish extends MissionUserState{}
 class MissionUserError extends MissionUserState {
   final String error;
 

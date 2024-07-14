@@ -28,9 +28,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   final textEditingController = TextEditingController();
   bool isReviewed = false;
   late Timer _timer;
-  late MissionBloc missionBloc;
   late MissionUserBloc missionUserBloc;
-  List<Mission> mission = [];
+  Mission mission = Mission();
   MissionUser missionUser = MissionUser();
   bool isEdit = false;
   late HistoryBloc historyBloc;
@@ -39,9 +38,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   void initState() {
     super.initState();
-    missionBloc = MissionBloc(MissionRepository())
-      ..add(LoadedMissionsByType(type: 'comment'));
-    missionUserBloc = MissionUserBloc(MissionUserRepository());
+    missionUserBloc = MissionUserBloc(MissionUserRepository())
+      ..add(LoadedMissionsUserById(type: 'comment'));
     historyBloc = HistoryBloc(HistoryRepository())
       ..add(LoadedHistoryStreamByUId(
           uId: SharedService.getUserId() ?? '', bookId: widget.book.id ?? ''));
@@ -59,9 +57,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => missionBloc,
-        ),
         BlocProvider(create: (context) => missionUserBloc),
         BlocProvider(create: (context) => historyBloc),
         BlocProvider(create: (context) => historyAudioBloc)
@@ -75,42 +70,27 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               }
             }
           }),
-          BlocListener<HistoryAudioBloc, HistoryAudioState>(listener: (context, state) {
+          BlocListener<HistoryAudioBloc, HistoryAudioState>(
+              listener: (context, state) {
             if (state is HistoryAudioLoaded) {
               if (state.historyAudio.isNotEmpty) {
                 isEdit = true;
               }
             }
           }),
-          BlocListener<MissionBloc, MissionState>(
-            listener: (context, state) {
-              //print('m: $state');
-              if (state is MissionLoadedByType) {
-                mission = state.mission;
-                mission.sort(
-                  (a, b) => Comparable.compare(
-                      b.times as Comparable, a.times as Comparable),
-                );
-                for (var m in mission) {
-                  //print(m.id);
-                  missionUserBloc.add(LoadedMissionsUserById(
-                      missionId: m.id ?? '',
-                      uId: SharedService.getUserId() ?? ''));
-                }
-              }
-            },
-          ),
           BlocListener<MissionUserBloc, MissionUserState>(
               listener: (context, state) {
-            //print(state);
             if (state is MissionUserLoaded) {
+              mission = state.mission ?? Mission();
               missionUser = MissionUser(
-                  uId: state.mission.uId,
-                  times: state.mission.times! + 1,
-                  missionId: state.mission.missionId,
+                  uId: state.missionUser?.uId,
+                  times: state.missionUser!.times! + 1,
+                  missionId: state.missionUser?.missionId,
                   status: true,
-                  id: state.mission.id);
-            } else if (state is MissionUserError) {}
+                  id: state.missionUser?.id);
+            }  else if(state is MissionUserFinish){
+              ShowSnackBar.success('Congratulations on completing the review type task', context);
+            }else if (state is MissionUserError) {}
           }),
         ],
         child: Scaffold(
@@ -240,10 +220,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 _timer = Timer(const Duration(seconds: 1), () {
-                                  missionUserBloc.add(
-                                      EditMissionUsers(mission: missionUser));
-                                  missionUserBloc.add(LoadedMissionUsers(
-                                      uId: SharedService.getUserId() ?? ''));
+                                  missionUserBloc.add(EditMissionUsers(
+                                      missionUser: missionUser,
+                                      mission: mission));
                                   BlocProvider.of<ReviewBloc>(context)
                                       .add(LoadedReview());
                                   Navigator.of(context).pop();
@@ -261,19 +240,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       });
                 } else if (isReviewed) {
                   ShowSnackBar.error(
-                      "Each account can only rate a book once",
-                      context);
-                }
-                else if(!isEdit){
+                      "Each account can only rate a book once", context);
+                } else if (!isEdit) {
                   ShowSnackBar.error(
-                      "Read at least 50% to be able to add review",
-                      context);
+                      "Read at least 50% to be able to add review", context);
                 }
-              }
-              else {
-                ShowSnackBar.error(
-                    "Please log in to review",
-                    context);
+              } else {
+                ShowSnackBar.error("Please log in to review", context);
               }
             },
             backgroundColor: const Color(0xFF8C2EEE),

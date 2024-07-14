@@ -15,7 +15,8 @@ class MissionRepository extends BaseMissionRepository {
     try {
       await for (var querySnapshot in _firebaseFirestore
           .collection('mission')
-          .orderBy('coins', descending: false)
+          .where('status', isEqualTo: true)
+          .orderBy('times', descending: false)
           .snapshots()) {
         List<Mission> missions = [];
 
@@ -27,6 +28,7 @@ class MissionRepository extends BaseMissionRepository {
               .where('uId', isEqualTo: SharedService.getUserId())
               .where('missionId', isEqualTo: data['id'])
               .where('status', isEqualTo: false)
+              .orderBy('times', descending: false)
               .get();
           if (missionUser.size != 0) {
             data['status'] = false;
@@ -56,6 +58,8 @@ class MissionRepository extends BaseMissionRepository {
     try {
       var querySnapshot = await _firebaseFirestore
           .collection('mission')
+          .orderBy('times', descending: true)
+          .where('status', isEqualTo: true)
           .where('type', isEqualTo: type)
           .get();
       return querySnapshot.docs.map((doc) {

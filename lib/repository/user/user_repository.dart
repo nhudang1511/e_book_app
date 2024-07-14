@@ -58,7 +58,10 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<List<model.User>> getAllUsers() async {
     try {
-      var querySnapshot = await _firebaseFirestore.collection('users').get();
+      var querySnapshot = await _firebaseFirestore
+          .collection('users')
+          .where('status', isEqualTo: true)
+          .get();
       return querySnapshot.docs.map((doc) {
         var data = doc.data();
         data['id'] = doc.id;
