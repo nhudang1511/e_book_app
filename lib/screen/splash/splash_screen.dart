@@ -25,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkWifiConnection() async {
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult == ConnectivityResult.wifi ||
+        connectivityResult == ConnectivityResult.mobile) {
       setState(() {
         _isWifiConnected = true;
       });
@@ -40,15 +41,14 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainScreen.routeName,
-            (route) => false,
+        (route) => false,
       );
     }
   }
 
   void _navigateToErrorScreen() {
-    Navigator.pushNamed(context, WifiDisconnectScreen.routeName, arguments: {
-      'onRetry': _retryConnection
-    });
+    Navigator.pushNamed(context, WifiDisconnectScreen.routeName,
+        arguments: {'onRetry': _retryConnection});
   }
 
   void _retryConnection() {
