@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/blocs.dart';
 import '../../../model/models.dart';
+import '../../../utils/show_snack_bar.dart';
 import '../../../widget/widget.dart';
 
 class ContactUsScreen extends StatefulWidget {
@@ -49,6 +50,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       child: BlocListener<ContactBloc, ContactState>(
         listener: (context, state) {
           if(state is AddContact){
+            ShowSnackBar.success("Finish add contact", context);
             Navigator.of(context).pop();
           }
         },
