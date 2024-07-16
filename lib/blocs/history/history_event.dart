@@ -51,3 +51,9 @@ class RemoveItemInHistory extends HistoryEvent{
 
   RemoveItemInHistory({required this.history});
 }
+class TopViewHistory extends HistoryEvent{
+}
+class UpdateTopViewHistory extends HistoryEvent{
+  final List<Book> book;
+  UpdateTopViewHistory({required this.book});
+}

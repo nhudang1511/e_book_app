@@ -87,6 +87,11 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
             create: (_) =>
                 CategoryBloc(CategoryRepository())..add(LoadCategory())),
+        BlocProvider(
+          create: (_) => HistoryBloc(
+            HistoryRepository(),
+          )..add(TopViewHistory()),
+        ),
       ],
       child: ChangeNotifierProvider(
           create: (BuildContext context) => ThemeProvider(widget.isDark),

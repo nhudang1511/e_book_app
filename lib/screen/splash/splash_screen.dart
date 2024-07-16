@@ -16,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool _isBookLoaded = false;
   bool _isWifiConnected = false;
+  bool _isHistoryTop = false;
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _checkIfDataLoaded() {
-    if (_isBookLoaded && _isWifiConnected) {
+    if (_isBookLoaded && _isHistoryTop && _isWifiConnected) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainScreen.routeName,
@@ -64,6 +65,14 @@ class _SplashScreenState extends State<SplashScreen> {
           if (state is BookLoaded) {
             setState(() {
               _isBookLoaded = true;
+            });
+            _checkIfDataLoaded();
+          }
+        }),
+        BlocListener<HistoryBloc, HistoryState>(listener: (context, state) {
+          if (state is HistoryTopView) {
+            setState(() {
+              _isHistoryTop = true;
             });
             _checkIfDataLoaded();
           }

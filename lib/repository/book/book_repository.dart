@@ -101,4 +101,26 @@ class BookRepository extends BaseBookRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<Book> getBookByBookId(String bookId) async {
+    try {
+      if (bookId.isNotEmpty) {
+        var docSnapshot =
+        await _firebaseFirestore.collection('book').doc(bookId).get();
+        if (docSnapshot.exists) {
+          var data = docSnapshot.data()!;
+          data['id'] = docSnapshot.id;
+          return Book().fromJson(data);
+        } else {
+          throw Exception("Book with id $bookId does not exist");
+        }
+      } else {
+        throw Error();
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
 }

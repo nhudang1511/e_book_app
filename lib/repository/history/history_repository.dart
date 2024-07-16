@@ -184,4 +184,11 @@ class HistoryRepository extends BaseHistoryRepository {
         .where("percent", isGreaterThanOrEqualTo: 50)
         .snapshots();
   }
+  @override
+  Stream<QuerySnapshot> streamAllHistories() {
+    return _firebaseFirestore
+        .collection('histories')
+        .snapshots();
+  }
+
 }

@@ -30,3 +30,7 @@ class HistoryLoaded extends HistoryState {
 
   HistoryLoaded({required this.histories});
 }
+class HistoryTopView extends HistoryState{
+  final List<Book> book;
+  HistoryTopView({required this.book});
+}

@@ -8,4 +8,5 @@ abstract class BaseBookRepository{
     DocumentSnapshot<Object?>? startAfterDoc
   });
   Future<void> fetchAuthorAndCategoryNames(Map<String, dynamic> data);
+  Future<Book> getBookByBookId(String bookId);
 }

@@ -22,6 +22,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<UpdatedHistory>(_onUpdatedHistory);
     on<RemoveItemInHistory>(_onRemoveItemInHistory);
     on<LoadedHistoryStreamByUId>(_onLoadedHistoryStreamByUId);
+    on<TopViewHistory>(_onTopViewHistory);
+    on<UpdateTopViewHistory>(_onUpdateTopViewHistory);
   }
 
   void _onAddToHistory(event, Emitter<HistoryState> emit) async {
@@ -62,8 +64,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 
-  void _onLoadedHistory(
-      LoadedHistory event, Emitter<HistoryState> emit) async {
+  void _onLoadedHistory(LoadedHistory event, Emitter<HistoryState> emit) async {
     _historySubscription?.cancel();
     _historySubscription = _historyRepository.streamHistories(event.uId).listen(
       (snapshot) {
@@ -80,10 +81,11 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   void _onLoadedHistoryStreamByUId(
       LoadedHistoryStreamByUId event, Emitter<HistoryState> emit) async {
     _historySubscription?.cancel();
-    _historySubscription = _historyRepository.streamHistoriesByUId(event.uId, event.bookId).listen(
-          (snapshot) {
+    _historySubscription =
+        _historyRepository.streamHistoriesByUId(event.uId, event.bookId).listen(
+      (snapshot) {
         List<History> histories =
-        snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
+            snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
         add(UpdatedHistory(histories: histories));
       },
       onError: (error) {
@@ -92,20 +94,66 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     );
   }
 
-
   void _onUpdatedHistory(UpdatedHistory event, Emitter<HistoryState> emit) {
     emit(HistoryLoaded(histories: event.histories));
   }
-  void _onRemoveItemInHistory(
-      event, Emitter<HistoryState> emit) async {
+
+  void _onRemoveItemInHistory(event, Emitter<HistoryState> emit) async {
     emit(HistoryLoading());
     try {
-      History history = await _historyRepository
-          .removeItemInHistory(event.history);
+      History history =
+          await _historyRepository.removeItemInHistory(event.history);
       emit(HistoryLoaded(histories: [history]));
     } catch (e) {
       emit(HistoryError('error in add'));
     }
+  }
+
+  void _onTopViewHistory(event, Emitter<HistoryState> emit) async {
+    _historySubscription?.cancel();
+    _historySubscription = _historyRepository.streamAllHistories().listen(
+          (snapshot) async {
+        List<History> histories =
+        snapshot.docs.map((doc) => History.fromSnapshot(doc)).toList();
+        var groupedHistories = <String, int>{};
+
+        for (var history in histories) {
+          if (groupedHistories.containsKey(history.chapters)) {
+            groupedHistories[history.chapters!] =
+                (groupedHistories[history.chapters!] ?? 0) +
+                    (history.times ?? 0);
+          } else {
+            groupedHistories[history.chapters!] = history.times ?? 0;
+          }
+        }
+
+        if (groupedHistories.isNotEmpty) {
+          final sortedHistories = groupedHistories.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
+          final topThreeHistories = Map<String, int>.fromEntries(
+            sortedHistories.take(3),
+          );
+
+          BookRepository bookRepository = BookRepository();
+          List<Book> books = [];
+
+          await Future.wait(topThreeHistories.keys.map((key) async {
+            final book = await bookRepository.getBookByBookId(key);
+            books.add(book);
+          }));
+
+          add(UpdateTopViewHistory(book: books));
+        }
+      },
+      onError: (error) {
+        emit(HistoryError(error.toString()));
+      },
+    );
+  }
+
+
+  void _onUpdateTopViewHistory(event, Emitter<HistoryState> emit) {
+    emit(HistoryTopView(book: event.book));
   }
 
   @override

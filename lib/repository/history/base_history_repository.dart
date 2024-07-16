@@ -8,4 +8,5 @@ abstract class BaseHistoryRepository{
   Stream<QuerySnapshot> streamHistories(String uId);
   Stream<QuerySnapshot> streamHistoriesByUId(String uId, String bookId);
   Future<History> removeItemInHistory(History history);
+  Stream<QuerySnapshot> streamAllHistories();
 }

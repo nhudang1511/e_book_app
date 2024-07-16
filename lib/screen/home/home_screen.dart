@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:e_book_app/repository/history/history_repository.dart';
 import 'package:e_book_app/widget/book_items/list_book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/blocs.dart';
 import '../../model/models.dart';
+import '../../widget/book_items/list_top_book.dart';
 import '../../widget/widget.dart';
 import 'components/custom_appbar_home.dart';
 import 'components/list_quote.dart';
@@ -71,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
       .toList();
   ScrollController controller = ScrollController();
   bool isPaginating = false;
+  List<Book> topBooks = [];
+
 
   void _scrollListener() {
     if (controller.offset >= controller.position.maxScrollExtent &&
@@ -114,101 +118,122 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           }
         }
-        return CustomScrollView(
-          controller: controller,
-          slivers: <Widget>[
-            CustomAppBarHome(title: period),
-            // const SectionTitle(title: 'New reals'),
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CarouselSlider(
-                      items: imageSliders,
-                      carouselController: _controller,
-                      options: CarouselOptions(
-                          viewportFraction: 1,
-                          autoPlay: true,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          }),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: listQuote
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      return GestureDetector(
-                        onTap: () => _controller.animateToPage(entry.key),
-                        child: Container(
-                          width: 12.0,
-                          height: 12.0,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 4.0),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: (Theme
-                                  .of(context)
-                                  .brightness ==
-                                  Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                                  .withOpacity(
-                                  _current == entry.key ? 0.9 : 0.4)),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            if (newBooks.isNotEmpty)
-              SliverToBoxAdapter(
+        return BlocBuilder<HistoryBloc, HistoryState>(
+          builder: (context, state) {
+            if(state is HistoryTopView){
+              topBooks = state.book;
+            }
+            return CustomScrollView(
+              controller: controller,
+              slivers: <Widget>[
+                CustomAppBarHome(title: period),
+                // const SectionTitle(title: 'New reals'),
+                SliverToBoxAdapter(
                   child: Column(
-                children: [
-                  const SectionTitle(title: 'New reals'),
-                  SizedBox(
-                    height: 150,
-                    child: ListBook(
-                      books: newBooks,
-                      inLibrary: false,
-                    ),
-                  ),
-                ],
-              )),
-            SliverList(
-              delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-                return Column(
-                  children: [
-                    const SectionTitle(title: 'All Books'),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: books.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return BookCardMain(
-                            book: books[index],
-                            inLibrary: false,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CarouselSlider(
+                          items: imageSliders,
+                          carouselController: _controller,
+                          options: CarouselOptions(
+                              viewportFraction: 1,
+                              autoPlay: true,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              }),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: listQuote
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          return GestureDetector(
+                            onTap: () => _controller.animateToPage(entry.key),
+                            child: Container(
+                              width: 12.0,
+                              height: 12.0,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 4.0),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: (Theme
+                                      .of(context)
+                                      .brightness ==
+                                      Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black)
+                                      .withOpacity(
+                                      _current == entry.key ? 0.9 : 0.4)),
+                            ),
                           );
-                        }),
-                    isPaginating
-                        ? Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ))
-                        : const SizedBox()
-                  ],
-                );
-              }, childCount: 1),
-            ),
-          ],
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                if(topBooks.isNotEmpty)
+                  SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          const SectionTitle(title: 'Top views'),
+                          SizedBox(
+                            height: 200,
+                            child: ListTopBook(
+                                books: topBooks
+                            ),
+                          ),
+                        ],
+                      )),
+                if (newBooks.isNotEmpty)
+                  SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          const SectionTitle(title: 'New reals'),
+                          SizedBox(
+                            height: 150,
+                            child: ListBook(
+                              books: newBooks,
+                              inLibrary: false,
+                            ),
+                          ),
+                        ],
+                      )),
+                SliverList(
+                  delegate:
+                  SliverChildBuilderDelegate((BuildContext context,
+                      int index) {
+                    return Column(
+                      children: [
+                        const SectionTitle(title: 'All Books'),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: books.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return BookCardMain(
+                                book: books[index],
+                                inLibrary: false,
+                              );
+                            }),
+                        isPaginating
+                            ? Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ))
+                            : const SizedBox()
+                      ],
+                    );
+                  }, childCount: 1),
+                ),
+              ],
+            );
+          },
         );
       },
     );
