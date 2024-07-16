@@ -67,8 +67,8 @@ class _BookCardMainState extends State<BookCardMain> {
             );
           },
           child: Container(
-            width: MediaQuery.of(context).size.width - 10,
-            height: MediaQuery.of(context).size.height /5 + 20,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             child: Row(
               children: [

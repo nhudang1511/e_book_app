@@ -23,7 +23,7 @@ class MissionUserBloc extends Bloc<MissionUserEvent, MissionUserState> {
     try {
       MissionRepository missionRepository = MissionRepository();
       List<Mission>? mission = await missionRepository.getMissionByType(event.type);
-      if(mission != null){
+      if(mission != null && SharedService.getUserId() != null){
        for(var m in mission){
          print(m.id);
          MissionUser? missionUser = await _missionUserRepository

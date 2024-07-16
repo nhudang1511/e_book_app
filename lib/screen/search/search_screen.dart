@@ -1,5 +1,4 @@
-import 'dart:async'; // Add this import for Timer
-
+import 'dart:async';
 import 'package:e_book_app/model/models.dart';
 import 'package:e_book_app/repository/book/book_repository.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const SizedBox();
                 }
                 return Expanded(
-                  child: _hasSearched == true
+                  child: _hasSearched == true && searchResults.isNotEmpty
                       ? SizedBox(
                     height: 180,
                     child: ListView.builder(

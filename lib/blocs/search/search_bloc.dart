@@ -23,7 +23,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           searchedBook.add(b);
         }
       }
-      emit(SearchLoaded(searchedBook: searchedBook));
+      if(searchedBook.isNotEmpty){
+        emit(SearchLoaded(searchedBook: searchedBook));
+      }
+      else{
+        emit(SearchFailure());
+      }
     } catch (e) {
       emit(SearchFailure());
     }
@@ -38,7 +43,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           searchedBook.add(b);
         }
       }
-      emit(SearchLoaded(searchedBook: searchedBook));
+      if(searchedBook.isNotEmpty){
+        emit(SearchLoaded(searchedBook: searchedBook));
+      }
+      else{
+        emit(SearchFailure());
+      }
     } catch (e) {
       emit(SearchFailure());
     }
