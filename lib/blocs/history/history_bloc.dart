@@ -131,7 +131,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           final sortedHistories = groupedHistories.entries.toList()
             ..sort((a, b) => b.value.compareTo(a.value));
           final topThreeHistories = Map<String, int>.fromEntries(
-            sortedHistories.take(3),
+            sortedHistories
           );
 
           BookRepository bookRepository = BookRepository();

@@ -187,7 +187,7 @@ class HistoryRepository extends BaseHistoryRepository {
   @override
   Stream<QuerySnapshot> streamAllHistories() {
     return _firebaseFirestore
-        .collection('histories')
+        .collection('histories').limit(3)
         .snapshots();
   }
 
