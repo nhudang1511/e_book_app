@@ -251,7 +251,7 @@ class _StatisticalState extends State<Statistical> {
                           return Container(
                             margin: const EdgeInsets.all(10),
                             child: LinearPercentIndicator(
-                              percent: point.y / 1000,
+                              percent:  1,
                               progressColor: index % 2 == 0
                                   ? const Color(0xFF6739B7)
                                   : const Color(0xFF9A7EC9),
